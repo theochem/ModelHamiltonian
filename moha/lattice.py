@@ -5,7 +5,7 @@ import numpy as np
 class Lattice:
     """Lattice containing LatticeSites."""
 
-    def __init__(self, sites=[]):
+    def __init__(self, sites=list()):
         """Initialize Lattice instance
 
         Parameters
@@ -19,17 +19,17 @@ class Lattice:
         self.n_sites = len(self.sites)
         self.adjacency_matrix = None
 
-    def add_site(self, coord):
-        """Generate a new LatticeSite and add to lattice
+    def add_site(self, coords):
+        """Generate a new LatticeSite and add to lattice.
 
         Parameters
         ----------
-        coord : np.array, shape(3,)
+        coords : np.ndarray(3,)
             The Cartesian coordinates of the new site
 
         """
 
-        self.sites.append(LatticeSite(self.n_sites, coord))
+        self.sites.append(LatticeSite(self.n_sites, coords))
         self.n_sites += 1
 
     def add_sites(self, *args):
@@ -37,18 +37,18 @@ class Lattice:
 
         Parameters
         ----------
-        *args : list of np.array, shape (3,)
+        *args : list of np.ndarray(3,)
             List of Cartesian coordinates of each new site
 
         """
-        for coord in args:
-            self.add_site(coord)
+        for coords in args:
+            self.add_site(coords)
 
     def gen_adjacency_matrix(self):
-        """Generate the adjacency matrix for the LatticeSites
+        """Generate the adjacency matrix for the LatticeSites.
 
         Produces a square (n x n) matrix where n is the number of LatticeSites,
-        where M_i,j = 1 denotes that sites i and j are neighbours
+        where M_i,j = 1 denotes that sites i and j are neighbours.
         """
         adjacency = np.zeros((len(self.sites), len(self.sites)), dtype=bool)
         for site in self.sites:
@@ -72,7 +72,7 @@ class Lattice:
 
     @classmethod
     def linear(cls, nodes, vec=np.array([1., 0., 0.]), pbc=True):
-        """Produce a 1-D linear Lattice:
+        """Produce a 1-D linear Lattice.
 
         Parameters
         ----------
@@ -95,9 +95,22 @@ class Lattice:
 
 
 class LatticeSite:
-    """ Lattice site on a Lattice """
+    """Lattice site on a Lattice.
 
-    def __init__(self, number, coord):
+    Attributes
+    ----------
+    number : int
+        The site number (should be same as ONvector index for the site)
+
+    coords : np.ndarray(3,)
+        Cartesian coordinates of the lattice site
+
+    neighbours : list of int
+        List of site numbers of neighbouring sites (connected by bonds)
+
+    """
+
+    def __init__(self, number, coords):
         """Initialize LatticeSite instance
 
         Parameters
@@ -105,13 +118,16 @@ class LatticeSite:
         number : int
             The site number (should be same as ONvector index for the site)
 
-        coord : np.array
+        coords : np.ndarray(3,)
             Cartesian coordinates of the lattice site
 
-        neighbours : list of int
-            List of site numbers of neighbouring sites (connected by bonds)
         """
+        if not isinstance(number, int):
+            raise TypeError("Site number must be an integer corresponding to the site's index in"
+                            "the ON vector")
+        if not isinstance(coords, np.ndarray):
+            raise TypeError("Site coordinates must be a numpy ndarray with shape (3,)")
 
         self.number = number
-        self.coord = coord
+        self.coords = coords
         self.neighbours = []
