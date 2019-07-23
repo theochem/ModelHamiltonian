@@ -1,44 +1,50 @@
-""" Model Hamiltonian Operator classes """
+""" Model Hamiltonian Operator classes."""
 import numpy as np
 from itertools import combinations
 
 
 class Hamiltonian:
-    """ Hamiltonian super class """
+    """Hamiltonian super class."""
 
     def __init__(self):
-        """ Hamiltonian
+        """Hamiltonian.
 
-            Parameters
-            ----------
+        Parameters
+        ----------
 
         """
         pass
 
 
 class HubbardHamiltonian(Hamiltonian):
-    """ Hubbard model Hamiltonian """
+    """Hubbard model Hamiltonian.
+
+    ..math::
+
+        H = H_{energy} + H_{hopping} + H_{interaction}
+
+    H_energy : zero electron term scaled by :math:`\epsilon_0`
+    H_hopping : one electron term between nearest-neighbour sites scaled by :math:`t`
+    H_interaction : two electron term for electrons on same site scaled by :math:`U`
+
+    """
 
     def __init__(self, lattice, n_electrons, t, u):
-        """ Hubbard Hamiltonian:
-            H = H_energy + H_hopping + H_interaction
-            H_energy : zero electron term scaled by e0
-            H_hopping : one electron term between nearest-neighbour sites scaled by t
-            H_interaction : two electron term for electrons on same site scaled by U
+        """Hubbard Hamiltonian:
 
-            Parameters
-            ----------
-            lattice : Lattice
-                Lattice class with an orbital on each site
+        Parameters
+        ----------
+        lattice : Lattice
+            Lattice class with an orbital on each site
 
-            n_electrons : int
-                The number operator N, corresponding to the number of electrons in the state
+        n_electrons : int
+            The number operator N, corresponding to the number of electrons in the state
 
-            t : float
-                The hopping amplitude for electrons hopping to nearest-neighbour sites
+        t : float
+            The hopping amplitude for electrons hopping to nearest-neighbour sites
 
-            u : float
-                The repulsion energy between two electrons on the same site (clearly of opposite spins)
+        u : float
+            The repulsion energy between two electrons on the same site (clearly of opposite spins)
         """
         super().__init__()
         self.lattice = lattice
@@ -60,7 +66,7 @@ class HubbardHamiltonian(Hamiltonian):
         self.H_total = np.zeros((self.n_basis_states, self.n_basis_states))
 
     def n_down(self, on_vector):
-        """ n_down operator: number of spin down e- """
+        """n_down operator: number of spin down e-."""
         k = self.lattice.Nsites
         return bin(on_vector)[-k:].count("1")
 
@@ -107,33 +113,40 @@ class HubbardHamiltonian(Hamiltonian):
 
 
 class HilbertSpace:
-    """ Hilbert space for N electrons on K sites, with each site containing 1 spin up orbital and
-        1 spin down orbital """
+    """Hilbert space for N electrons on K sites.
+
+    Hilbert space for lattice sites, with each site containing 1 spin up orbital and 1 spin down
+    orbital.
+
+    """
 
     def __init__(self, n, k):
-        """ Hilbert space: 2K orbitals filled by N electrons
+        """Hilbert space: 2K orbitals filled by N electrons
 
-            Parameters
-            ----------
-            n : int
-                The number of electrons
+        Parameters
+        ----------
+        n : int
+            The number of electrons
 
-            k : int
-                The number of sites
+        k : int
+            The number of sites
+
         """
         self.N = n
         self.K = k
         self.states = None
 
     def construct(self):
-        """ Construct the basis states for the Hilbert space:
-            Each basis state is represented as a binary integer I, and ordered such that
-            I = 2**L * I(spin down) + I(spin up).
+        """Construct the basis states for the Hilbert space.
 
-            Each integer I(spin ...) represents an occupation number (ON) vector, where
-            | k_m , k_m-1 , ... , k_0 > = I = 2**(k_m) + 2**(k_m-1) + ... + 2**(0),
-            so | 0_2 , 1_1 , 1_0 > = 011
-            """
+        Each basis state is represented as a binary integer I, and ordered such that
+        I = 2**L * I(spin down) + I(spin up).
+
+        Each integer I(spin ...) represents an occupation number (ON) vector, where
+        | k_m , k_m-1 , ... , k_0 > = I = 2**(k_m) + 2**(k_m-1) + ... + 2**(0),
+        so | 0_2 , 1_1 , 1_0 > = 011
+
+        """
         states = []
         for i in combinations(reversed(range(2*self.K)), self.N):     # Reversing ensures correct order of final states
             states.append(sum([2**j for j in i]))
