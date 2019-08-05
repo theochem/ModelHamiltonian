@@ -1,4 +1,6 @@
 """Lattice Classes for Model Hamiltonian Systems."""
+
+from itertools import cycle
 import numpy as np
 
 
@@ -104,7 +106,7 @@ class Lattice:
         self.sites[site2].neighbours.append(site1)
 
     @classmethod
-    def linear(cls, n_sites, dist=1.0, axis=0):
+    def linear(cls, n_sites, dist=1.0, axis=0, atom_types=[""]):
         """Produce a 1-D linear Lattice of evenly-spaced sites.
 
         Parameters
@@ -116,13 +118,27 @@ class Lattice:
         axis : {0, 1, 2}
             The Cartesian axis along which the line proceeds.
             0 corresponds to x, 1 to y, 2 to z.
+        atom_types : list of str
+            The atom type of each lattice site.
+            When given a list with length less than the number of sites, the pattern is repeated
+            in order, i.e. ["C", "O"] will yield a lattice with even sites of type "C" and odd
+            sites of type "O".
         # TODO: add pbc
         pbc : bool
             Connect endpoints for periodic boundary conditions?
+
+        Raises
+        ------
+        ValueError if `atom_types` is longer than `n_sites`.
+
         """
+        if len(atom_types) > n_sites:
+            raise ValueError("Too many atom types specified")
+
         coords = np.zeros((n_sites, 3))
         coords[:, axis] = np.linspace(0, dist * (n_sites - 1), n_sites)
-        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        atom_types = cycle(atom_types)
+        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
         lat = cls(sites=sites)
         [lat.add_bond(i, i + 1) for i in range(len(sites) - 1)]
         """
@@ -134,7 +150,7 @@ class Lattice:
         return lat
 
     @classmethod
-    def rectangular(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1)):
+    def rectangular(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), atom_types=[""]):
         """Produce a 2-D rectangular Lattice of evenly-spaced sites.
 
         Generate 2-dimensional primitive Bravais lattices of the following types:
@@ -150,10 +166,24 @@ class Lattice:
         axis : tuple of int
             The Cartesian axes along which the lattice is generated.
             0 corresponds to x, 1 to y, 2 to z.
+        atom_types : list of str
+            The atom type of each lattice site.
+            When given a list with length less than the number of sites, the pattern is repeated
+            in order, i.e. ["C", "O"] will yield a lattice with even sites of type "C" and odd
+            sites of type "O".
+
+        Raises
+        ------
+        ValueError
+            If the same axis is chosen multiple times for the lattice.
+            If `atom_types` is longer than `n_sites`.
 
         """
         if axis[0] == axis[1]:
-            raise ValueError("Each lattice axis must be different.")
+            raise ValueError("Each lattice axis must be different")
+        if len(atom_types) > np.product(n_sites):
+            raise ValueError("Too many atom types specified")
+
         coords = np.zeros((n_sites[0] * n_sites[1], 3))
         coords[:, axis[0]] = np.tile(
             np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1]
@@ -161,7 +191,8 @@ class Lattice:
         coords[:, axis[1]] = np.repeat(
             np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]
         )
-        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        atom_types = cycle(atom_types)
+        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
         lat = cls(sites=sites)
         # Add neighbours along axis 0
         [
@@ -179,7 +210,7 @@ class Lattice:
         return lat
 
     @classmethod
-    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=45.0):
+    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=45.0, atom_types=[""]):
         """Produce a 2-D oblique Lattice of evenly-spaced sites.
 
         Generate 2-dimensional primitive Bravais lattices of the following types:
@@ -196,19 +227,34 @@ class Lattice:
             0 corresponds to x, 1 to y, 2 to z.
         angle : float
             The skew angle of the lattice in radians.
+        atom_types : list of str
+            The atom type of each lattice site.
+            When given a list with length less than the number of sites, the pattern is repeated
+            in order, i.e. ["C", "O"] will yield a lattice with even sites of type "C" and odd
+            sites of type "O".
+
+        Raises
+        ------
+        ValueError
+            If the same axis is chosen multiple times for the lattice.
+            If `atom_types` is longer than `n_sites`.
 
         """
         # Redirect to rectangular if no angle
         if angle == 0:
             return cls.rectangular(n_sites, dist, axis)
         if axis[0] == axis[1]:
-            raise ValueError("Each lattice axis must be different.")
+            raise ValueError("Each lattice axis must be different")
+        if len(atom_types) > np.product(n_sites):
+            raise ValueError("Too many atom types specified")
+
         coords = np.zeros((n_sites[0] * n_sites[1], 3))
         coords[:, axis[0]] = np.tile(
             np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1]
         ) + np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[0] * np.cos(angle)
         coords[:, axis[1]] = np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[1] * np.sin(angle)
-        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        atom_types = cycle(atom_types)
+        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
         lat = cls(sites=sites)
         # Add neighbours along axis 0
         [
@@ -226,7 +272,7 @@ class Lattice:
         return lat
 
     @classmethod
-    def orthorhombic(cls, n_sites, dist=(1.0, 1.0, 1.0)):
+    def orthorhombic(cls, n_sites, dist=(1.0, 1.0, 1.0), atom_types=[""]):
         """Produce a 3-D orthorhombic Lattice of evenly-spaced sites.
 
         Generate 3-dimensional primitive Bravais lattices of the following types:
@@ -242,15 +288,29 @@ class Lattice:
             The number of lattice sites for each axis.
         dist : tuple of float
             The distance between each lattice site for each axis.
+        atom_types : list of str
+            The atom type of each lattice site.
+            When given a list with length less than the number of sites, the pattern is repeated
+            in order, i.e. ["C", "O"] will yield a lattice with even sites of type "C" and odd
+            sites of type "O".
+
+        Raises
+        ------
+        ValueError
+            If `atom_types` is longer than `n_sites`.
 
         """
+        if len(atom_types) > np.product(n_sites):
+            raise ValueError("Too many atom types specified")
+
         coords = np.zeros((n_sites[0] * n_sites[1] * n_sites[2], 3))
         coords[:, 0] = np.tile(np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1] * n_sites[2])
         coords[:, 1] = np.tile(np.repeat(np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]), n_sites[2])
         coords[:, 2] = np.repeat(
             np.linspace(0, dist[2] * (n_sites[2] - 1), n_sites[2]), n_sites[0] * n_sites[1]
         )
-        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        atom_types = cycle(atom_types)
+        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
         lat = cls(sites=sites)
         # Add neighbours along x axis
         [
@@ -306,6 +366,14 @@ class LatticeSite:
         atom_type : str
             The atom type of the site.
 
+        Raises
+        ------
+        TypeError
+            If `number` is not an integer.
+            If `coords` is not of type np.ndarray.
+        ValueError
+            If `coords` does not have shape (3,).
+
         """
         if not isinstance(number, int):
             raise TypeError(
@@ -313,7 +381,9 @@ class LatticeSite:
                 "the ON vector"
             )
         if not isinstance(coords, np.ndarray):
-            raise TypeError("Site coordinates must be a numpy ndarray with shape (3,)")
+            raise TypeError("Site coordinates must be a numpy ndarray")
+        if coords.shape != (3,):
+            raise ValueError("Site coordinates must have shape (3,)")
 
         self.number = number
         self.coords = coords
