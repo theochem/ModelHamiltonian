@@ -3,7 +3,32 @@ import numpy as np
 
 
 class Lattice:
-    """Lattice containing LatticeSites."""
+    """Lattice containing LatticeSites.
+
+    Attributes
+    ----------
+    sites : list of LatticeSite
+        The sites comprising the lattice.
+    n_sites : int
+        The number of lattice sites in the lattice, K.
+    adjacency_matrix : np.ndarray(K, K)
+        A boolean matrix specifying the neighbours for each site, with M_i,j = 1 denoting that
+        sites i and j are neighbours.
+
+    Methods
+    -------
+    add_site(coords, atom_type)
+        Generate a new LatticeSite and add to the lattice.
+    add_sites(*args)
+        Generate many LatticeSites at once and add to the lattice.
+
+    Notes
+    -----
+    Most porcelain functions will generate the adjacency matrix prior to returning a class
+    instance, but using the Lattice class outside of those class methods will require calling
+    `gen_adjacency_matrix` after adding all LatticeSites to the Lattice.
+
+    """
 
     def __init__(self, sites=list()):
         """Initialize Lattice instance
@@ -11,7 +36,7 @@ class Lattice:
         Parameters
         ----------
         sites : list of LatticeSite
-            Contains all of the sites on the lattice
+            The sites comprising the lattice.
 
         """
 
@@ -19,36 +44,45 @@ class Lattice:
         self.n_sites = len(self.sites)
         self.adjacency_matrix = None
 
-    def add_site(self, coords):
+    def add_site(self, coords, atom_type=""):
         """Generate a new LatticeSite and add to lattice.
 
         Parameters
         ----------
         coords : np.ndarray(3,)
-            The Cartesian coordinates of the new site
+            The Cartesian coordinates of the new site.
+        atom_type : str
+            The atom type of the site.
 
         """
 
-        self.sites.append(LatticeSite(self.n_sites, coords))
+        self.sites.append(LatticeSite(self.n_sites, coords, atom_type))
         self.n_sites += 1
 
-    def add_sites(self, *args):
+    def add_sites(self, sites):
         """Mass generate new LatticeSites and add to lattice
 
         Parameters
         ----------
-        *args : list of np.ndarray(3,)
-            List of Cartesian coordinates of each new site
+        sites : list of tuple
+            List of Cartesian coordinates and atom_types of each new site.
+            Each tuple must consist of a np.ndarray(3,) in first position and str in second pos'n.
 
         """
-        for coords in args:
-            self.add_site(coords)
+        for coords, atom_type in sites:
+            self.add_site(coords=coords, atom_type=atom_type)
 
     def gen_adjacency_matrix(self):
         """Generate the adjacency matrix for the LatticeSites.
 
-        Produces a square (n x n) matrix where n is the number of LatticeSites,
+        Produces a square (K x K) matrix where K is the number of LatticeSites,
         where M_i,j = 1 denotes that sites i and j are neighbours.
+
+        Notes
+        -----
+        Most porcelain functions will call this function prior to returning a class instance, but
+        using the Lattice class outside a method will require calling this function after adding
+        all LatticeSites to the Lattice.
         """
         adjacency = np.zeros((len(self.sites), len(self.sites)), dtype=bool)
         for site in self.sites:
@@ -57,40 +91,189 @@ class Lattice:
         self.adjacency_matrix = adjacency
 
     def add_bond(self, site1, site2):
-        """Define two LatticeSites as neighbours
+        """Define two LatticeSites as neighbours.
 
         Parameters
         ----------
         site1 : int
-            The site number of the first LatticeSite
-
+            The site number of the first LatticeSite.
         site2 : int
-            The site number of the second LatticeSite
+            The site number of the second LatticeSite.
         """
         self.sites[site1].neighbours.append(site2)
         self.sites[site2].neighbours.append(site1)
 
     @classmethod
-    def linear(cls, nodes, vec=np.array([1., 0., 0.]), pbc=True):
-        """Produce a 1-D linear Lattice.
+    def linear(cls, n_sites, dist=1.0, axis=0):
+        """Produce a 1-D linear Lattice of evenly-spaced sites.
 
         Parameters
         ----------
-        nodes : int
-            The number of sites to add to the lattice
-
-        vec : np.array
-            The vector defining the distance between each node
-
+        n_sites : int
+            The number of lattice sites, K.
+        dist : float
+            The distance between each lattice site.
+        axis : {0, 1, 2}
+            The Cartesian axis along which the line proceeds.
+            0 corresponds to x, 1 to y, 2 to z.
+        # TODO: add pbc
         pbc : bool
             Connect endpoints for periodic boundary conditions?
         """
-        sites = [LatticeSite(n, n*vec) for n in range(nodes)]
+        coords = np.zeros((n_sites, 3))
+        coords[:, axis] = np.linspace(0, dist * (n_sites - 1), n_sites)
+        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
         lat = cls(sites=sites)
-        [lat.add_bond(i, i+1) for i in range(len(sites)-1)]
+        [lat.add_bond(i, i + 1) for i in range(len(sites) - 1)]
+        """
         if pbc:
-            if nodes > 2:
+            if n_sites > 2:
                 lat.add_bond(0, len(sites)-1)
+        """
+        lat.gen_adjacency_matrix()
+        return lat
+
+    @classmethod
+    def rectangular(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1)):
+        """Produce a 2-D rectangular Lattice of evenly-spaced sites.
+
+        Generate 2-dimensional primitive Bravais lattices of the following types:
+        Orthorhombic (rectangular): D2 point group
+        Tetragonal (square): D4 point group
+
+        Parameters
+        ----------
+        n_sites : tuple of int
+            The number of lattice sites for each axis.
+        dist : tuple of float
+            The distance between each lattice site for each axis.
+        axis : tuple of int
+            The Cartesian axes along which the lattice is generated.
+            0 corresponds to x, 1 to y, 2 to z.
+
+        """
+        if axis[0] == axis[1]:
+            raise ValueError("Each lattice axis must be different.")
+        coords = np.zeros((n_sites[0] * n_sites[1], 3))
+        coords[:, axis[0]] = np.tile(
+            np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1]
+        )
+        coords[:, axis[1]] = np.repeat(
+            np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]
+        )
+        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        lat = cls(sites=sites)
+        # Add neighbours along axis 0
+        [
+            lat.add_bond(n_sites[0] * b + a, n_sites[0] * b + a + 1)
+            for a in range(n_sites[0] - 1)
+            for b in range(n_sites[1])
+        ]
+        # Add neighbours along axis 1
+        [
+            lat.add_bond(n_sites[0] * b + a, n_sites[0] * (b + 1) + a)
+            for a in range(n_sites[0])
+            for b in range(n_sites[1] - 1)
+        ]
+        lat.gen_adjacency_matrix()
+        return lat
+
+    @classmethod
+    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=45.0):
+        """Produce a 2-D oblique Lattice of evenly-spaced sites.
+
+        Generate 2-dimensional primitive Bravais lattices of the following types:
+        Monoclinic (oblique): C2 point group
+
+        Parameters
+        ----------
+        n_sites : tuple of int
+            The number of lattice sites for each axis.
+        dist : tuple of float
+            The distance between each lattice site for each axis.
+        axis : tuple of int
+            The Cartesian axes along which the lattice is generated.
+            0 corresponds to x, 1 to y, 2 to z.
+        angle : float
+            The skew angle of the lattice in radians.
+
+        """
+        # Redirect to rectangular if no angle
+        if angle == 0:
+            return cls.rectangular(n_sites, dist, axis)
+        if axis[0] == axis[1]:
+            raise ValueError("Each lattice axis must be different.")
+        coords = np.zeros((n_sites[0] * n_sites[1], 3))
+        coords[:, axis[0]] = np.tile(
+            np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1]
+        ) + np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[0] * np.cos(angle)
+        coords[:, axis[1]] = np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[1] * np.sin(angle)
+        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        lat = cls(sites=sites)
+        # Add neighbours along axis 0
+        [
+            lat.add_bond(n_sites[0] * b + a, n_sites[0] * b + a + 1)
+            for a in range(n_sites[0] - 1)
+            for b in range(n_sites[1])
+        ]
+        # Add neighbours along axis 1
+        [
+            lat.add_bond(n_sites[0] * b + a, n_sites[0] * (b + 1) + a)
+            for a in range(n_sites[0])
+            for b in range(n_sites[1] - 1)
+        ]
+        lat.gen_adjacency_matrix()
+        return lat
+
+    @classmethod
+    def orthorhombic(cls, n_sites, dist=(1.0, 1.0, 1.0)):
+        """Produce a 3-D orthorhombic Lattice of evenly-spaced sites.
+
+        Generate 3-dimensional primitive Bravais lattices of the following types:
+        Orthorhombic: D2h point group
+        Tetragonal: D4h point group
+        Cubic: Oh point group
+
+        All inputs are ordered x, y, z.
+
+        Parameters
+        ----------
+        n_sites : tuple of int
+            The number of lattice sites for each axis.
+        dist : tuple of float
+            The distance between each lattice site for each axis.
+
+        """
+        coords = np.zeros((n_sites[0] * n_sites[1] * n_sites[2], 3))
+        coords[:, 0] = np.tile(np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1] * n_sites[2])
+        coords[:, 1] = np.tile(np.repeat(np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]), n_sites[2])
+        coords[:, 2] = np.repeat(
+            np.linspace(0, dist[2] * (n_sites[2] - 1), n_sites[2]), n_sites[0] * n_sites[1]
+        )
+        sites = [LatticeSite(site, coords) for site, coords in enumerate(coords)]
+        lat = cls(sites=sites)
+        # Add neighbours along x axis
+        [
+            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * c + n_sites[0] * b + a + 1)
+            for a in range(n_sites[0] - 1)
+            for b in range(n_sites[1])
+            for c in range(n_sites[2])
+        ]
+        # Add neighbours along y axis
+        [
+            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * c + n_sites[0] * (b + 1) + a)
+            for a in range(n_sites[0])
+            for b in range(n_sites[1] - 1)
+            for c in range(n_sites[2])
+        ]
+        # Add neighbours along z axis
+        [
+            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * (c + 1) + n_sites[0] * b + a)
+            for a in range(n_sites[0])
+            for b in range(n_sites[1])
+            for c in range(n_sites[2] - 1)
+        ]
+        lat.gen_adjacency_matrix()
         return lat
 
 
@@ -100,34 +283,39 @@ class LatticeSite:
     Attributes
     ----------
     number : int
-        The site number (should be same as ONvector index for the site)
-
+        The site number (should be same as ONvector index for the site).
     coords : np.ndarray(3,)
-        Cartesian coordinates of the lattice site
-
+        Cartesian coordinates of the lattice site.
+    atom_type : str
+        The atom type of the site.
+        # TODO: determine if this will just be atom name or atom w/ hybridization
     neighbours : list of int
-        List of site numbers of neighbouring sites (connected by bonds)
+        List of site numbers of neighbouring sites (connected by bonds).
 
     """
 
-    def __init__(self, number, coords):
+    def __init__(self, number, coords, atom_type=""):
         """Initialize LatticeSite instance
 
         Parameters
         ----------
         number : int
-            The site number (should be same as ONvector index for the site)
-
+            The site number (should be same as ONvector index for the site).
         coords : np.ndarray(3,)
-            Cartesian coordinates of the lattice site
+            Cartesian coordinates of the lattice site.
+        atom_type : str
+            The atom type of the site.
 
         """
         if not isinstance(number, int):
-            raise TypeError("Site number must be an integer corresponding to the site's index in"
-                            "the ON vector")
+            raise TypeError(
+                "Site number must be an integer corresponding to the site's index in"
+                "the ON vector"
+            )
         if not isinstance(coords, np.ndarray):
             raise TypeError("Site coordinates must be a numpy ndarray with shape (3,)")
 
         self.number = number
         self.coords = coords
+        self.atom_type = atom_type
         self.neighbours = []
