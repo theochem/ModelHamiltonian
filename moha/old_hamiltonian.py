@@ -1,6 +1,7 @@
 """ Model Hamiltonian Operator classes."""
+from itertools import chain, combinations, product
 import numpy as np
-from itertools import combinations
+from scipy.special import comb
 
 
 class Hamiltonian:
@@ -163,60 +164,35 @@ class PPPHamiltonian(Hamiltonian):
         """
         super().__init__()
         self.lattice = lattice
-        # FIXME: awful var name
-        self.N = n_electrons
-        # Reshape to align alpha matrix with Dimension 1
+        self.n_sites = lattice.n_sites
+        self.n_electrons = n_electrons
         self.alpha = alpha[None, :, None]
-        self.beta = beta
-        self.u_matrix = u_matrix
+        self.beta = beta[None, :, :, None]
+        self.u_matrix = u_matrix[None, :]
         self.u_ij = off_site[None, :, :]
 
         # Construct the Hilbert space for the Hamiltonian
-        self.space = HilbertSpace(self.N, self.lattice.n_sites)
-        self.basis = self.space.states
-        self.n_basis_states = self.basis.shape[0]
-        self.int_to_state = {basis: i for i, basis in enumerate(self.basis)}
+        self.space = HilbertSpace(self.n_electrons, self.lattice.n_sites)
+        self.n_matrix = self.space.states
+        self.n_basis_states = self.space.n_basis_states
+        self.int_to_state = {basis: i for i, basis in enumerate(self.space.state_list)}
+        self.state_to_int = {i: basis for i, basis in enumerate(self.space.state_list)}
 
         # Initialize Hamiltonian components
         # TODO: make Hamiltonian components' wording consistent
-        self.H_interaction = np.zeros((self.n_basis_states, self.n_basis_states))
+        # FIXME: should make these save to file, memory concerns;
+        # FIXME: store energy, interaction as diagonals, not full matrix
         self.H_hopping = np.zeros((self.n_basis_states, self.n_basis_states))
-        self.H_energy = np.zeros((self.n_basis_states, self.n_basis_states))
         self.H_off_site_repulsion = np.zeros((self.n_basis_states, self.n_basis_states))
         self.H_total = np.zeros((self.n_basis_states, self.n_basis_states))
 
-        # Build a matrix of n all operator results
-        # Dimension 0: Basis state (position in self.basis) (size: L choose N)
-        # Dimension 1: Lattice site number (position in lattice) (size: L)
-        # Dimension 2: Spin state (0: spin down, 1: spin up) (size: 2)
-        self.n_matrix = np.zeros((self.n_basis_states, self.lattice.n_sites, 2), dtype=bool)
-        self.on_down = [state >> self.lattice.n_sites for state in self.basis]
-        # Read binary right-to-left so that site 0 is index 0
-        # FIXME: clean up format strings with f"{x:0{lattice}}"
-        self.n_matrix[:, :, 0] = np.array(
-            [
-                list(map(int, list(format(x, "#0{}b".format(self.lattice.n_sites + 2))[-1:1:-1])))
-                for x in self.on_down
-            ]
-        )
-        self.on_up = [state % 2 ** self.lattice.n_sites for state in self.basis]
-        self.n_matrix[:, :, 1] = np.array(
-            [
-                list(map(int, list(format(x, "#0{}b".format(self.lattice.n_sites + 2))[-1:1:-1])))
-                for x in self.on_up
-            ]
-        )
-
-        # Calculate H_energy
+        # Calculate H_energy FIXME: store diagonal only
         self.H_energy = np.diag((self.alpha * self.n_matrix).sum(2).sum(1))
 
         # Calculate H_interaction
         # Compute N operator for each state and lattice site
         # TODO: Keep big_n assigned??
         self.big_n = np.logical_and(self.n_matrix[:, :, 0], self.n_matrix[:, :, 1])
-        # Reshape to align u matrix with Dimension 1
-        # FIXME: move this up
-        self.u_matrix = self.u_matrix[None, :]
         self.H_interaction = np.diag((self.u_matrix * self.big_n).sum(1))
 
         # Calculate H_hopping
@@ -224,13 +200,12 @@ class PPPHamiltonian(Hamiltonian):
         # Dimension 1: Lattice site to hop to (position in lattice) (size: L)
         # Dimension 2: Lattice site to hop from (position in lattice) (size: L)
         # Dimension 3: Spin state (0: spin down, 1: spin up) (size: 2)
-        # FIXME: move this up
-        self.beta = self.beta[None, :, :, None]
         hopping = np.logical_and(
             self.n_matrix[:, None, :, :], np.logical_not(self.n_matrix[:, :, None, :])
         )
         # FIXME: remove assignment after testing
         self.hopping = hopping
+        """
         up_transitions = (
             2 ** np.arange(self.lattice.n_sites)[:, None]
             - 2 ** np.arange(self.lattice.n_sites)[None, :]
@@ -250,17 +225,31 @@ class PPPHamiltonian(Hamiltonian):
             )
             for new_state, amplitude in components[0]:
                 self.H_hopping[i, self.int_to_state[int(new_state)]] = amplitude
+        """
+        not_singly_occ = np.logical_not(np.logical_xor(self.n_matrix[:, :, 0], self.n_matrix[:, :, 1]))
+        self.not_singly_occ = not_singly_occ
+        self.H_off_site_repulsion = (self.u_ij * np.logical_and(not_singly_occ[:, :, None], not_singly_occ[:, None, :])).sum(2).sum(1)
 
-        not_singly_occ = np.logical_not(np.logical_xor(self.n_matrix[:, None, :, 0], self.n_matrix[:, :, None, 1]))
-        self.H_off_site_repulsion = 0
 
-
-# FIXME: This needs to be reworked to avoid overflow on K > 15
+# FIXME: This needs to be reworked to avoid overflow on K > 15; fixed 23Jul, now it's just slow
+# FIXME: Potentially change back to integers using mpmath?
 class HilbertSpace:
     """Hilbert space for N electrons on K sites.
 
     Hilbert space for lattice sites, with each site containing 1 spin-up orbital and 1 spin-down
     orbital.
+
+    Attributes
+    ----------
+    states : np.ndarray(K choose N, K, 2)
+        The occupation state for each basis state, stored in a boolean array.
+        Dimension 0 corresponds to the basis state, in the same order as `state_list`.
+        Dimension 1 corresponds to the lattice site number.
+        Dimension 2 corresponds to the spin-state, either 0(spin down) or 1(spin up)
+    state_list : list of str
+        A string containing the condensed representation of the ordered pairs (k, s) representing
+        each electron in each state, where k is the lattice site number for the orbital and s is
+        A(spin up) or B(spin down).
 
     """
 
@@ -270,29 +259,40 @@ class HilbertSpace:
         Parameters
         ----------
         n_electrons : int
-            The number of electrons in the system
+            The number of electrons in the system, denoted as N.
         n_sites : int
-            The number of sites, with each containing a pair of spin-orbitals
+            The number of lattice sites, K, with each containing a pair of spin-orbitals.
 
         """
         self.n_electrons = n_electrons
         self.n_sites = n_sites
-        self.states = self.construct_states()
+        self.n_basis_states = int(comb(2*self.n_sites, self.n_electrons))
+        self.states = np.zeros((self.n_basis_states, self.n_sites, 2), dtype=bool)
+        self.state_list = self.construct_states()
 
     def construct_states(self):
         """Construct the basis states for the Hilbert space.
 
-        Each basis state is represented as a binary integer I, and ordered such that
-        I = 2**L * I(spin down) + I(spin up).
+        Each basis state is generated as electrons represented by ordered pairs (k, s), where k
+        denotes the lattice site containing the orbital and s is either A(spin up) or B(spin down).
 
-        Each integer I(spin ...) represents an occupation number (ON) vector, where
-        | k_m , k_m-1 , ... , k_0 > = I = 2**(k_m) + 2**(k_m-1) + ... + 2**(0),
-        so | 0_2 , 1_1 , 1_0 > = 011
+        Returns
+        -------
+        state_list : list of list of str
+            A list containing the string representation of each ordered pair (k, s)
+            representing each electron in each state, where k is the lattice site number for the
+            orbital and s is A(spin up) or B(spin down).
 
         """
-        states = []
-        for i in combinations(
-            reversed(range(2 * self.K)), self.N
-        ):  # Reversing ensures correct order of final states
-            states.append(sum([2 ** j for j in i]))
-        return np.array(list(reversed(states)))
+        state_list = []
+        for i, state in enumerate(
+                combinations(
+                    product(
+                        [str(k) for k in range(self.n_sites)], "AB"
+                    ), self.n_electrons
+                )
+        ):
+            for site, spin in state:
+                self.states[i, int(site), int(spin == "A")] = True
+            state_list.append("".join(list(chain(*state))))
+        return state_list
