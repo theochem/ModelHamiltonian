@@ -111,7 +111,7 @@ class PPPHamiltonian:
         dense numpy array.
 
         """
-        two_electron_matrix = dok_matrix((self.k, self.k))
+        two_electron_matrix = dok_matrix((2 * self.k, 2 * self.k))
         for i in range(self.k):
             two_electron_matrix[i, i+self.k] = u_matrix[i]
             two_electron_matrix[i + self.k, i] = u_matrix[i]
@@ -163,13 +163,16 @@ class PPPHamiltonian:
         This method will attempt to allocate the full two-electron matrix (2K, 2K, 2K, 2K).
         Due to Python's issues with memory-related error handling, this method will fail without
         warning if the array is too large. To check if this is a concern, a quick back-of-the-
-        envelope calculation for total array size is 8 bytes * K ** 4.
+        envelope calculation for total array size is 8 bytes * (2 * K) ** 4.
         75 sites (150 total orbitals) is over 4 GB of memory.
         """
-        two_electron_matrix = np.zeros((self.k, self.k, self.k, self.k))
+        one_electron_matrix = np.zeros((2*self.k, 2*self.k))
+        one_electron_matrix[:self.k, :self.k] = self.one_electron_matrix
+        one_electron_matrix[self.k:, self.k:] = self.one_electron_matrix
+        two_electron_matrix = np.zeros((2 * self.k, 2 * self.k, 2 * self.k, 2 * self.k))
         for key in self.two_electron_matrix.keys():
             two_electron_matrix[key + key] = self.two_electron_matrix[key]
-        return self.one_electron_matrix, two_electron_matrix
+        return one_electron_matrix, two_electron_matrix
 
 
 class HubbardHamiltonian(PPPHamiltonian):
@@ -220,7 +223,7 @@ class HubbardHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        two_electron_matrix = dok_matrix((self.k, self.k))
+        two_electron_matrix = dok_matrix((2*self.k, 2*self.k))
         for i in range(self.k):
             two_electron_matrix[i, i + self.k] = u_matrix[i]
             two_electron_matrix[i + self.k, i] = u_matrix[i]
@@ -273,7 +276,7 @@ class HuckelHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        return dok_matrix((self.k, self.k))
+        return dok_matrix((2*self.k, 2*self.k))
 
 
 class IsingHamiltonian(PPPHamiltonian):
@@ -328,7 +331,7 @@ class IsingHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        two_electron_matrix = dok_matrix((self.k, self.k))
+        two_electron_matrix = dok_matrix((2*self.k, 2*self.k))
         for i in range(self.k):
             for j in range(i, self.k):
                 v_ij = v_matrix[i, j]

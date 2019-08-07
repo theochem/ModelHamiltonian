@@ -210,7 +210,7 @@ class Lattice:
         return lat
 
     @classmethod
-    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=45.0, atom_types=[""]):
+    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=np.pi/4, atom_types=[""]):
         """Produce a 2-D oblique Lattice of evenly-spaced sites.
 
         Generate 2-dimensional primitive Bravais lattices of the following types:
