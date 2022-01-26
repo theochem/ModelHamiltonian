@@ -42,15 +42,13 @@ def test_2():
     n_up = 2
     n_down = 2
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_excited_dets(0)
-    wfn.add_excited_dets(1)
-    wfn.add_excited_dets(2)
-    wfn.add_excited_dets(3)
-    wfn.add_excited_dets(4)
+    wfn.add_all_dets(4)
 
     op = pyci.sparse_op(ham, wfn)
     eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
     E, err = quad(lambda x: jv(0, x) * jv(1, x) / (x * (1 + np.exp(x / 2))),
                   0, np.inf)
-    np.allclose(E, eigenvals)
-    print(E, eigenvals)
+    np.allclose(-4*E, eigenvals)
+    print(-4*E, eigenvals)
+
+test_2()
