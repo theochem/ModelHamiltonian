@@ -1,5 +1,5 @@
 import numpy as np
-# import pyci
+import pyci
 from Huckel_Hamiltonian import *
 from scipy.integrate import quad
 from scipy.special import jv
