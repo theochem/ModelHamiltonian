@@ -2,6 +2,28 @@ import numpy as np
 from scipy.sparse import dok_matrix
 from itertools import permutations
 
+
+def to_spatial(v):
+    """
+    Converts matrix in spinorbital basis to spatial basis
+    :param v: two body integral in spinorbital basis
+    :return: np.array: two body integral in spatial basis
+    """
+    new_shape = (np.array(v.shape)/2).astype(int)
+    all_p, all_q, all_r, all_s = new_shape
+    v_new = np.zeros(tuple(new_shape))
+    for p in range(all_p):
+        for q in range(all_q):
+            for r in range(all_r):
+                for s in range(all_s):
+                    elem = 0
+                    for sigma_1 in [0, 2]:
+                        for sigma_2 in [0, 2]:
+                            elem += v[p+sigma_1, q+sigma_2, r+sigma_1, s+sigma_2]
+                    v_new[p, q, r, s] = elem
+    return v_new/2
+
+
 def distance(seq_1, seq_2):
     """
     Calculate number of different elements in two sequences
@@ -98,6 +120,10 @@ class PPP():
 
 
     def get_hamilton(self):
+        """
+        Build zero, one and two body integrals
+        :return: tuple: zero, one and two body integrals as numpy arrays
+        """
         self.connectivity = self.get_connectivity_matrix()
 
         n_sp = self.connectivity.shape[0]
