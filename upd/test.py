@@ -42,7 +42,7 @@ def test_2():
     n_up = 2
     n_down = 2
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_all_dets(4)
+    wfn.add_all_dets()
 
     op = pyci.sparse_op(ham, wfn)
     eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
