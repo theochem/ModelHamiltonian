@@ -4,20 +4,6 @@ from Huckel_Hamiltonian import *
 from scipy.integrate import quad
 from scipy.special import jv
 
-def to_spatial(v):
-    new_shape = (np.array(v.shape)/2).astype(int)
-    all_p, all_q, all_r, all_s = new_shape
-    v_new = np.zeros(tuple(new_shape))
-    for p in range(all_p):
-        for q in range(all_q):
-            for r in range(all_r):
-                for s in range(all_s):
-                    elem = 0
-                    for sigma_1 in [0, 2]:
-                        for sigma_2 in [0, 2]:
-                            elem += v[p+sigma_1, q+sigma_2, r+sigma_1, s+sigma_2]
-                    v_new[p, q, r, s] = elem
-    return v_new/2
 
 def test_1():
     """system of 3 electrons on two site hubbard model. Should return 0 energy ground state"""
