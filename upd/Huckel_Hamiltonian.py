@@ -3,9 +3,22 @@ from scipy.sparse import dok_matrix
 from itertools import permutations
 
 def distance(seq_1, seq_2):
+    """
+    Calculate number of different elements in two sequences
+    :param seq_1: first sequence (set of indices)
+    :param seq_2: second sequence (set of distance)
+    :return: number of different elements in sequences pairwise: int
+    """
     return sum([1 for i in range(len(seq_1)) if seq_1[i] != seq_2[i]])
 
 def sign_parity(ref, seq, count=0):
+    """
+    Calculate sign of permutations for sequence in relation to reference sequence
+    :param ref: refernce sequence
+    :param seq: sequence one wants to know the sign of permutations
+    :param count: number of counts
+    :return: sign of permutations, amount of the necessary permutations to make from sequence reference sequence: tuple
+    """
     if ref == seq:
         return (-1)**count, count
 
@@ -28,6 +41,13 @@ def sign_parity(ref, seq, count=0):
 
 
 def fill_with_parity(V, ref_set):
+    """
+    Fill the gaps in V matrix based on the existing elements, taking into account their indices and parity
+    :param V: Two electron integral matrix with filled elements indices of wich are p<q<r<s
+    :param ref_set: set of indices based of which wil be filled other elements of the V matrix taking into account
+                    their parity
+    :return: filled two electron integral matrix: np.array
+    """
     permutations_1 = list(permutations(ref_set[: 2], 2))
     permutations_2 = list(permutations(ref_set[2:], 2))
     permutation_indices = [list(ind_1)+list(ind_2) for ind_1 in permutations_1 for ind_2 in permutations_2]
@@ -64,6 +84,10 @@ class PPP():
 
 
     def get_connectivity_matrix(self):
+        """
+        Builds the connectivity matrix based on the bond_types
+        :return: connectivuty matrix :np.array
+        """
         elements = set([atom for bond_type in self.bond_types for atom in bond_type[:2] ])
         n_atoms = len(elements)
         self.atoms_num = {elem: i for i, elem in enumerate(elements)}
