@@ -31,12 +31,39 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    def to_dense(self, integral):
+    def to_sparse(self,Md):
         """
-        Generate a dense array from the sparse matrix
-        :param integral: sparse
-        :return: np.ndarray
+        Converts dense array of integrals to sparse array in dictionary of keys format
+        :param Md: dense array
+        :return Ms: sparse dictionary of keys
         """
+        # Find non-zero indices in dense array
+        indices = np.where(Md != 0)
+        # Building list object of indices
+        ind_ls = list(zip(*indices))
+        # Building dictionary of keys for non-zero dense array elements 
+        Ms = {key:value for key,value in zip(ind_ls, Md[indices])}
+        return Ms
+
+    def to_dense(self, Ms):
+        """
+        Converts sparse array of integrals in dictionary of keys format to dense numpy array
+        :param Ms: sparse dictionary of keys
+        :return: dense array
+        """
+        # Return 0 if sparse array is empty
+        if Ms == {}:
+            print("No non-zero integrals provided, dense array is 0.")
+            return 0
+        # Get shape of dense array from first element of sparse array
+        first = next(iter(Ms))
+        shape = list()
+        for x in first: shape.append(2*self.cm_len)
+        Md = np.zeros(shape)
+        # Building dense array from sparse array keys
+        for key in Ms.keys():
+            Md[key] = Ms[key]
+        return Md
 
     @abstractmethod
     def to_spatial(self, integral: np.ndarray, sym: int, dense: bool):
@@ -102,7 +129,7 @@ class HamiltonianAPI(ABC):
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 
 
-    @abstractmethod
+#    @abstractmethod
     def save_triqs(self, fname:str, integral):
         """
         Save matrix in triqc format
@@ -112,7 +139,7 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    @abstractmethod
+#    @abstractmethod
     def save(self, fname: str, integral, basis):
         """Save file as regular numpy array"""
         pass
