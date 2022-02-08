@@ -39,7 +39,6 @@ class HamiltonianAPI(ABC):
         :return: np.ndarray
         """
 
-    @abstractmethod
     def to_spatial(self, integral: np.ndarray, sym: int, dense: bool):
         """
         Converts one-/two- integral matrix from spin-orbital to spatial basis
