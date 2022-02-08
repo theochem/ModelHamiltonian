@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TextIO
 import numpy as np
+from scipy.sparse import csr_matrix, diags, triu
 
 
 class HamiltonianAPI(ABC):
@@ -47,7 +48,69 @@ class HamiltonianAPI(ABC):
         :param dense: dense or sparse matrix; default sparse
         :return:
         """
-        pass
+        # FIXME: Eliminate hard-coded number of sites (k)
+        # make it a class attribute: self._k
+        k = 2
+        if not sym in [1, 2, 4, 8]:
+            raise ValueError('Wrong inpput symmetry')
+        
+        #
+        # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
+        #
+        if isinstance(integral, csr_matrix):
+            spatial_int = csr_matrix((k, k))
+            spatial_int = integral[:k, :k]
+        elif isinstance(integral, dict):
+            spatial_int = {}
+            for p in range(k):
+                # U_pppp
+                spatial_int[(p,p,p,p)] = integral[(p, p + k, p, p + k)]
+                for q in range(k):
+                    # Gamma_pqpq, Pairing_ppqq
+                    spatial_int[(p,q,p,q)] = integral[(p,q,p,q)]
+                    spatial_int[(p,p,q,q)] = integral[(p,p,q,q)]
+        else:
+            raise ValueError('Wrong integral input.')
+        
+        #
+        # Symmetries
+        #
+        if isinstance(spatial_int, csr_matrix):
+            if not sym in [1,2]:
+                raise ValueError('Wrong symmetry for 1-body term')
+            if sym == 1:
+                spatial_int = spatial_int + spatial_int.T - diags(spatial_int.diagonal())
+            else:
+                spatial_int = triu(spatial_int)
+        else:
+            if sym == 1:
+                # Add all terms from eightfold permutational symmetry
+                for i in range(k):
+                    for j in range(k):
+                        spatial_int[(j, i, j, i)] = spatial_int[(i, j, i, j)]
+                        spatial_int[(j,j,i,i)] = integral[(i,i,j,j)]
+                        spatial_int[(j,i,i,j)] = integral[(i,i,j,j)]
+                        spatial_int[(i,j,j,i)] = integral[(i,i,j,j)]                        
+            elif sym == 2:
+                for i in range(k):
+                    for j in range(k):
+                        spatial_int[(j,j,i,i)] = integral[(i,i,j,j)]
+            elif sym == 4:
+                for i in range(k):
+                    for j in range(k):
+                        spatial_int[(j, i, j, i)] = spatial_int[(i, j, i, j)]
+                        spatial_int[(j,j,i,i)] = integral[(i,i,j,j)]
+            else:
+                # FIXME: It is assumed the internal format uses the eightfold permutational symmetry
+                # this may be wrong and the Hamiltonian have only fourfold permutational symmetry
+                pass
+        
+        if dense:
+            if isinstance(spatial_int, csr_matrix):
+                spatial_int.toarray()
+            else:
+                spatial_int = self.to_dense(spatial_int)
+        return spatial_int
 
     @abstractmethod
     def to_spinorbital(self, integral: np.ndarray, sym: int, dense: bool):
