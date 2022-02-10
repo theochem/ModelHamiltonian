@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TextIO
+from utils import convert_indices
 import numpy as np
 
 
@@ -84,11 +85,15 @@ class HamiltonianAPI(ABC):
 
         # Reduce symmetry of integrals
         two_ints = self.reduce_sym(self.two_ints)
-        # Flip indices from physics to chemical notation:
-        two_ints = np.swapaxes(two_ints, 1, 2)
-        
-        # Write integrals and core energy
-        for i, j, k, l in two_ints.keys():
+
+        # getting nonzero elements from the 2d _sparse_ array
+        p_array, q_array = two_ints.nonzero()
+
+        # converting 2d indices to 4d indices
+        N = int(np.sqrt(two_ints.shape[0]))
+        for p, q in zip(p_array, q_array):
+            i, j, k, l = convert_indices(N, p, q)
+            j, k = k, j  # changing indexing from physical to chemical notation
             if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
                 value = two_ints[(i, k, j, l)]
                 print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
