@@ -72,7 +72,8 @@ class HamiltonianAPI(ABC):
                         attribute can be set.
         :return: None
         """
-        one_ints = self.one_ints
+        # Reduce symmetry of integral
+        one_ints = self.reduse_sym(self.one_ints)
 
         # Write header
         nactive = one_ints.shape[0]
@@ -81,16 +82,16 @@ class HamiltonianAPI(ABC):
         print('  ISYM=1', file=f)
         print(' &END', file=f)
 
+        # Reduce symmetry of integrals
+        two_ints = self.reduce_sym(self.two_ints)
+        # Flip indices from physics to chemical notation:
+        two_ints = np.swapaxes(two_ints, 1, 2)
+        
         # Write integrals and core energy
-        two_ints = self.two_ints
-        for i in range(nactive):  # pylint: disable=too-many-nested-blocks
-            for j in range(i + 1):
-                for k in range(nactive):
-                    for l in range(k + 1):
-                        if (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
-                            if (i, k, j, l) in two_ints:
-                                value = two_ints[(i, k, j, l)]
-                                print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
+        for i, j, k, l in two_ints.keys():
+            if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
+                value = two_ints[(i, k, j, l)]
+                print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
         for i in range(nactive):
             for j in range(i + 1):
                 value = one_ints[i, j]
