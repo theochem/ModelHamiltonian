@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import TextIO
 import numpy as np
-from scipy.sparse import csr_matrix, diags, triu
+from scipy.sparse import csr_matrix, diags
 
 
 class HamiltonianAPI(ABC):
@@ -45,33 +45,38 @@ class HamiltonianAPI(ABC):
         :param integral: input matrix
         :param sym: symmetry -- [2, 4, 8] default is None
         :param dense: dense or sparse matrix; default sparse
-        :return:
+        :return: one-/two-body integrals in spatial basis
         """
-        # FIXME: Eliminate hard-coded number of sites (k)
-        # make it a class attribute: self._k
-        k = 2
-        if not sym in [1, 2, 4, 8]:
-            raise ValueError('Wrong inpput symmetry')
-        
         #
         # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
         #
-        if isinstance(integral, csr_matrix):
-            spatial_int = csr_matrix((k, k))
-            spatial_int = integral[:k, :k]
-        elif isinstance(integral, dict):
-            spatial_int = {}
-            for p in range(k):
-                # U_pppp
-                spatial_int[(p,p,p,p)] = integral[(p, p + k, p, p + k)]
-                for q in range(p, k):
-                    # Gamma_pqpq, Pairing_ppqq
-                    spatial_int[(p,q,p,q)] = integral[(p, q, p, q)]
-                    spatial_int[(p,p,q,q)] = integral[(p, p + k, q, q + k)]
+        n = 2 * self._k
+        if integral.shape[0] == 2*self._k:
+            spatial_int = csr_matrix((self._k, self._k))
+            spatial_int = integral[:self._k, :self._k]
+        elif integral.shape[0] == 4*self._k**2:
+            spatial_int = csr_matrix((self._k**2, self._k**2))
+            for p in range(self._k):
+                # v_pppp = U_pppp_ab
+                pp, pp = convert_indices(self._k, p,p,p,p)
+                pp_, pp_ = convert_indices(n, p, p + self._k, p, p + self._k)
+                spatial_int[pp, pp] = integral[(pp_, pp_)]
+                for q in range(p, self._k):
+                    # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
+                    pq, pq = convert_indices(self._k, p,q,p,q)
+                    pq_, pq_ = convert_indices(n, p, q, p, q)
+                    spatial_int[pq, pq] = integral[pq_, pq_]
+                    # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
+                    pq_, pq_ = convert_indices(n, p, q + self._k, p, q + self._k)
+                    spatial_int[pq, pq] += integral[pq_, pq_]
+                    #  v_ppqq = Pairing_ppqq_ab
+                    pp, qq = convert_indices(self._k, p,p,q,q)
+                    pp_, qq_ = convert_indices(n, p, p + self._k, q, q + self._k)
+                    spatial_int[pp, qq] = integral[pp_, qq_]
         else:
             raise ValueError('Wrong integral input.')
         
-        spatial_int = expand_sym(sym, spatial_int, k)
+        spatial_int = expand_sym(sym, spatial_int, self._k)
         
         if dense:
             if isinstance(spatial_int, csr_matrix):
