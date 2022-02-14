@@ -71,10 +71,7 @@ class HamiltonianAPI(ABC):
         else:
             raise ValueError('Wrong integral input.')
         
-        # FIXME: Eliminate hard-coded {one,two}-body Hamiltonian operator symmetries
-        # make it a class attribute: self._sym_{1b,2b}
-        sym_1b, sym_2b = (2, 4)
-        reduce_sym(spatial_int, k, sym_1b, sym_2b, sym)
+        spatial_int = expand_sym(sym, spatial_int, k)
         
         if dense:
             if isinstance(spatial_int, csr_matrix):
@@ -152,122 +149,73 @@ class HamiltonianAPI(ABC):
         pass
 
 
-def reduce_sym(integral, k, sym_1b, sym_2b, to_sym):
-    """
-    Reduce permutational symmetry of one- and two-body terms
-    :param integral: input {one,two}-body integrals
-    :param k: number of basis functions
-    :param sym_1b: current symmetry of one-body integrals
-    :param sym_2b: current symmetry of two-body integrals
-    :param to_sym: target symmetry
-    :return: integral with target symmetry
-    """
-    # FIXME: Only works for integrals in spatial-orbital basis
-    #
-    # Symmetries
-    #
-    if isinstance(integral, csr_matrix):
-        if not to_sym in [1,2]:
-            raise ValueError('Wrong 1-body term symmetry')
-        if to_sym == sym_1b:
-            pass
-        elif to_sym > sym_1b:
-            raise ValueError(f'Wrong symmetry requested, desired symmetry must be <= {sym_1b}')
-        else:
-            integral = integral + integral.T - diags(integral.diagonal())
-    else:
-        if to_sym > sym_2b:
-            raise ValueError(f'Wrong symmetry requested, desired symmetry must be <= {sym_2b}')
-        elif to_sym == sym_2b:
-            pass 
-        elif sym_2b == 4:
-            if to_sym == 1:
-                # Add terms from fourfold permutational symmetry
-                for i in range(k):
-                    for j in range(i,k):
-                        integral[(j, i, j, i)] = integral[(i, j, i, j)]
-                        integral[(j,j,i,i)] = integral[(i,i,j,j)]
-            else:
-                # leave out <ij|kl>=<kl|ij> terms
-                for i in range(k):
-                    for j in range(i,k):
-                        integral[(j, i, j, i)] = integral[(i, j, i, j)]
-        elif sym_2b == 8:
-            if to_sym == 1:
-                # Add all terms from eightfold permutational symmetry
-                for i in range(k):
-                    for j in range(i,k):
-                        integral[(j, i, j, i)] = integral[(i, j, i, j)]
-                        integral[(j,j,i,i)] = integral[(i,i,j,j)]
-                        integral[(j,i,i,j)] = integral[(i,i,j,j)]
-                        integral[(i,j,j,i)] = integral[(i,i,j,j)]
-            elif to_sym == 2:
-                # leave out <ij|kl>=<kl|ij> terms
-                for i in range(k):
-                    for j in range(i,k):
-                        integral[(j,i,i,j)] = integral[(i,i,j,j)]
-                        integral[(i,j,j,i)] = integral[(i,i,j,j)] 
-            else:
-                # leave out <ij|kl>=<kl|ij>=<ji|lk>=<lk|ji> terms
-                for i in range(k):
-                    for j in range(i,k):
-                        integral[(j,i,i,j)] = integral[(i,i,j,j)]
-                        integral[(i,j,j,i)] = integral[(i,i,j,j)]
-        else: # sym_2b = 2
-            for i in range(k):
-                for j in range(i,k):
-                    integral[(j,j,i,i)] = integral[(i,i,j,j)]
-        return integral
-
-
-def restore_sym(sym, integral, k, sym_2b):
+def expand_sym(sym, integral, n):
     """
     Restore permutational symmetry of one- and two-body terms
     :param integral: input {one,two}-body integrals
-    :param k: number of sites
-    :param sym_1b: int, current  one-body integrals symmetry
-    :param sym_2b: int, current two-body integrals symmetry
-    :param sym: int, target symmetry
-    :return: integral with target symmetry
-    """
+    :param sym: int, current symmetry
+    :param n: int, number of basis functions
+    :return: integral with a symmetry of 1
+
+    Notes
+    -----
+    The input integrals are expected to be sparse arrays with dimensions :math:`(N,N)` and 
+    :math:`(N^2, N^2)` for the one- and two-body terms respectively. :math:`N` represents 
+    the number of basis functions, which may be either of spatial or spin-orbital type. This
+    function adds missing terms in the input array related to the given ones by the indicated 
+    symmetry parameter `sym`. Allowed permutational symmetries are 1 (no symmetry), 2, 4 and 8. 
+    Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and details of the 
+    permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html). 
+    """    
+    if not sym in [1, 2, 4, 8]:
+        raise ValueError('Wrong inpput symmetry')
+    if sym == 1:
+        return integral
     #
-    # Symmetries
+    # Expanding Symmetries
     #
-    if isinstance(integral, csr_matrix):
+    if integral.shape[0] == n:
         if not sym == 2:
             raise ValueError('Wrong 1-body term symmetry')
-        integral_sym = integral + integral.T - diags(integral.diagonal())
+        h_ii = diags(integral.diagonal()).copy()
+        integral = integral + integral.T - h_ii
+    elif integral.shape[0] == n**2:
+        # getting nonzero elements from the 2d _sparse_ array
+        pq_array, rs_array = integral.nonzero()
+
+        for pq, rs in zip(pq_array, rs_array):
+            p, q, r, s = convert_indices(n, pq, rs)
+            if sym == 2: 
+                # 1. Transpose: <pq|rs>=<rs|pq>
+                rs, pq = convert_indices(n, r,s,p,q)
+                integral[rs, pq] = integral[pq, rs]
+            elif sym == 4:
+                # Add terms from fourfold permutational symmetry
+                # 1. Transpose: <pq|rs>=<rs|pq>
+                # 2. Permute dummy indices (swap variables of particles 1 and 2): 
+                # <p_1 q_2|r_1 s_2> = <q_1 p_2|s_1 r_2>
+                rs, pq = convert_indices(n, r,s,p,q)
+                qp, sr = convert_indices(n, q,p,s,r)
+                integral[rs, pq] = integral[pq, rs]
+                integral[qp, sr] = integral[pq, rs]
+                integral[sr, qp] = integral[rs, pq]
+            else:
+                # Add terms from eightfold permutational symmetry
+                # 1. Transpose: <pq|rs>=<rs|pq>
+                # 2. Permute dummy indices (swap variables of particles 1 and 2): 
+                # <p_1 q_2|r_1 s_2> = <q_1 p_2|s_1 r_2>
+                # 3. Permute orbitals of the same variable, e.g. <p_1 q_2|r_1 s_2> = <r_1 q_2|p_1 s_2>
+                rs, pq = convert_indices(n, r,s,p,q)
+                qp, sr = convert_indices(n, q,p,s,r)
+                rq, ps = convert_indices(n, r,q,p,s)
+                sp, qr = convert_indices(n, s,p,q,r)
+                integral[rs, pq] = integral[pq, rs]
+                integral[qp, sr] = integral[pq, rs]
+                integral[sr, qp] = integral[rs, pq]                
+                integral[rq, ps] = integral[pq, rs]
+                integral[ps, rq] = integral[rs, pq]
+                integral[sp, qr] = integral[qp, sr]
+                integral[qr, sp] = integral[sr, qp]
     else:
-        if sym > sym_2b:
-            raise ValueError(f'Wrong symmetry requested, desired symmetry must be <= {sym_2b}')
-        integral_sym = integral.copy()
-        if sym == 1:
-            pass 
-        elif sym == 2: 
-            # Add <ij|kl>=<kl|ij> terms
-            for (p, q, r, s) in integral.keys():
-                if p != r and (q%k == p) and (s%k == r):
-                    integral_sym[(r,s,p,q)] = integral[(p,q,r,s)]
-        elif sym == 4:
-            # Add terms from fourfold permutational symmetry
-            for (p, q, r, s) in integral.keys():
-                if p != r and (q%k == p) and (s%k == r):
-                    integral_sym[(r,s,p,q)] = integral[(p,q,r,s)]
-                    integral_sym[(q,p,s,r)] = integral[(p,q,r,s)]
-                    integral_sym[(s,r,q,p)] = integral[(p,q,r,s)]
-                elif (r%k == p) and (s%k == q):
-                    integral_sym[(q,p,q,p)] = integral[(p,q,p,q)]
-        else:
-            # Add all terms from eightfold permutational symmetry
-            for (p, q, r, s) in integral.keys():
-                if p != r and (q%k == p) and (s%k == r):
-                    integral_sym[(r,s,p,q)] = integral[(p,q,r,s)]
-                    integral_sym[(q,p,s,r)] = integral[(p,q,r,s)]
-                    integral_sym[(s,r,q,p)] = integral[(p,q,r,s)]
-                    integral_sym[(r,q,p,s)] = integral[(p,q,r,s)]
-                    integral_sym[(s,p,q,r)] = integral_sym[(q,p,s,r)]
-                    integral_sym[(p,s,r,q)] = integral_sym[(r,s,p,q)]
-                    integral_sym[(q,r,s,p)] = integral_sym[(s,r,q,p)]
-                elif (r%k == p) and (s%k == q):
-                    integral_sym[(q,p,q,p)] = integral[(p,q,p,q)]
-        return integral_sym
+        raise ValueError('Wrong input integral')
+    return integral
