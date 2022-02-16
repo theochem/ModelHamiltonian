@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import TextIO
 import numpy as np
+from scipy.sparse import csr_matrix
+from utils import convert_indices
 
 
 class HamiltonianAPI(ABC):
@@ -31,12 +33,59 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    def to_dense(self, integral):
+    def to_sparse(self, Md):
         """
-        Generate a dense array from the sparse matrix
-        :param integral: sparse
-        :return: np.ndarray
+        Converts dense array of integrals to sparse array in scipy csr format.
+        :param Md: 2 or 4 dimensional numpy.array
+        :return scipy.sparse.csr_matrix
         """
+        # Finding indices for non-zero elements and shape of Md.
+        indices = np.array(np.where(Md != 0)).astype(int).T
+        N = Md.shape[0]
+        
+        # Converting 2D array to csr_matrix
+        if np.ndim(Md) == 2:
+            return csr_matrix(Md)
+        
+        # Converting 4D array to csr_matrix using convert_indices from util.py.
+        elif np.ndim(Md) == 4:
+            row = np.array([]); col = np.array([]); data = np.array([]);
+            for ind in indices:
+                p,q = convert_indices(N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3]));
+                row = np.append(row,p)
+                col = np.append(col,q)
+                data = np.append(data,Md[tuple(ind)])
+            return csr_matrix((data, (row, col)), shape=(N*N, N*N))
+        
+        # Return if array dimensions incompatible.
+        else:
+            print("Incompatible dense array dimension. Must be either 2 or 4 dimensions.")
+            return
+
+    def to_dense(self, Ms, dim=2):
+        """
+        Converts sparse arry of integrals in scipy csr format to dense numpy array.
+        :param Ms: scipy.sparse.csr_matrix
+        :param dim: target dimension of output array (either 2 or 4)
+        :return: numpy.array
+        """
+        # return dense 2D array (default).
+        if dim == 2:
+            return Ms.todense()
+
+        # Optionally, return dense 4D array for two-particle integrals.
+        elif dim == 4:
+            N = int(np.sqrt(Ms.shape[0]))
+            vd = np.zeros([N,N,N,N])
+            for p,q in np.array(Ms.nonzero()).T:
+                i,j,k,l = convert_indices(N, int(p),int(q))
+                vd[(i,j,k,l)] = Ms[p,q]
+            return vd
+
+        # Return if target dim is not 2 or 4.
+        else:
+            print("Target output dimension must be either 2 or 4.")
+            return
 
     @abstractmethod
     def to_spatial(self, integral: np.ndarray, sym: int, dense: bool):
@@ -102,7 +151,7 @@ class HamiltonianAPI(ABC):
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 
 
-    @abstractmethod
+#    @abstractmethod
     def save_triqs(self, fname:str, integral):
         """
         Save matrix in triqc format
@@ -112,7 +161,7 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    @abstractmethod
+#    @abstractmethod
     def save(self, fname: str, integral, basis):
         """Save file as regular numpy array"""
         pass
