@@ -6,7 +6,7 @@ class HamPPP(HamiltonianAPI):
     def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=0.0784, charges=0.417,
                  sym=None, g_pair=None, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
         """
-        Initialize Parison-Par-Popple Hamiltonian in the form:
+        Initialize Pariser-Parr-Pople Hamiltonian in the form:
         $\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+\
          \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2} \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
          \hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q \beta}-Q_{q}\right)+
