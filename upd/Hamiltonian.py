@@ -88,7 +88,6 @@ class HamiltonianAPI(ABC):
             print("Target output dimension must be either 2 or 4.")
             return
 
-    @abstractmethod
     def to_spatial(self, integral: np.ndarray, sym: int, dense: bool):
         """
         Converts one-/two- integral matrix from spin-orbital to spatial basis
@@ -99,7 +98,6 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    @abstractmethod
     def to_spinorbital(self, integral: np.ndarray, sym: int, dense: bool):
         """
         Converts one-/two- integral matrix from spatial to spin-orbital basis
@@ -157,7 +155,6 @@ class HamiltonianAPI(ABC):
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 
 
-#    @abstractmethod
     def save_triqs(self, fname:str, integral):
         """
         Save matrix in triqc format
@@ -167,7 +164,6 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-#    @abstractmethod
     def save(self, fname: str, integral, basis):
         """Save file as regular numpy array"""
         pass
