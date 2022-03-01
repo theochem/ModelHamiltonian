@@ -37,4 +37,15 @@ def convert_indices(N, *args):
         raise TypeError("Wrong indices")
 
 
-
+def get_atom_type(atom):
+    """
+    Returns atom type and site index
+    "C23" -> "C", 23
+    :param atom: str
+    :return: tuple
+    """
+    i = 1
+    while atom[-i:].isdigit():
+        i += 1
+    i -= 1
+    return atom[:-i], int(atom[-i:])
