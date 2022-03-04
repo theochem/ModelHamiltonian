@@ -1,5 +1,7 @@
 from Hamiltonian import HamiltonianAPI
+from utils import get_atom_type
 import numpy as np
+from scipy.sparse import csr_matrix, diags
 
 
 class HamPPP(HamiltonianAPI):
@@ -29,6 +31,7 @@ class HamPPP(HamiltonianAPI):
         :param Bz:
         """
         self._sym = sym
+        self.n_sites = None
         self.connectivity = connectivity
         self.alpha = alpha
         self.beta = beta
@@ -39,12 +42,60 @@ class HamPPP(HamiltonianAPI):
         self.atom_types = atom_types
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
+        self.atoms_num, self.connectivity_matrix = self.generate_connectivity_matrix()
+        self.zero_energy = None
+        self.one_body = None
+        self.two_body = None
+
+    def generate_connectivity_matrix(self):
+        """
+        Generates connectivity matrix
+        :return: dictionary in which np.ndarray
+        """
+        max_site = 0
+        atoms_sites_lst = []
+        for atom1, atom2, bond in self.connectivity:
+            atom1_name, site1 = get_atom_type(atom1)
+            atom2_name, site2 = get_atom_type(atom2)
+
+            atoms_sites_lst.append((atom1_name, site1))
+            atoms_sites_lst.append((atom2_name, site2))
+            if max_site < max(site1, site2):  # finding the maximum index of site
+                max_site = max(site1, site2)
+        self.n_sites = len(atoms_sites_lst)
+
+        if self.atom_types is None:
+            atom_types = [None for i in range(max_site)]
+            for atom, site in atoms_sites_lst:
+                atom_types[site] = atom
+            self.atom_types = atom_types
+
+        connectivity_mtrx = np.zeros((max_site, max_site))
+        for atom1, atom2, bond in self.connectivity:
+            atom1_name, site1 = get_atom_type(atom1)
+            atom2_name, site2 = get_atom_type(atom2)
+            connectivity_mtrx[site1, site2] = bond
+
+        self.connectivity_matrix = csr_matrix(np.maximum(connectivity_mtrx, connectivity_mtrx.T))
+        return self.connectivity_matrix
 
     def generate_zero_body_integral(self):
-        pass
+        self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
+        return self.zero_energy
 
     def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
-        pass
+        one_body_term = diags(
+            [self.alpha for _ in range(self.n_sites)],
+            format="csr") + self.beta * self.connectivity_matrix
+
+        for p in range(self.n_sites):
+            for q in range(self.n_sites):
+                if p != q:
+                    one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
+                    one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
+
+        self.one_body = one_body_term
+        return self.one_body
 
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
         pass
