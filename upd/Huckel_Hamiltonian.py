@@ -1,7 +1,6 @@
 import numpy as np
-from scipy.sparse import dok_matrix
 from itertools import permutations
-
+from Hamiltonian import HamiltonianAPI
 
 def to_spatial(v):
     """
@@ -90,7 +89,7 @@ def fill_with_parity(V, ref_set):
         V[p, q, r, s] = sign * ref_value
     return V
 
-class PPP():
+class PPP(HamiltonianAPI):
     def __init__(self, bond_types, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=0.0784, charges=0.417, g_pair=None,
                  atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
         self.bond_types = bond_types
@@ -103,7 +102,6 @@ class PPP():
         self.atom_types = atom_types
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
-
 
     def get_connectivity_matrix(self):
         """
@@ -118,6 +116,49 @@ class PPP():
             connectivity[self.atoms_num[atom1], self.atoms_num[atom2]] = bond
         return np.maximum(connectivity, connectivity.T)
 
+    def generate_zero_body_integral(self):
+        """Generates zero body integral"""
+        pass
+
+    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+        """
+        Generates one body integral in spatial or spin orbital basis
+        :param sym: symmetry -- [2, 4, 8] default is None
+        :param basis: basis -- ['spatial', 'spin orbital']
+        :param dense: dense or sparse matrix; default dense
+        :return: numpy.ndarray or scipy.sparse.csc_matrix
+        """
+        pass
+
+    def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
+        """
+        Generates two body integral in spatial or spinorbital basis
+        :param sym: symmetry -- [2, 4, 8] default is None
+        :param basis: basis -- ['spatial', 'spin orbital']
+        :param dense: dense or sparse matrix; default dense
+        :return: numpy.ndarray or sparse
+        """
+        pass
+
+    def to_spatial(self, integral: np.ndarray, sym: int, dense: bool):
+        """
+        Converts one-/two- integral matrix from spin-orbital to spatial basis
+        :param integral: input matrix
+        :param sym: symmetry -- [2, 4, 8] default is None
+        :param dense: dense or sparse matrix; default sparse
+        :return:
+        """
+        pass
+
+    def to_spinorbital(self, integral: np.ndarray, sym: int, dense: bool):
+        """
+        Converts one-/two- integral matrix from spatial to spin-orbital basis
+        :param integral: input matrix
+        :param sym: symmetry -- [2, 4, 8] default None
+        :param dense: dense or sparse matrix; default sparse
+        :return:
+        """
+        pass
 
     def get_hamilton(self):
         """
@@ -125,8 +166,9 @@ class PPP():
         :return: tuple: zero, one and two body integrals as numpy arrays
         """
         self.connectivity = self.get_connectivity_matrix()
+        self.cm_len = self.connectivity.shape[0]
+        n_sp = self.cm_len
 
-        n_sp = self.connectivity.shape[0]
         h_huckel = np.diag([self.alpha for _ in range(n_sp)]) + self.beta*self.connectivity ## look at the Rauk's dictionary
         h_hubbard = np.zeros((2*n_sp, 2*n_sp))
         for p in range(n_sp):
