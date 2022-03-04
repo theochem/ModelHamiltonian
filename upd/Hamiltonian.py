@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TextIO
+from utils import convert_indices
 import numpy as np
 from scipy.sparse import csr_matrix, diags
 from utils import convert_indices
@@ -87,6 +88,7 @@ class HamiltonianAPI(ABC):
             print("Target output dimension must be either 2 or 4.")
             return
 
+          
     def to_spatial(self, integral: np.ndarray, sym: int, dense: bool, nbody: int):
         """
         Converts one-/two- integral matrix from spin-orbital to spatial basis
@@ -134,7 +136,6 @@ class HamiltonianAPI(ABC):
                 spatial_int = self.to_dense(spatial_int)
         return spatial_int
 
-    @abstractmethod
     def to_spinorbital(self, integral: np.ndarray, sym: int, dense: bool):
         """
         Converts one-/two- integral matrix from spatial to spin-orbital basis
@@ -157,7 +158,8 @@ class HamiltonianAPI(ABC):
                         attribute can be set.
         :return: None
         """
-        one_ints = self.one_ints
+        # Reduce symmetry of integral
+        one_ints = self.reduse_sym(self.one_ints)
 
         # Write header
         nactive = one_ints.shape[0]
@@ -166,16 +168,20 @@ class HamiltonianAPI(ABC):
         print('  ISYM=1', file=f)
         print(' &END', file=f)
 
-        # Write integrals and core energy
-        two_ints = self.two_ints
-        for i in range(nactive):  # pylint: disable=too-many-nested-blocks
-            for j in range(i + 1):
-                for k in range(nactive):
-                    for l in range(k + 1):
-                        if (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
-                            if (i, k, j, l) in two_ints:
-                                value = two_ints[(i, k, j, l)]
-                                print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
+        # Reduce symmetry of integrals
+        two_ints = self.reduce_sym(self.two_ints)
+
+        # getting nonzero elements from the 2d _sparse_ array
+        p_array, q_array = two_ints.nonzero()
+
+        # converting 2d indices to 4d indices
+        N = int(np.sqrt(two_ints.shape[0]))
+        for p, q in zip(p_array, q_array):
+            i, j, k, l = convert_indices(N, p, q)
+            j, k = k, j  # changing indexing from physical to chemical notation
+            if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
+                value = two_ints[(i, k, j, l)]
+                print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
         for i in range(nactive):
             for j in range(i + 1):
                 value = one_ints[i, j]
@@ -187,7 +193,6 @@ class HamiltonianAPI(ABC):
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 
 
-#    @abstractmethod
     def save_triqs(self, fname:str, integral):
         """
         Save matrix in triqc format
@@ -197,7 +202,6 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-#    @abstractmethod
     def save(self, fname: str, integral, basis):
         """Save file as regular numpy array"""
         pass
