@@ -1,5 +1,5 @@
 from Hamiltonian import HamiltonianAPI
-from utils import get_atom_type
+from utils import get_atom_type, convert_indices
 import numpy as np
 from scipy.sparse import csr_matrix, diags
 
