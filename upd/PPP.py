@@ -1,5 +1,5 @@
 from Hamiltonian import HamiltonianAPI
-from utils import get_atom_type
+from utils import get_atom_type, convert_indices
 import numpy as np
 from scipy.sparse import csr_matrix, diags
 
@@ -98,4 +98,28 @@ class HamPPP(HamiltonianAPI):
         return self.one_body
 
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
-        pass
+        n_sp = self.n_sites
+        Nv = 2*n_sp
+        v = csr_matrix((Nv*Nv, Nv*Nv))
+
+        if self.u_onsite is not None:
+            for p in range(n_sp):
+                i,j = convert_indices(Nv, p, p+n_sp, p+n_sp, p) 
+                v[i,j] = self.u_onsite[p]
+
+        if self.gamma is not None:
+            for p in range(n_sp):
+                for q in range(n_sp):
+                    if p != q:
+                        i,j = convert_indices(Nv, p, q, q, p)  
+                        v[i,j] = self.gamma[p, q]
+
+                        i,j = convert_indices(Nv, p, q+n_sp, q+n_sp, p) 
+                        v[i,j] = self.gamma[p, q+n_sp]
+   
+                        i,j = convert_indices(Nv, p+n_sp, q, q, p+n_sp) 
+                        v[i,j] = self.gamma[p+n_sp, q]
+   
+                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, q+n_sp, p+n_sp) 
+                        v[i,j] = self.gamma[p+n_sp, q+n_sp]
+        return 0.5*v
