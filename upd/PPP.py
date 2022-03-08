@@ -1,6 +1,7 @@
 from Hamiltonian import HamiltonianAPI
 from utils import get_atom_type
 import numpy as np
+import scipy.sparse
 from scipy.sparse import csr_matrix, diags
 
 
@@ -65,19 +66,20 @@ class HamPPP(HamiltonianAPI):
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
-            atom_types = [None for i in range(max_site)]
+            atom_types = [None for i in range(max_site+1)]
             for atom, site in atoms_sites_lst:
                 atom_types[site] = atom
             self.atom_types = atom_types
-
         connectivity_mtrx = np.zeros((max_site, max_site))
+
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1, site2] = bond
+            connectivity_mtrx[site1-1, site2-1] = bond ##numbering of sites should start from 1
 
-        self.connectivity_matrix = csr_matrix(np.maximum(connectivity_mtrx, connectivity_mtrx.T))
-        return self.connectivity_matrix
+        connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
+        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
+        return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
@@ -93,9 +95,20 @@ class HamPPP(HamiltonianAPI):
                 if p != q:
                     one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
                     one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
+        if basis == 'spatial basis':
+            self.one_body = one_body_term
+        elif basis == 'spinorbital basis':
+            one_body_term_spin = scipy.sparse.hstack([one_body_term, csr_matrix(one_body_term.shape)], format='csr')
+            one_body_term_spin = scipy.sparse.vstack([one_body_term_spin,
+                                                     scipy.sparse.hstack([csr_matrix(one_body_term.shape), one_body_term],
+                                                                         format='csr')],
+                                                     format='csr')
+            self.one_body = one_body_term_spin
+        else:
+            raise TypeError("Wrong basis")
 
-        self.one_body = one_body_term
-        return self.one_body
+        return self.one_body.todense() if dense else self.one_body
+
 
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
         pass
