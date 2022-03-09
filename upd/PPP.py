@@ -110,7 +110,6 @@ class HamPPP(HamiltonianAPI):
 
         return self.one_body.todense() if dense else self.one_body
 
-
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
         n_sp = self.n_sites
         Nv = 2*n_sp
