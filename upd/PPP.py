@@ -90,11 +90,12 @@ class HamPPP(HamiltonianAPI):
             [self.alpha for _ in range(self.n_sites)],
             format="csr") + self.beta * self.connectivity_matrix
 
-        for p in range(self.n_sites):
-            for q in range(self.n_sites):
-                if p != q:
-                    one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
-                    one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
+        if (self.gamma is not None) and (self.charges is not None):
+            for p in range(self.n_sites):
+                for q in range(self.n_sites):
+                    if p != q:
+                        one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
+                        one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
         if basis == 'spatial basis':
             self.one_body = one_body_term
         elif basis == 'spinorbital basis':
