@@ -1,6 +1,6 @@
 import numpy as np
 import pyci
-from Huckel_Hamiltonian import *
+from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
 
@@ -10,22 +10,26 @@ def test_1():
     """ 2 site hubbard model with 2 electrons. Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812 """
 
-    hubbard = Hubbard([(f"C{i}",f"C{i+1}", 1) for i in range(1,2)], alpha=0, beta=-1, u_onsite=np.array([1 for i in range(2)]))
-    ecore, h, v = hubbard.get_hamilton()
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]),
+                     gamma=None, charges=None, sym=None)
+    ecore = hubbard.generate_zero_body_integral()
+    h = hubbard.generate_one_body_integral(sym=None, basis='spin orbital', dense=True)
+    v = hubbard.generate_two_body_integral(sym=None, basis='spin orbital', dense=True)
 
-    v_new = to_spatial(v)
+    return None
+    # v_new = to_spatial(v)
 
-    ham = pyci.hamiltonian(ecore, h, v_new)
-    n_up = 1
-    n_down = 1
-    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_excited_dets(0)
-    wfn.add_excited_dets(1)
-    wfn.add_excited_dets(2)
-
-    op = pyci.sparse_op(ham, wfn)
-    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    np.allclose(eigenvals, -1.561552812)
+    # ham = pyci.hamiltonian(ecore, h, v_new)
+    # n_up = 1
+    # n_down = 1
+    # wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    # wfn.add_excited_dets(0)
+    # wfn.add_excited_dets(1)
+    # wfn.add_excited_dets(2)
+    #
+    # op = pyci.sparse_op(ham, wfn)
+    # eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    # np.allclose(eigenvals, -1.561552812)
 
 
 def test_2():
