@@ -82,6 +82,8 @@ class HamPPP(HamiltonianAPI):
         return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
+        if self.charges is None:
+            return 0
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
         return self.zero_energy
 
