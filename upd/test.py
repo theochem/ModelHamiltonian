@@ -1,5 +1,5 @@
 import numpy as np
-import pyci
+# import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
@@ -55,4 +55,4 @@ def test_2():
     np.allclose(-4*E, eigenvals)
     print(-4*E, eigenvals)
 
-test_2()
+test_1()
