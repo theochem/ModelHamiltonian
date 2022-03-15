@@ -1,5 +1,5 @@
 import numpy as np
-# import pyci
+import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
@@ -14,7 +14,7 @@ def test_1():
     hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]),
                      gamma=None, charges=None, sym=None)
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=None, basis='spinorbital basis', dense=True)
+    h = hubbard.generate_one_body_integral(sym=None, basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=None, basis='spinorbital basis', dense=True)
 
     v_4d = np.zeros((4, 4, 4, 4))
@@ -22,20 +22,16 @@ def test_1():
         i, j, k, l = convert_indices(4, int(m), int(n))
         v_4d[i, j, k, l] = v[m, n]
 
-    return ecore, h, v_4d
-    # v_new = to_spatial(v)
-
-    # ham = pyci.hamiltonian(ecore, h, v_new)
-    # n_up = 1
-    # n_down = 1
-    # wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    # wfn.add_excited_dets(0)
-    # wfn.add_excited_dets(1)
-    # wfn.add_excited_dets(2)
-    #
-    # op = pyci.sparse_op(ham, wfn)
-    # eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    # np.allclose(eigenvals, -1.561552812)
+    v_new = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+    print(v_new)
+    #ham = pyci.hamiltonian(ecore,i h, v_new)
+    n_up = 1
+    n_down = 1
+    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    wfn.add_all_dets()
+    op = pyci.sparse_op(ham, wfn)
+    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    np.allclose(eigenvals, -1.561552812)
 
 
 def test_2():
@@ -47,8 +43,7 @@ def test_2():
     hubbard = Hubbard([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=0, beta=-0.5,
             u_onsite = np.array([1 for i in range(4)]))
     ecore, h, v = hubbard.get_hamilton()
-    v_new = to_spatial(v)
-    ham = pyci.hamiltonian(ecore, h, v_new)
+    ham = pyci.hamiltonian(ecore, h, v)
     n_up = 2
     n_down = 2
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
