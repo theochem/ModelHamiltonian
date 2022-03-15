@@ -1,5 +1,5 @@
 import numpy as np
-import pyci
+# import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
@@ -14,24 +14,27 @@ def test_1():
     hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]),
                      gamma=None, charges=None, sym=None)
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=None, basis='spatial basis', dense=True)
-    v = hubbard.generate_two_body_integral(sym=None, basis='spinorbital basis', dense=True)
+    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
-    v_4d = np.zeros((4, 4, 4, 4))
-    for m, n in zip(*v.nonzero()):
-        i, j, k, l = convert_indices(4, int(m), int(n))
-        v_4d[i, j, k, l] = v[m, n]
 
-    v_new = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
-    print(v_new)
+    v_new = hubbard.to_spatial(v, sym=1, dense=False, nbody=2)
+
+    # print(v_new)
+
+    v_4d = np.zeros((2, 2, 2, 2))
+    for m, n in zip(*v_new.nonzero()):
+        i, j, k, l = convert_indices(2, int(m), int(n))
+        v_4d[i, j, k, l] = v_new[m, n]
+    print(v_4d, '----------')
     #ham = pyci.hamiltonian(ecore,i h, v_new)
-    n_up = 1
-    n_down = 1
-    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_all_dets()
-    op = pyci.sparse_op(ham, wfn)
-    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    np.allclose(eigenvals, -1.561552812)
+    # n_up = 1
+    # n_down = 1
+    # wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    # wfn.add_all_dets()
+    # op = pyci.sparse_op(ham, wfn)
+    # eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    # np.allclose(eigenvals, -1.561552812)
 
 
 def test_2():
