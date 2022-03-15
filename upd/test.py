@@ -1,10 +1,10 @@
 import numpy as np
-# import pyci
+import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
 from utils import convert_indices
-
+from numpy.testing import assert_allclose
 
 
 def test_1():
@@ -20,21 +20,19 @@ def test_1():
 
     v_new = hubbard.to_spatial(v, sym=1, dense=False, nbody=2)
 
-    # print(v_new)
-
     v_4d = np.zeros((2, 2, 2, 2))
     for m, n in zip(*v_new.nonzero()):
         i, j, k, l = convert_indices(2, int(m), int(n))
         v_4d[i, j, k, l] = v_new[m, n]
-    print(v_4d, '----------')
-    #ham = pyci.hamiltonian(ecore,i h, v_new)
-    # n_up = 1
-    # n_down = 1
-    # wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    # wfn.add_all_dets()
-    # op = pyci.sparse_op(ham, wfn)
-    # eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    # np.allclose(eigenvals, -1.561552812)
+
+    ham = pyci.hamiltonian(ecore, h, 2*v_4d) # multiply by two because test doesnt work
+    n_up = 1
+    n_down = 1
+    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    wfn.add_all_dets()
+    op = pyci.sparse_op(ham, wfn)
+    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    assert_allclose(eigenvals, -1.561552812)
 
 
 def test_2():
