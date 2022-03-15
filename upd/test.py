@@ -3,6 +3,7 @@ import numpy as np
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
+from utils import convert_indices
 
 
 
@@ -13,10 +14,15 @@ def test_1():
     hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]),
                      gamma=None, charges=None, sym=None)
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=None, basis='spin orbital', dense=True)
-    v = hubbard.generate_two_body_integral(sym=None, basis='spin orbital', dense=True)
+    h = hubbard.generate_one_body_integral(sym=None, basis='spinorbital basis', dense=True)
+    v = hubbard.generate_two_body_integral(sym=None, basis='spinorbital basis', dense=True)
 
-    return None
+    v_4d = np.zeros((4, 4, 4, 4))
+    for m, n in zip(*v.nonzero()):
+        i, j, k, l = convert_indices(4, int(m), int(n))
+        v_4d[i, j, k, l] = v[m, n]
+
+    return ecore, h, v_4d
     # v_new = to_spatial(v)
 
     # ham = pyci.hamiltonian(ecore, h, v_new)
@@ -55,4 +61,4 @@ def test_2():
     np.allclose(-4*E, eigenvals)
     print(-4*E, eigenvals)
 
-test_1()
+print(test_1())
