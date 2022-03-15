@@ -127,7 +127,6 @@ class HamiltonianAPI(ABC):
         else:
             raise ValueError('Wrong integral input.')
 
-        print(spatial_int)
         spatial_int = expand_sym(sym, spatial_int, nbody)
         
         if dense:
