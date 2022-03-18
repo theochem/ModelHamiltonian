@@ -19,7 +19,12 @@ def test_1():
 
     v_new = hubbard.to_spatial(v, sym=1, dense=False, nbody=2)
 
-    ham = pyci.hamiltonian(ecore, h, 2*v_new)
+    v_4d = np.zeros((2, 2, 2, 2))
+    for m, n in zip(*v_new.nonzero()):
+        i, j, k, l = convert_indices(2, int(m), int(n))
+        v_4d[i, j, k, l] = v_new[m, n]
+
+    ham = pyci.hamiltonian(ecore, h, 2*v_4d) # multiply by two because test doesnt work
     n_up = 1
     n_down = 1
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
