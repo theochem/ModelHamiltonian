@@ -101,32 +101,32 @@ class HamiltonianAPI(ABC):
         #
         # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
         #
-        n = 2 * self._k
-        if integral.shape[0] == 2*self._k:
-            spatial_int = csr_matrix((self._k, self._k))
-            spatial_int = integral[:self._k, :self._k]
-        elif integral.shape[0] == 4*self._k**2:
-            spatial_int = csr_matrix((self._k**2, self._k**2))
-            for p in range(self._k):
+        n = 2 * self.n_sites
+        if integral.shape[0] == 2*self.n_sites:
+            spatial_int = csr_matrix((self.n_sites, self.n_sites))
+            spatial_int = integral[:self.n_sites, :self.n_sites]
+        elif integral.shape[0] == 4*self.n_sites**2:
+            spatial_int = csr_matrix((self.n_sites**2, self.n_sites**2))
+            for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
-                pp, pp = convert_indices(self._k, p,p,p,p)
-                pp_, pp_ = convert_indices(n, p, p + self._k, p, p + self._k)
+                pp, pp = convert_indices(self.n_sites, p,p,p,p)
+                pp_, pp_ = convert_indices(n, p, p + self.n_sites, p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
-                for q in range(p, self._k):
+                for q in range(p, self.n_sites):
                     # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
-                    pq, pq = convert_indices(self._k, p,q,p,q)
+                    pq, pq = convert_indices(self.n_sites, p, q, p, q)
                     pq_, pq_ = convert_indices(n, p, q, p, q)
                     spatial_int[pq, pq] = integral[pq_, pq_]
                     # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
-                    pq_, pq_ = convert_indices(n, p, q + self._k, p, q + self._k)
+                    pq_, pq_ = convert_indices(n, p, q + self.n_sites, p, q + self.n_sites)
                     spatial_int[pq, pq] += integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
-                    pp, qq = convert_indices(self._k, p,p,q,q)
-                    pp_, qq_ = convert_indices(n, p, p + self._k, q, q + self._k)
+                    pp, qq = convert_indices(self.n_sites, p,p,q,q)
+                    pp_, qq_ = convert_indices(n, p, p + self.n_sites, q, q + self.n_sites)
                     spatial_int[pp, qq] = integral[pp_, qq_]
         else:
             raise ValueError('Wrong integral input.')
-        
+
         spatial_int = expand_sym(sym, spatial_int, nbody)
         
         if dense:
@@ -136,12 +136,12 @@ class HamiltonianAPI(ABC):
                 spatial_int = self.to_dense(spatial_int)
         return spatial_int
 
-    def to_spinorbital(self, integral: np.ndarray, sym: int, dense: bool):
+    def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
         """
         Converts one-/two- integral matrix from spatial to spin-orbital basis
         :param integral: input matrix
-        :param sym: symmetry -- [2, 4, 8] default None
-        :param dense: dense or sparse matrix; default sparse
+        :param sym: symmetry -- [2, 4, 8] default 1
+        :param dense: dense or sparse matrix; default is sparse
         :return:
         """
         pass
