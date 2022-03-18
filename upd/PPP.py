@@ -119,7 +119,7 @@ class HamPPP(HamiltonianAPI):
 
         if self.u_onsite is not None:
             for p in range(n_sp):
-                i,j = convert_indices(Nv, p, p+n_sp, p+n_sp, p) 
+                i,j = convert_indices(Nv, p, p+n_sp, p, p+n_sp)
                 v[i,j] = self.u_onsite[p]
 
         if self.gamma is not None:

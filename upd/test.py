@@ -17,15 +17,9 @@ def test_1():
     h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
-
     v_new = hubbard.to_spatial(v, sym=1, dense=False, nbody=2)
 
-    v_4d = np.zeros((2, 2, 2, 2))
-    for m, n in zip(*v_new.nonzero()):
-        i, j, k, l = convert_indices(2, int(m), int(n))
-        v_4d[i, j, k, l] = v_new[m, n]
-
-    ham = pyci.hamiltonian(ecore, h, 2*v_4d) # multiply by two because test doesnt work
+    ham = pyci.hamiltonian(ecore, h, 2*v_new)
     n_up = 1
     n_down = 1
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
