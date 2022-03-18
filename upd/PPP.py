@@ -126,15 +126,15 @@ class HamPPP(HamiltonianAPI):
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
-                        i,j = convert_indices(Nv, p, q, q, p)  
+                        i,j = convert_indices(Nv, p, q, p, q)
                         v[i,j] = self.gamma[p, q]
 
-                        i,j = convert_indices(Nv, p, q+n_sp, q+n_sp, p) 
+                        i,j = convert_indices(Nv, p, q+n_sp, p, q+n_sp)
                         v[i,j] = self.gamma[p, q+n_sp]
    
-                        i,j = convert_indices(Nv, p+n_sp, q, q, p+n_sp) 
+                        i,j = convert_indices(Nv, p+n_sp, q, p+n_sp, q)
                         v[i,j] = self.gamma[p+n_sp, q]
    
-                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, q+n_sp, p+n_sp) 
+                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, p+n_sp, q+n_sp)
                         v[i,j] = self.gamma[p+n_sp, q+n_sp]
         return 0.5*v

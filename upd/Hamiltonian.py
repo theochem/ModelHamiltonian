@@ -110,19 +110,19 @@ class HamiltonianAPI(ABC):
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
                 pp, pp = convert_indices(self.n_sites, p,p,p,p)
-                pp_, pp_ = convert_indices(n, p, p + self.n_sites,p + self.n_sites, p)
+                pp_, pp_ = convert_indices(n, p, p + self.n_sites, p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
                 for q in range(p, self.n_sites):
                     # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
-                    pq, pq = convert_indices(self.n_sites, p,q,q,p)
-                    pq_, pq_ = convert_indices(n, p, q, q, p)
+                    pq, pq = convert_indices(self.n_sites, p, q, p, q)
+                    pq_, pq_ = convert_indices(n, p, q, p, q)
                     spatial_int[pq, pq] = integral[pq_, pq_]
                     # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
-                    pq_, pq_ = convert_indices(n, p, q + self.n_sites, q + self.n_sites, p)
+                    pq_, pq_ = convert_indices(n, p, q + self.n_sites, p, q + self.n_sites)
                     spatial_int[pq, pq] += integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
                     pp, qq = convert_indices(self.n_sites, p,p,q,q)
-                    pp_, qq_ = convert_indices(n, p, p + self.n_sites, q + self.n_sites, q)
+                    pp_, qq_ = convert_indices(n, p, p + self.n_sites, q, q + self.n_sites)
                     spatial_int[pp, qq] = integral[pp_, qq_]
         else:
             raise ValueError('Wrong integral input.')
