@@ -82,6 +82,8 @@ class HamPPP(HamiltonianAPI):
         return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
+        if self.charges is None:
+            return 0
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
         return self.zero_energy
 
@@ -90,11 +92,12 @@ class HamPPP(HamiltonianAPI):
             [self.alpha for _ in range(self.n_sites)],
             format="csr") + self.beta * self.connectivity_matrix
 
-        for p in range(self.n_sites):
-            for q in range(self.n_sites):
-                if p != q:
-                    one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
-                    one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
+        if (self.gamma is not None) and (self.charges is not None):
+            for p in range(self.n_sites):
+                for q in range(self.n_sites):
+                    if p != q:
+                        one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
+                        one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
         if basis == 'spatial basis':
             self.one_body = one_body_term
         elif basis == 'spinorbital basis':
@@ -109,7 +112,6 @@ class HamPPP(HamiltonianAPI):
 
         return self.one_body.todense() if dense else self.one_body
 
-
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
         n_sp = self.n_sites
         Nv = 2*n_sp
@@ -117,22 +119,22 @@ class HamPPP(HamiltonianAPI):
 
         if self.u_onsite is not None:
             for p in range(n_sp):
-                i,j = convert_indices(Nv, p, p+n_sp, p+n_sp, p) 
+                i,j = convert_indices(Nv, p, p+n_sp, p, p+n_sp)
                 v[i,j] = self.u_onsite[p]
 
         if self.gamma is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
-                        i,j = convert_indices(Nv, p, q, q, p)  
+                        i,j = convert_indices(Nv, p, q, p, q)
                         v[i,j] = self.gamma[p, q]
 
-                        i,j = convert_indices(Nv, p, q+n_sp, q+n_sp, p) 
+                        i,j = convert_indices(Nv, p, q+n_sp, p, q+n_sp)
                         v[i,j] = self.gamma[p, q+n_sp]
    
-                        i,j = convert_indices(Nv, p+n_sp, q, q, p+n_sp) 
+                        i,j = convert_indices(Nv, p+n_sp, q, p+n_sp, q)
                         v[i,j] = self.gamma[p+n_sp, q]
    
-                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, q+n_sp, p+n_sp) 
+                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, p+n_sp, q+n_sp)
                         v[i,j] = self.gamma[p+n_sp, q+n_sp]
         return 0.5*v
