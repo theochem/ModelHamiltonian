@@ -135,4 +135,15 @@ class HamPPP(HamiltonianAPI):
    
                         i,j = convert_indices(Nv, p+n_sp, q+n_sp, q+n_sp, p+n_sp) 
                         v[i,j] = self.gamma[p+n_sp, q+n_sp]
-        return 0.5*v
+        v *= 0.5
+
+        # converting basis if necessary
+        if basis == 'spatial basis':
+            v = self.to_spatial(integral=self.to_dense(v), sym=sym, dense=False, nbody=2)
+        elif basis == 'spinorbital basis':
+            pass
+        else:
+            raise TypeError("Wrong basis")
+
+        # return either sparse csr array (default) or dense N^2*N^2 array
+        return self.to_dense(v) if dense else v
