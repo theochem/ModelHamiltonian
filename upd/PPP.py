@@ -58,9 +58,9 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-
-            atoms_sites_lst.append((atom1_name, site1))
-            atoms_sites_lst.append((atom2_name, site2))
+            for pair in [(atom1_name, site1), (atom2_name, site2)]:
+                if pair not in atoms_sites_lst:
+                    atoms_sites_lst.append(pair)
             if max_site < max(site1, site2):  # finding the maximum index of site
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
