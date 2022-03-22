@@ -3,7 +3,6 @@ import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
-from utils import convert_indices
 from numpy.testing import assert_allclose
 
 
@@ -11,20 +10,14 @@ def test_1():
     """ 2 site hubbard model with 2 electrons. Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812 """
 
-    hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]),
-                     gamma=None, charges=None, sym=None)
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
-    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
+    v = hubbard.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
-    v_new = hubbard.to_spatial(v, sym=1, dense=False, nbody=2)
+    assert v.shape[0] == 2
 
-    v_4d = np.zeros((2, 2, 2, 2))
-    for m, n in zip(*v_new.nonzero()):
-        i, j, k, l = convert_indices(2, int(m), int(n))
-        v_4d[i, j, k, l] = v_new[m, n]
-
-    ham = pyci.hamiltonian(ecore, h, 2*v_4d) # multiply by two because test doesnt work
+    ham = pyci.hamiltonian(ecore, h, 2*v) # multiply by two because test doesnt work
     n_up = 1
     n_down = 1
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
@@ -68,14 +61,14 @@ def test_3():
     hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)#a=,b= 
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(sym=1, basis='spinorbital basis', dense=True)
-    # FIXME: empty scipy.sparse.csr.csr_matrix
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
     test = np.zeros_like(h)
-    test[:2, :2] =  np.array([[a, b], [b, a]])
-    test[2:, 2:] =  np.array([[a, b], [b, a]])
+    test[:2, :2] = np.array([[a, b], [b, a]])
+    test[2:, 2:] = np.array([[a, b], [b, a]])
     assert np.allclose(h, test)
-    test = np.zeros((16,16))
+    test = np.zeros((16, 16))
+
     assert v.shape[0] == 16
     # assert np.allclose(v, test)
     assert ecore == 0.
@@ -100,24 +93,21 @@ def test_4():
 
     $E_0 = 2 (\alpha + 2 \beta) + 2 \alpha$
     """
-    # FIXME
-    # This test Fails due to incorrect number of sites' evaluation
     a = -5
     b = -0.5
-    hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b,
-            gamma=None, charges=None, sym=None)
-    print(f'Incorrect number of sites, should be 4, got {hubbard.n_sites}')
+    hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b)
     atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
-    print(f'Sites {atoms_sites_lst}')
 
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
-    # FIXME: empty scipy.sparse.csr.csr_matrix
-    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True) 
-    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
-    
+    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
+
+    assert v.shape[0] == 8
     assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
-    assert v.shape[0] == 64
+    print(type(v))
+    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+
+    assert v.shape[0] == 4
 
     ham = pyci.hamiltonian(ecore, h, np.zeros((8, 8, 8, 8)))
     n_up = 2
