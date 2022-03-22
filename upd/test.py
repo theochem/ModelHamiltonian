@@ -102,18 +102,20 @@ def test_4():
     """
     a = -5
     b = -0.5
-    hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b,
-            gamma=None, charges=None, sym=None)
+    hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b)
     atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
 
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
     # FIXME: empty scipy.sparse.csr.csr_matrix
-    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True) 
-    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
-    
-    assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
+    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
     assert v.shape[0] == 64
+    assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
+
+    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+
+    assert v.shape[0] == 16
+
 
     ham = pyci.hamiltonian(ecore, h, np.zeros((8, 8, 8, 8)))
     n_up = 2
