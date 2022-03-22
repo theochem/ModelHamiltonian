@@ -72,10 +72,10 @@ def test_3():
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
     test = np.zeros_like(h)
-    test[:2, :2] =  np.array([[a, b], [b, a]])
-    test[2:, 2:] =  np.array([[a, b], [b, a]])
+    test[:2, :2] = np.array([[a, b], [b, a]])
+    test[2:, 2:] = np.array([[a, b], [b, a]])
     assert np.allclose(h, test)
-    test = np.zeros((16,16))
+    test = np.zeros((16, 16))
     assert v.shape[0] == 16
     # assert np.allclose(v, test)
     assert ecore == 0.
