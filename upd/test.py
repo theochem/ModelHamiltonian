@@ -17,7 +17,7 @@ def test_1():
 
     assert v.shape[0] == 2
 
-    ham = pyci.hamiltonian(ecore, h, 2*v) # multiply by two because test doesnt work
+    ham = pyci.hamiltonian(ecore, h, 2*v)  # multiply by two because test doesn't work
     n_up = 1
     n_down = 1
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
@@ -33,8 +33,8 @@ def test_2():
     $\frac{E(U, d=1)}{t N_{s}}=-4 \int_{0}^{\infty} d x \frac{J_{0}(x) J_{1}(x)}{x[1+\exp (U x / 2)]}$
     :return:
     """
-    hubbard = Hubbard([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=0, beta=-0.5,
-            u_onsite = np.array([1 for i in range(4)]))
+    hubbard = Hubbard([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=0,  beta=-0.5,
+                      u_onsite = np.array([1 for i in range(4)]))
     ecore, h, v = hubbard.get_hamilton()
     ham = pyci.hamiltonian(ecore, h, v)
     n_up = 2
