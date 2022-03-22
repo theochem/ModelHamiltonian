@@ -104,7 +104,6 @@ def test_4():
 
     assert v.shape[0] == 8
     assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
-    print(type(v))
     v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
 
     assert v.shape[0] == 4
@@ -119,5 +118,7 @@ def test_4():
     answer = 2*(a+2*b) + 2*a
     assert_allclose(eigenvals[0],  answer)
 
+print("running test 4")
 print(test_4())
-# print(test_1())
+print("running test 1")
+print(test_1())
