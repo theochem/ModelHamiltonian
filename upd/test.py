@@ -56,4 +56,78 @@ def test_2():
     np.allclose(-4*E, eigenvals)
     print(-4*E, eigenvals)
 
-print(test_1())
+
+def test_3():
+    """
+    Ethylene Huckel model
+
+    $E_0 = 2 (\alpha + \beta)$
+    """
+    a = -11.26
+    b = -1.45
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)#a=,b= 
+    ecore = hubbard.generate_zero_body_integral()
+    h = hubbard.generate_one_body_integral(sym=1, basis='spinorbital basis', dense=True)
+    # FIXME: empty scipy.sparse.csr.csr_matrix
+    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
+
+    test = np.zeros_like(h)
+    test[:2, :2] =  np.array([[a, b], [b, a]])
+    test[2:, 2:] =  np.array([[a, b], [b, a]])
+    assert np.allclose(h, test)
+    test = np.zeros((16,16))
+    assert v.shape[0] == 16
+    # assert np.allclose(v, test)
+    assert ecore == 0.
+
+    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+    assert np.allclose(h, np.array([[a, b], [b, a]]))
+
+    ham = pyci.hamiltonian(ecore, h, np.zeros((4, 4, 4, 4)))
+    n_up = 1
+    n_down = 1
+    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    wfn.add_all_dets()
+    op = pyci.sparse_op(ham, wfn)
+    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    assert_allclose(eigenvals[0], 2*(a+b))
+
+
+def test_4():
+    """
+    Cyclobutadiene, 4 site Huckel model with periodic boundary conditions
+
+    $E_0 = 2 (\alpha + 2 \beta) + 2 \alpha$
+    """
+    # FIXME
+    # This test Fails due to incorrect number of sites' evaluation
+    a = -5
+    b = -0.5
+    hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b,
+            gamma=None, charges=None, sym=None)
+    print(f'Incorrect number of sites, should be 4, got {hubbard.n_sites}')
+    atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
+    print(f'Sites {atoms_sites_lst}')
+
+    ecore = hubbard.generate_zero_body_integral()
+    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    # FIXME: empty scipy.sparse.csr.csr_matrix
+    v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True) 
+    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+    
+    assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
+    assert v.shape[0] == 64
+
+    ham = pyci.hamiltonian(ecore, h, np.zeros((8, 8, 8, 8)))
+    n_up = 2
+    n_down = 2
+    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
+    wfn.add_all_dets()
+    op = pyci.sparse_op(ham, wfn)
+    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
+    answer = 2*(a+2*b) + 2*a
+    assert_allclose(eigenvals[0],  answer)
+
+print(test_4())
+# print(test_1())
