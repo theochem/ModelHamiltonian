@@ -1,5 +1,5 @@
 import numpy as np
-import pyci
+# import pyci
 from PPP import *
 from scipy.integrate import quad
 from scipy.special import jv
@@ -100,15 +100,11 @@ def test_4():
 
     $E_0 = 2 (\alpha + 2 \beta) + 2 \alpha$
     """
-    # FIXME
-    # This test Fails due to incorrect number of sites' evaluation
     a = -5
     b = -0.5
     hubbard = HamPPP([("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C1", 1)], alpha=a, beta=b,
             gamma=None, charges=None, sym=None)
-    print(f'Incorrect number of sites, should be 4, got {hubbard.n_sites}')
     atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
-    print(f'Sites {atoms_sites_lst}')
 
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
