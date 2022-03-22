@@ -138,6 +138,7 @@ class HamPPP(HamiltonianAPI):
 
                         i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
                         v[i, j] = self.gamma[p + n_sp, q + n_sp]
+
         v *= 0.5
 
         # converting basis if necessary

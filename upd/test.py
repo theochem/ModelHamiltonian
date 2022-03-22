@@ -68,6 +68,7 @@ def test_3():
     test[2:, 2:] = np.array([[a, b], [b, a]])
     assert np.allclose(h, test)
     test = np.zeros((16, 16))
+
     assert v.shape[0] == 16
     # assert np.allclose(v, test)
     assert ecore == 0.
@@ -107,7 +108,6 @@ def test_4():
     v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
 
     assert v.shape[0] == 4
-
 
     ham = pyci.hamiltonian(ecore, h, np.zeros((8, 8, 8, 8)))
     n_up = 2
