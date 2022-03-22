@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix, diags
 
 
 class HamPPP(HamiltonianAPI):
-    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=0.0784, charges=0.417,
+    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=None, charges=0.417,
                  sym=None, g_pair=None, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
         """
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
