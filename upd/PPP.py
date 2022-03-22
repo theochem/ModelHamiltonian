@@ -6,8 +6,8 @@ from scipy.sparse import csr_matrix, diags
 
 
 class HamPPP(HamiltonianAPI):
-    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=0.0784, charges=0.417,
-                 sym=None, g_pair=None, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
+    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=None, charges=0.417,
+                 sym=1, g_pair=None, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
         """
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
         $\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+\
@@ -23,7 +23,7 @@ class HamPPP(HamiltonianAPI):
         :param u_onsite: on-site Coulomb interaction: 1d np.ndarray
         :param gamma: parameter that specifies long-range Coulomb interaction: 2d np.ndarray
         :param charges: Charges on sites: 1d np.ndarray
-        :param sym: symmetry of the Hamiltonian: int [2, 4, 8] or None. Default is None
+        :param sym: symmetry of the Hamiltonian: int [2, 4, 8] or None. Default is 1
         :param g_pair:  g_pq term that captures interaction between electron pairs
         :param atom_types: A list of dimension equal to the number of sites specifying the atom type of each site
                            If a list of atom types is specified, the values of alpha and beta are ignored.
@@ -58,15 +58,15 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-
-            atoms_sites_lst.append((atom1_name, site1))
-            atoms_sites_lst.append((atom2_name, site2))
+            for pair in [(atom1_name, site1), (atom2_name, site2)]:
+                if pair not in atoms_sites_lst:
+                    atoms_sites_lst.append(pair)
             if max_site < max(site1, site2):  # finding the maximum index of site
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
-            atom_types = [None for i in range(max_site+1)]
+            atom_types = [None for i in range(max_site + 1)]
             for atom, site in atoms_sites_lst:
                 atom_types[site] = atom
             self.atom_types = atom_types
@@ -75,7 +75,7 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1-1, site2-1] = bond ##numbering of sites should start from 1
+            connectivity_mtrx[site1 - 1, site2 - 1] = bond  ##numbering of sites should start from 1
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
@@ -103,8 +103,9 @@ class HamPPP(HamiltonianAPI):
         elif basis == 'spinorbital basis':
             one_body_term_spin = scipy.sparse.hstack([one_body_term, csr_matrix(one_body_term.shape)], format='csr')
             one_body_term_spin = scipy.sparse.vstack([one_body_term_spin,
-                                                     scipy.sparse.hstack([csr_matrix(one_body_term.shape), one_body_term],
-                                                                         format='csr')],
+                                                      scipy.sparse.hstack([csr_matrix(one_body_term.shape),
+                                                                           one_body_term],
+                                                                          format='csr')],
                                                      format='csr')
             self.one_body = one_body_term_spin
         else:
@@ -114,29 +115,30 @@ class HamPPP(HamiltonianAPI):
 
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
         n_sp = self.n_sites
-        Nv = 2*n_sp
-        v = csr_matrix((Nv*Nv, Nv*Nv))
+        Nv = 2 * n_sp
+        v = csr_matrix((Nv * Nv, Nv * Nv))
 
         if self.u_onsite is not None:
             for p in range(n_sp):
-                i,j = convert_indices(Nv, p, p+n_sp, p, p+n_sp)
-                v[i,j] = self.u_onsite[p]
+                i, j = convert_indices(Nv, p, p + n_sp, p, p + n_sp)
+                v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
-                        i,j = convert_indices(Nv, p, q, p, q)
-                        v[i,j] = self.gamma[p, q]
+                        i, j = convert_indices(Nv, p, q, p, q)
+                        v[i, j] = self.gamma[p, q]
 
-                        i,j = convert_indices(Nv, p, q+n_sp, p, q+n_sp)
-                        v[i,j] = self.gamma[p, q+n_sp]
-   
-                        i,j = convert_indices(Nv, p+n_sp, q, p+n_sp, q)
-                        v[i,j] = self.gamma[p+n_sp, q]
-   
-                        i,j = convert_indices(Nv, p+n_sp, q+n_sp, p+n_sp, q+n_sp)
-                        v[i,j] = self.gamma[p+n_sp, q+n_sp]
+                        i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
+                        v[i, j] = self.gamma[p, q + n_sp]
+
+                        i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
+                        v[i, j] = self.gamma[p + n_sp, q]
+
+                        i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
+                        v[i, j] = self.gamma[p + n_sp, q + n_sp]
+
         v *= 0.5
 
         # converting basis if necessary
@@ -148,4 +150,4 @@ class HamPPP(HamiltonianAPI):
             raise TypeError("Wrong basis")
 
         # return either sparse csr array (default) or dense N^2*N^2 array
-        return self.to_dense(v) if dense else v
+        return self.to_dense(v, dim=4) if dense else v
