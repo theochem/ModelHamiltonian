@@ -72,7 +72,7 @@ class HamiltonianAPI(ABC):
         """
         # return dense 2D array (default).
         if dim == 2:
-            return Ms.todense()
+            return Ms.todense() if isinstance(Ms, csr_matrix) else Ms
 
         # Optionally, return dense 4D array for two-particle integrals.
         elif dim == 4:
