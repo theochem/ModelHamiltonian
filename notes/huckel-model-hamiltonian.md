@@ -2,12 +2,12 @@
 
 ## The H&uuml;ckel Hamiltonian 
 The Hamiltonian is a one-electron site-interaction model, with one orbital (traditionally a $\pi$ orbital) per site. 
-$$ \hat{H} = \sum_{p,q=1}^n h_{pq} a^{\dag}_p a_q $$(1)
+$$ \hat{H} = \sum_{p,q=1}^n h_{pq} a^{\dagger}_p a_q $$(1)
 Traditionally there are two parameters: 
 - an $\alpha_{pp}$ parameter that is the diagonal terms, representing the energy associated with an electron on the site $p$ 
 - a $\beta_{pq}=\beta_{qp}$ parameter that is the resonance/hopping/bond term between sites $p$ and $q$. 
  
-> Note: Traditionally H&uuml;uckel theory works by assuming that orbitals on different sites do not overlap. H&uuml;ckel Hamiltonians are always restricted.
+> Note: Traditionally H&uuml;ckel theory works by assuming that orbitals on different sites do not overlap. H&uuml;ckel Hamiltonians are always restricted.
 
 Traditionally, the values of $\alpha$ and $\beta$ are defined for the 2p orbital in an $sp^2$ hybridized carbon atom, with reasonable values being:
 $$ \alpha = -11.26 \text{ eV} = 0.414 \text{ Hartree}$$(2)
@@ -62,6 +62,21 @@ $$(11)
 
 If a non-supported atom type is invoked but a bond length is not selected, a default bond length of 90% of the sum of the atoms' covalent radii is used. (The 90% is to compensate for the fact there is a multiple bond.) These approximations are all very rough, but it's just intended for ease; the "direct input" option provides all the flexibility that can possibly be required. The above integral is the overlap integral for two $p$ orbitals in $\pi$-binding geometry.  These formulas, which I transcribed from MROO, should be double-checked. One unit test is to affirm that the $t=0$ limit is recovered when $t \rightarrow 0^+$. Another is to check that $R\rightarrow 0^+$, $S_{XY} = (1-t^2)^{5/2}$ (Eq. 68 in MROO).
 
+An alternative is available when we know a value of $\beta$ for a reference (equilibrium geometry, $R_0$), using *Mulliken's magic formula*. The solution is to use:
+$$
+\beta(R) = \beta(R_0) \frac{S(R)}{S(R_0)}
+$$
+For 2pz orbitals in a $\pi$-binding configuration, one has:
+$$
+S(R) = \tfrac{1}{15} e^{-\rho} (\rho^3 + 6 \rho^2 + 15 \rho + 15)
+$$
+with
+$$
+\rho = \xi R
+$$
+(with $R$ measured in atomic units of Bohr). Paldus and Chin indicate that one-half the effective nuclear charge should be used for $\xi$, and give a value of $\xi=1.625$ for the Carbon atom, based on Slater's rules. That gives a quite reasonable prescription, and is noted to correspond beautifully to the overlap formula above. The Mulliken-magic-formula should be preferred over the Wolfsberg-Helmholz approximation where there is enough data. 
+
+
 ### Direct input of parameters: 
 The user can pass in the $h_{pq}$ matrix directly as an $n \times n$ matrix, where the diagonal entries are interpreted as $\alpha_{pp}$ and the off-diagonal entries are interpreted as $\beta_{pq}$. Optionally, the user can pass in explicit values for $\alpha$ and/or $\beta$. If so, then $h_{pq}$ is used to define atomic connectivity. Specifically, non-zero off-diagonal elements get replaced by $\beta$ and nonzero diagonal elements get replaced by $\alpha$. Zero elements of $h_{pq}$ remain zero. 
 $$
@@ -80,3 +95,4 @@ H&uuml;ckel theory always uses restricted Hamiltonians. So $h_{p \alpha q \alpha
 ### References
 - Parameters from [Arvi Rauk, The Orbital Interaction Theory of Organic Chemistry , Second Edition, Wiley-Interscience, New York, 2001.](https://onlinelibrary.wiley.com/doi/book/10.1002/0471220418).
 - Overlaps of $\pi$-bonding $2p$ orbitals from [R. S. Mulliken, C. A. Rieke, D. Orloff, and H. Orloff, "Formulas and Numerical Tables for Overlap Integrals", *J. Chem. Phys.* **17**, 1248-1267 (1949)](https://aip.scitation.org/doi/10.1063/1.1747150). 
+- Mulliken Magic Formula from R. S. Mulliken, J. Chim. Phys. 46, 675 (1949).Direct reference was Eq. (6) of [J. Paldus and E. Chin, "Bond Length Alternation in Cyclic Polyenes. I. Restricted Hartree-Fock Method, *Int. J. Quantum Chem.* **24** 373-394 (1983).](https://onlinelibrary.wiley.com/doi/10.1002/qua.560240405)
