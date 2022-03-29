@@ -147,11 +147,11 @@ def test_ppp_api():
     assert v.shape[0] == 6
 
 
+print("running test 1")
+print(test_1())
+print("running test 2")
 print(test_2())
-
-# print("running test 4")
-# print(test_4())
-# print("running test 1")
-# print(test_1())
-# print("running test 2")
-# print(test_2())
+print("running test 3")
+print(test_3())
+print("running test 4")
+print(test_4())
