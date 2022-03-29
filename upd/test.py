@@ -121,9 +121,33 @@ def test_4():
     answer = 2*(a+2*b) + 2*a
     assert_allclose(eigenvals[0],  answer)
 
+
+def test_ppp_api():
+    """
+    Six sites PPP model
+    """
+    norb = 6
+    connectivity = [("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C5", 1), ("C5", "C6", 1), ("C6", "C1", 1)]
+    u_matrix = np.ones(norb)
+    g_matrix = np.arange(36).reshape((norb, norb))
+    charges = np.ones(norb)
+
+    ham = HamPPP(connectivity, alpha=0., beta=-2.5, u_onsite=u_matrix, gamma=g_matrix, charges=charges)
+    ecore = ham.generate_zero_body_integral()
+    h = ham.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    v = ham.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
+
+    print(h.shape)
+    print(h.shape)
+    assert h.shape[0] == 6
+    assert v.shape[0] == 6
+
+
+print(test_ppp_api())
+
 # print("running test 4")
 # print(test_4())
 # print("running test 1")
 # print(test_1())
-print("running test 2")
-print(test_2())
+# print("running test 2")
+# print(test_2())

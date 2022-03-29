@@ -124,20 +124,27 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
+            if basis == 'spinorbital basis' and self.gamma.shape != (2*n_sp, 2*n_sp):
+                raise TypeError("Gamma matrix has wrong basis")
+
+            if basis == 'spatial basis' and self.gamma.shape == (n_sp, n_sp):
+                zeros_block = np.zeros((n_sp, n_sp))
+                gamma = np.vstack([np.hstack([self.gamma, zeros_block]),
+                                   np.hstack([zeros_block, self.gamma])])
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = self.gamma[p, q]
+                        v[i, j] = gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = self.gamma[p, q + n_sp]
+                        v[i, j] = gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = self.gamma[p + n_sp, q]
+                        v[i, j] = gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
-                        v[i, j] = self.gamma[p + n_sp, q + n_sp]
+                        v[i, j] = gamma[p + n_sp, q + n_sp]
 
         v *= 0.5
 
