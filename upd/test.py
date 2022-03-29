@@ -33,6 +33,7 @@ def test_2():
     $\frac{E(U, d=1)}{t N_{s}}=-4 \int_{0}^{\infty} d x \frac{J_{0}(x) J_{1}(x)}{x[1+\exp (U x / 2)]}$
     """
     nsites = np.linspace(2, 8, 4).astype(int)
+    energies = []
     for nsite in nsites:
         nelec = nsite//2
         hubbard = HamPPP([(f"C{i}", f"C{i+1}", 1) for i in range(1, nsite)] + [(f"C{nsite}", f"C{1}", 1)],
@@ -49,8 +50,11 @@ def test_2():
         wfn.add_all_dets()
         op = pyci.sparse_op(ham, wfn)
         eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-        print(eigenvals)
-
+        energies.append(eigenvals)
+    assert_allclose(energies, [[-1.56155281],
+                               [-3.34084762],
+                               [-6.60115829],
+                               [-7.9523256]])
 
 
 def test_3():
@@ -72,7 +76,7 @@ def test_3():
     assert np.allclose(h, test)
     test = np.zeros((16, 16))
 
-    assert v.shape[0] == 16
+    assert v.shape[0] == 4
     # assert np.allclose(v, test)
     assert ecore == 0.
 
@@ -143,7 +147,7 @@ def test_ppp_api():
     assert v.shape[0] == 6
 
 
-print(test_ppp_api())
+print(test_2())
 
 # print("running test 4")
 # print(test_4())
