@@ -75,7 +75,7 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond  ##numbering of sites should start from 1
+            connectivity_mtrx[site1 - 1, site2 - 1] = bond  # numbering of sites should start from 1
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
@@ -87,7 +87,7 @@ class HamPPP(HamiltonianAPI):
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
         return self.zero_energy
 
-    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_one_body_integral(self, basis: str, dense: bool):
         one_body_term = diags(
             [self.alpha for _ in range(self.n_sites)],
             format="csr") + self.beta * self.connectivity_matrix
@@ -113,7 +113,7 @@ class HamPPP(HamiltonianAPI):
 
         return self.one_body.todense() if dense else self.one_body
 
-    def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = csr_matrix((Nv * Nv, Nv * Nv))
