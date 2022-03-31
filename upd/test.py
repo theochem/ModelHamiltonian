@@ -1,6 +1,6 @@
 import numpy as np
 import pyci
-from PPP import *
+from MoHa import *
 from scipy.integrate import quad
 from scipy.special import jv
 from numpy.testing import assert_allclose
@@ -10,14 +10,14 @@ def test_1():
     """ 2 site hubbard model with 2 electrons. Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812 """
 
-    hubbard = HamPPP([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
+    hubbard = HamHub([("C1", "C2", 1)], alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
     assert v.shape[0] == 2
 
-    ham = pyci.hamiltonian(ecore, h, 2*v)  # multiply by two because test doesn't work
+    ham = pyci.hamiltonian(ecore, h, 2 * v)  # multiply by two because test doesn't work
     n_up = 1
     n_down = 1
     wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
@@ -35,12 +35,12 @@ def test_2():
     nsites = np.linspace(2, 8, 4).astype(int)
     energies = []
     for nsite in nsites:
-        nelec = nsite//2
-        hubbard = HamPPP([(f"C{i}", f"C{i+1}", 1) for i in range(1, nsite)] + [(f"C{nsite}", f"C{1}", 1)],
-                         alpha=0,  beta=-1,
-                         u_onsite=np.array([1 for i in range(nsite+1)]))
+        nelec = nsite // 2
+        hubbard = HamPPP([(f"C{i}", f"C{i + 1}", 1) for i in range(1, nsite)] + [(f"C{nsite}", f"C{1}", 1)],
+                         alpha=0, beta=-1,
+                         u_onsite=np.array([1 for i in range(nsite + 1)]))
         ecore = hubbard.generate_zero_body_integral()
-        h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+        h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
         v = hubbard.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
         ham = pyci.hamiltonian(ecore, h, 2 * v)  # multiply by two because test doesn't work
@@ -65,22 +65,21 @@ def test_3():
     """
     a = -11.26
     b = -1.45
-    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)#a=,b= 
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)  # a=,b=
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=1, basis='spinorbital basis', dense=True)
+    h = hubbard.generate_one_body_integral(basis='spinorbital basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
     test = np.zeros_like(h)
     test[:2, :2] = np.array([[a, b], [b, a]])
     test[2:, 2:] = np.array([[a, b], [b, a]])
     assert np.allclose(h, test)
-    test = np.zeros((16, 16))
 
     assert v.shape[0] == 4
     # assert np.allclose(v, test)
     assert ecore == 0.
 
-    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
     assert np.allclose(h, np.array([[a, b], [b, a]]))
 
@@ -91,7 +90,7 @@ def test_3():
     wfn.add_all_dets()
     op = pyci.sparse_op(ham, wfn)
     eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    assert_allclose(eigenvals[0], 2*(a+b))
+    assert_allclose(eigenvals[0], 2 * (a + b))
 
 
 def test_4():
@@ -106,7 +105,7 @@ def test_4():
     atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
 
     ecore = hubbard.generate_zero_body_integral()
-    h = hubbard.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
 
     assert v.shape[0] == 8
@@ -122,8 +121,8 @@ def test_4():
     wfn.add_all_dets()
     op = pyci.sparse_op(ham, wfn)
     eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    answer = 2*(a+2*b) + 2*a
-    assert_allclose(eigenvals[0],  answer)
+    answer = 2 * (a + 2 * b) + 2 * a
+    assert_allclose(eigenvals[0], answer)
 
 
 def test_ppp_api():
@@ -131,14 +130,14 @@ def test_ppp_api():
     Six sites PPP model
     """
     norb = 6
-    connectivity = [("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C5", 1), ("C5", "C6", 1), ("C6", "C1", 1)]
+    connectivity = [("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C5", 1), ("C5", "C6", 1),
+                    ("C6", "C1", 1)]
     u_matrix = np.ones(norb)
     g_matrix = np.arange(36).reshape((norb, norb))
     charges = np.ones(norb)
 
     ham = HamPPP(connectivity, alpha=0., beta=-2.5, u_onsite=u_matrix, gamma=g_matrix, charges=charges)
-    ecore = ham.generate_zero_body_integral()
-    h = ham.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    h = ham.generate_one_body_integral(basis='spatial basis', dense=True)
     v = ham.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
     print(h.shape)
@@ -148,10 +147,17 @@ def test_ppp_api():
 
 
 print("running test 1")
-print(test_1())
+test_1()
+print('ok')
 print("running test 2")
-print(test_2())
+test_2()
+print('ok')
 print("running test 3")
-print(test_3())
+test_3()
+print('ok')
 print("running test 4")
-print(test_4())
+test_4()
+print('ok')
+print("running api test")
+test_ppp_api()
+print('ok')
