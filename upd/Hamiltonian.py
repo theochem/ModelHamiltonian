@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TextIO
 from utils import convert_indices
 import numpy as np
-from scipy.sparse import csr_matrix, diags
+from scipy.sparse import csr_matrix, diags, lil_matrix
 from utils import convert_indices
 
 
@@ -103,10 +103,10 @@ class HamiltonianAPI(ABC):
         #
         n = 2 * self.n_sites
         if integral.shape[0] == 2*self.n_sites:
-            spatial_int = csr_matrix((self.n_sites, self.n_sites))
+            spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[:self.n_sites, :self.n_sites]
         elif integral.shape[0] == 4*self.n_sites**2:
-            spatial_int = csr_matrix((self.n_sites**2, self.n_sites**2))
+            spatial_int = lil_matrix((self.n_sites**2, self.n_sites**2))
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
                 pp, pp = convert_indices(self.n_sites, p,p,p,p)
@@ -128,6 +128,7 @@ class HamiltonianAPI(ABC):
             raise ValueError('Wrong integral input.')
 
         spatial_int = expand_sym(sym, spatial_int, nbody)
+        spatial_int = spatial_int.tocsr()
         
         if dense:
             if isinstance(spatial_int, csr_matrix):
