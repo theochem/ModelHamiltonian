@@ -147,7 +147,6 @@ class HamPPP(HamiltonianAPI):
                         v[i, j] = gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
-
         # converting basis if necessary
         if basis == 'spatial basis':
             v = self.to_spatial(integral=self.to_dense(v), sym=sym, dense=False, nbody=2)
@@ -156,6 +155,7 @@ class HamPPP(HamiltonianAPI):
         else:
             raise TypeError("Wrong basis")
 
+        self.two_body = v
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
 
