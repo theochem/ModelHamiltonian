@@ -2,7 +2,7 @@ from Hamiltonian import HamiltonianAPI
 from utils import get_atom_type, convert_indices
 import numpy as np
 import scipy.sparse
-from scipy.sparse import csr_matrix, diags
+from scipy.sparse import csr_matrix, diags, lil_matrix
 
 
 class HamPPP(HamiltonianAPI):
@@ -116,7 +116,7 @@ class HamPPP(HamiltonianAPI):
     def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
         n_sp = self.n_sites
         Nv = 2 * n_sp
-        v = csr_matrix((Nv * Nv, Nv * Nv))
+        v = lil_matrix((Nv * Nv, Nv * Nv))
 
         if self.u_onsite is not None:
             for p in range(n_sp):
@@ -146,7 +146,7 @@ class HamPPP(HamiltonianAPI):
                         i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
                         v[i, j] = gamma[p + n_sp, q + n_sp]
 
-        v *= 0.5
+        v = v.tocsr()
 
         # converting basis if necessary
         if basis == 'spatial basis':
