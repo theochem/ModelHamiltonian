@@ -174,7 +174,7 @@ class HamiltonianAPI(ABC):
 
         # getting nonzero elements from the 2d _sparse_ array
         p_array, q_array = two_ints.nonzero()
-        
+
         # converting 2d indices to 4d indices
         N = int(np.sqrt(two_ints.shape[0]))
         for p, q in zip(p_array, q_array):
