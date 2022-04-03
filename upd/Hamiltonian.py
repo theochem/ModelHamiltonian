@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TextIO
 from utils import convert_indices
 import numpy as np
-from scipy.sparse import csr_matrix, diags
+from scipy.sparse import csr_matrix, diags, lil_matrix
 from utils import convert_indices
 
 
@@ -103,10 +103,10 @@ class HamiltonianAPI(ABC):
         #
         n = 2 * self.n_sites
         if integral.shape[0] == 2*self.n_sites:
-            spatial_int = csr_matrix((self.n_sites, self.n_sites))
+            spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[:self.n_sites, :self.n_sites]
         elif integral.shape[0] == 4*self.n_sites**2:
-            spatial_int = csr_matrix((self.n_sites**2, self.n_sites**2))
+            spatial_int = lil_matrix((self.n_sites**2, self.n_sites**2))
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
                 pp, pp = convert_indices(self.n_sites, p,p,p,p)
@@ -128,6 +128,7 @@ class HamiltonianAPI(ABC):
             raise ValueError('Wrong integral input.')
 
         spatial_int = expand_sym(sym, spatial_int, nbody)
+        spatial_int = spatial_int.tocsr()
         
         if dense:
             if isinstance(spatial_int, csr_matrix):
@@ -159,7 +160,7 @@ class HamiltonianAPI(ABC):
         :return: None
         """
         # Reduce symmetry of integral
-        one_ints = self.reduse_sym(self.one_ints)
+        one_ints = expand_sym(self._sym, self.one_body, 1)
 
         # Write header
         nactive = one_ints.shape[0]
@@ -169,7 +170,7 @@ class HamiltonianAPI(ABC):
         print(' &END', file=f)
 
         # Reduce symmetry of integrals
-        two_ints = self.reduce_sym(self.two_ints)
+        two_ints = expand_sym(self._sym, self.two_body, 2)
 
         # getting nonzero elements from the 2d _sparse_ array
         p_array, q_array = two_ints.nonzero()
@@ -177,7 +178,7 @@ class HamiltonianAPI(ABC):
         # converting 2d indices to 4d indices
         N = int(np.sqrt(two_ints.shape[0]))
         for p, q in zip(p_array, q_array):
-            i, j, k, l = convert_indices(N, p, q)
+            i, j, k, l = convert_indices(N, int(p), int(q))
             j, k = k, j  # changing indexing from physical to chemical notation
             if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
                 value = two_ints[(i, k, j, l)]
@@ -188,7 +189,7 @@ class HamiltonianAPI(ABC):
                 if value != 0.0:
                     print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {0:4d} {0:4d}', file=f)
 
-        core_energy = self.core_energy
+        core_energy = self.zero_energy
         if core_energy is not None:
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 

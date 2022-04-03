@@ -2,7 +2,7 @@ from Hamiltonian import HamiltonianAPI
 from utils import get_atom_type, convert_indices
 import numpy as np
 import scipy.sparse
-from scipy.sparse import csr_matrix, diags
+from scipy.sparse import csr_matrix, diags, lil_matrix
 
 
 class HamPPP(HamiltonianAPI):
@@ -75,7 +75,7 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond  ##numbering of sites should start from 1
+            connectivity_mtrx[site1 - 1, site2 - 1] = bond  # numbering of sites should start from 1
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
@@ -87,7 +87,7 @@ class HamPPP(HamiltonianAPI):
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
         return self.zero_energy
 
-    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_one_body_integral(self, basis: str, dense: bool):
         one_body_term = diags(
             [self.alpha for _ in range(self.n_sites)],
             format="csr") + self.beta * self.connectivity_matrix
@@ -113,10 +113,10 @@ class HamPPP(HamiltonianAPI):
 
         return self.one_body.todense() if dense else self.one_body
 
-    def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
         n_sp = self.n_sites
         Nv = 2 * n_sp
-        v = csr_matrix((Nv * Nv, Nv * Nv))
+        v = lil_matrix((Nv * Nv, Nv * Nv))
 
         if self.u_onsite is not None:
             for p in range(n_sp):
@@ -124,23 +124,29 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
+            if basis == 'spinorbital basis' and self.gamma.shape != (2 * n_sp, 2 * n_sp):
+                raise TypeError("Gamma matrix has wrong basis")
+
+            if basis == 'spatial basis' and self.gamma.shape == (n_sp, n_sp):
+                zeros_block = np.zeros((n_sp, n_sp))
+                gamma = np.vstack([np.hstack([self.gamma, zeros_block]),
+                                   np.hstack([zeros_block, self.gamma])])
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = self.gamma[p, q]
+                        v[i, j] = gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = self.gamma[p, q + n_sp]
+                        v[i, j] = gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = self.gamma[p + n_sp, q]
+                        v[i, j] = gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
-                        v[i, j] = self.gamma[p + n_sp, q + n_sp]
+                        v[i, j] = gamma[p + n_sp, q + n_sp]
 
-        v *= 0.5
-
+        v = v.tocsr()
         # converting basis if necessary
         if basis == 'spatial basis':
             v = self.to_spatial(integral=self.to_dense(v), sym=sym, dense=False, nbody=2)
@@ -149,5 +155,50 @@ class HamPPP(HamiltonianAPI):
         else:
             raise TypeError("Wrong basis")
 
+        self.two_body = v
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
+
+
+class HamHub(HamPPP):
+    """
+    The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
+    It can be invoked by choosing gamma = 0 from PPP hamiltonian
+    """
+
+    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None,
+                 sym=1, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
+        super().__init__(connectivity=connectivity,
+                         alpha=alpha,
+                         beta=beta,
+                         u_onsite=u_onsite,
+                         gamma=None,
+                         charges=0,
+                         sym=sym,
+                         atom_types=atom_types,
+                         atom_dictionary=atom_dictionary,
+                         bond_dictionary=bond_dictionary,
+                         Bz=Bz)
+        self.charges = np.zeros(self.n_sites)
+
+
+class HamHuck(HamHub):
+    """
+    The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
+    It can be invoked by choosing gamma = 0 from PPP hamiltonian
+    """
+
+    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, charges=0.417,
+                 sym=1, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
+        super().__init__(connectivity=connectivity,
+                         alpha=alpha,
+                         beta=beta,
+                         u_onsite=u_onsite,
+                         gamma=None,
+                         charges=charges,
+                         sym=sym,
+                         atom_types=atom_types,
+                         atom_dictionary=atom_dictionary,
+                         bond_dictionary=bond_dictionary,
+                         Bz=Bz)
+        self.u_onsite = np.zeros(self.n_sites)
