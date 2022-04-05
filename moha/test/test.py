@@ -1,5 +1,5 @@
 import numpy as np
-from MoHa import *
+from moha import *
 from numpy.testing import assert_allclose, assert_equal
 
 

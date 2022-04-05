@@ -29,11 +29,18 @@ class HamiltonianAPI(ABC):
         r"""
         Generate one body integral in spatial or spin orbital basis.
 
-        :param sym: symmetry -- [2, 4, 8] default is None
-        :param basis: basis -- ['spatial', 'spin orbital']
-        :param dense: dense or sparse matrix; default dense
-        :return: numpy.ndarray or scipy.sparse.csc_matrix
+        Parameters
+        ----------
+        sym: int
+            symmetry -- [1, 2] default is 1
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
 
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
         """
         pass
 
@@ -42,11 +49,18 @@ class HamiltonianAPI(ABC):
         r"""
         Generate two body integral in spatial or spinorbital basis.
 
-        :param sym: symmetry -- [2, 4, 8] default is None
-        :param basis: basis -- ['spatial', 'spin orbital']
-        :param dense: dense or sparse matrix; default dense
-        :return: numpy.ndarray or sparse
+        Parameters
+        ----------
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
 
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
         """
         pass
 
@@ -54,9 +68,14 @@ class HamiltonianAPI(ABC):
         r"""
         Convert dense array of integrals to sparse array in scipy csr format.
 
-        :param Md: 2 or 4 dimensional numpy.array
-        :return scipy.sparse.csr_matrix
+        Parameters
+        ----------
+        Md: np.ndarray
+            input matrix of the shape 2d or 4d
 
+        Returns
+        -------
+        scipy.sparse.csr_matrix
         """
         # Finding indices for non-zero elements and shape of Md.
         indices = np.array(np.where(Md != 0)).astype(int).T
@@ -85,12 +104,17 @@ class HamiltonianAPI(ABC):
 
     def to_dense(self, Ms, dim=2):
         r"""
-        Convert sparse arry of integrals in scipy csr format to dense numpy array.
+        Convert sparse array of integrals in scipy csr format to dense numpy array.
 
-        :param Ms: scipy.sparse.csr_matrix
-        :param dim: target dimension of output array (either 2 or 4)
-        :return: numpy.array
+        Parameters
+        ----------
+        Ms: scipy.sparse.csr_matrix
+        dim: int
+            target dimension of output array (either 2 or 4)
 
+        Returns
+        -------
+        np.ndarray
         """
         # return dense 2D array (default).
         if dim == 2:
@@ -112,14 +136,21 @@ class HamiltonianAPI(ABC):
 
     def to_spatial(self, sym: int, dense: bool, nbody: int):
         r"""
-        Convert one-/two- integral matrix from spin-orbital to spatial basis
+        Convert one-/two- integral matrix from spin-orbital to spatial basis.
 
-        :param integral: input matrix
-        :param sym: symmetry -- [2, 4, 8] default is None
-        :param dense: dense or sparse matrix; default sparse
-        :param nbody: int, type of integral, one of 1 (one-body) or 2 (two-body)
-        :return: one-/two-body integrals in spatial basis
+        Parameters
+        ----------
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
+        dense: bool
+            dense or sparse matrix; default False
+        nbody: int
+            type of integral, one of 1 (one-body) or 2 (two-body)
 
+        Returns
+        -------
+        spatial_int: scipy.sparce.csr_matrix or np.ndarray
+            one-/two-body integrals in spatial basis
         """
         # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
         integral = self.one_body if nbody == 1 else self.two_body
@@ -165,13 +196,20 @@ class HamiltonianAPI(ABC):
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
         r"""
-        Convert one-/two- integral matrix from spatial to spin-orbital basis
+        Convert one-/two- integral matrix from spatial to spin-orbital basis.
 
-        :param integral: input matrix
-        :param sym: symmetry -- [2, 4, 8] default 1
-        :param dense: dense or sparse matrix; default is sparse
-        :return:
+        Parameters
+        ----------
+        integral: scipy.sparse.csr_matrix
+            type of integral, one of 1 (one-body) or 2 (two-body)
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
+        dense: bool
+            dense or sparse matrix; default False
 
+        Returns
+        -------
+        None
         """
         pass
 
@@ -179,16 +217,20 @@ class HamiltonianAPI(ABC):
         r"""
         Save all parts of hamiltonian in fcidump format.
 
-        Adapted from https://github.com/theochem/iodata/blob/master/iodata/formats/fcidump.py
+        Parameters
+        ----------
+        f: TextIO file
+        nelec: int
+            The number of electrons in the system
+        spinpol: float
+            The spin polarization. By default, its value is derived from the
+            molecular orbitals (mo attribute), as abs(nalpha - nbeta). In this case,
+            spinpol cannot be set. When no molecular orbitals are present, this
+            attribute can be set.
 
-        :param f: TextIO file
-        :param nelec: The number of electrons in the system
-        :param spinpol: The spin polarization. By default, its value is derived from the
-                        molecular orbitals (mo attribute), as abs(nalpha - nbeta). In this case,
-                        spinpol cannot be set. When no molecular orbitals are present, this
-                        attribute can be set.
-        :return: None
-
+        Returns
+        -------
+        None
         """
         # Reduce symmetry of integral
         one_ints = expand_sym(self._sym, self.one_body, 1)
@@ -228,11 +270,18 @@ class HamiltonianAPI(ABC):
         r"""
         Save matrix in triqc format.
 
-        :param fname: filename
-        :param integral: matrix to be saved
-        :return: None
+        Parameters
+        ----------
+        fname: str
+            name of the file
+        integral: int
+            type of integral, one of 1 (one-body) or 2 (two-body)
 
+        Returns
+        -------
+        None
         """
+
         pass
 
     def save(self, fname: str, integral, basis):
@@ -244,34 +293,44 @@ def expand_sym(sym, integral, nbody):
     r"""
     Restore permutational symmetry of one- and two-body terms.
 
-    :param integral: 2-D sparse array, the {one,two}-body integrals
-    :param sym: int, integral symmetry, one of 1 (no symmetry), 2, 4 or 8.
-    :param nbody: int, number of particle variables in the integral, one of 1 (one-body) or 2 (two-body)
-    :return: integral's matrix with a symmetry of 1
+    Parameters
+    ----------
+    sym: int
+        integral symmetry, one of 1 (no symmetry), 2, 4 or 8.
+    integral: scipy.sparce.csr_matrix
+        2-D sparse array, the {one,two}-body integrals
+    nbody: int
+        number of particle variables in the integral, one of 1 (one-body) or 2 (two-body)
+
+    Returns
+    -------
+    integral: scipy.sparse.csr_matrix
+        2d array of with the symmetry 1
 
     Notes
     -----
-    Given the one- or two-body Hamiltonian matrix terms, :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
-    the supported permutational symmetries are:
-    sym = 2:
-    :math:`h_{i,j} = h_{j,i}`
-    :math:`g_{ij,kl} = g_{kl,ij}`
-    sym = 4:
-    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji}`
-    sym = 8:
-    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji} = g_{kj,il} = g_(il,kj) = g_(li,jk) = g_(jk,li)`
-    sym = 1 corresponds to no-symmetry
-    where it is assumed the integrals are over real orbitals.
+        Given the one- or two-body Hamiltonian matrix terms, :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
+        the supported permutational symmetries are:
+        sym = 2:
+        :math:`h_{i,j} = h_{j,i}`
+        :math:`g_{ij,kl} = g_{kl,ij}`
+        sym = 4:
+        :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji}`
+        sym = 8:
+        :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji} = g_{kj,il} = g_(il,kj) = g_(li,jk) = g_(jk,li)`
+        sym = 1 corresponds to no-symmetry
+        where it is assumed the integrals are over real orbitals.
 
-    The input Hamiltonian terms are expected to be sparse arrays of dimensions :math:`(N,N)` or
-    :math:`(N^2, N^2)` for the one- and two-body integrals respectively. :math:`N` represents
-    the number of basis functions, which may be either of spatial or spin-orbital type.
-    This function applies to the input array the permutations indicated by the symmetry parameter `sym`
-    to adds the missing terms.
-    Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the
-    permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
-
+        The input Hamiltonian terms are expected to be sparse arrays of dimensions :math:`(N,N)` or
+        :math:`(N^2, N^2)` for the one- and two-body integrals respectively. :math:`N` represents
+        the number of basis functions, which may be either of spatial or spin-orbital type.
+        This function applies to the input array the permutations indicated by the symmetry parameter `sym`
+        to adds the missing terms.
+        Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the
+        permutations considered can be
+        found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
     """
+
     if not sym in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
     if not nbody in [1, 2]:
