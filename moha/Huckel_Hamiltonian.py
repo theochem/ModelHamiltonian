@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import permutations
-from Hamiltonian import HamiltonianAPI
+from .Hamiltonian import HamiltonianAPI
 
 def to_spatial(v):
     """
