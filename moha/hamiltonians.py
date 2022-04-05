@@ -1,10 +1,19 @@
+r"""Model Hamiltonian classes."""
+
 import numpy as np
 
 from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
-from .hamiltonian import HamiltonianAPI
+from .api import HamiltonianAPI
 
 from .utils import get_atom_type, convert_indices
+
+
+__all__ = [
+    "HamPPP",
+    "HamHuck",
+    "HamHub",
+]
 
 
 class HamPPP(HamiltonianAPI):
@@ -25,7 +34,7 @@ class HamPPP(HamiltonianAPI):
         bond_dictionary=None,
         Bz=None,
     ):
-        """
+        r"""
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
         $\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+\
          \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2} \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
@@ -66,7 +75,7 @@ class HamPPP(HamiltonianAPI):
         self.two_body = None
 
     def generate_connectivity_matrix(self):
-        """
+        r"""
         Generates connectivity matrix
         :return: dictionary in which np.ndarray
         """
@@ -99,6 +108,7 @@ class HamPPP(HamiltonianAPI):
         return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
+        r""" """
         if self.charges is None:
             return 0
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(
@@ -107,6 +117,7 @@ class HamPPP(HamiltonianAPI):
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
+        r""" """
         one_body_term = (
             diags([self.alpha for _ in range(self.n_sites)], format="csr")
             + self.beta * self.connectivity_matrix
@@ -139,6 +150,7 @@ class HamPPP(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
+        r""" """
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
@@ -188,9 +200,10 @@ class HamPPP(HamiltonianAPI):
 
 
 class HamHub(HamPPP):
-    """
+    r"""
     The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
-    It can be invoked by choosing gamma = 0 from PPP hamiltonian
+    It can be invoked by choosing gamma = 0 from PPP hamiltonian.
+
     """
 
     def __init__(
@@ -205,6 +218,7 @@ class HamHub(HamPPP):
         bond_dictionary=None,
         Bz=None,
     ):
+        r""" """
         super().__init__(
             connectivity=connectivity,
             alpha=alpha,
@@ -222,9 +236,10 @@ class HamHub(HamPPP):
 
 
 class HamHuck(HamHub):
-    """
+    r"""
     The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
-    It can be invoked by choosing gamma = 0 from PPP hamiltonian
+    It can be invoked by choosing gamma = 0 from PPP hamiltonian.
+
     """
 
     def __init__(
@@ -240,6 +255,7 @@ class HamHuck(HamHub):
         bond_dictionary=None,
         Bz=None,
     ):
+        r""" """
         super().__init__(
             connectivity=connectivity,
             alpha=alpha,
