@@ -7,10 +7,8 @@ from scipy.sparse import dok_matrix
 class PPPHamiltonian:
     r"""Pariser-Parr-Pople model Hamiltonian.
 
-    ..math::
-
-        \hat{H}_{\text{PPP}} = H_{\text{energy}} + H_{\text{hopping}} + H_{\text{interaction}} +
-        H_{\text{off-site repulsion}},
+    :math:`\hat{H}_{\text{PPP}} = H_{\text{energy}} + H_{\text{hopping}} + H_{\text{interaction}} +
+    H_{\text{off-site repulsion}}`,
 
     where :math:`H_{energy} = \sum_{i, \sigma} \alpha_{i} a_{i \sigma}^{\dagger} a_{i \sigma}`,
     :math:`H_{hopping} =
@@ -51,7 +49,7 @@ class PPPHamiltonian:
             The core energy at each site k.
         beta : np.ndarray(K, K)
 
-        u_matrix : np.ndarray(K,)
+        u_matrix : np.ndarray(K, )
 
         v_matrix : np.ndarray(K, K)
 
