@@ -1,12 +1,9 @@
 import numpy as np
-import pyci
 from MoHa import *
-from scipy.integrate import quad
-from scipy.special import jv
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_equal
 
 
-def test_1():
+def test_hub2():
     """ 2 site hubbard model with 2 electrons. Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812 """
 
@@ -15,25 +12,22 @@ def test_1():
     h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
-    assert v.shape[0] == 2
+    # constructing the exact two body integral
+    v_true = np.zeros((2, 2, 2, 2,))
+    v_true[0, 0, 0, 0] = 1
+    v_true[1, 1, 1, 1] = 1
 
-    ham = pyci.hamiltonian(ecore, h, 2 * v)  # multiply by two because test doesn't work
-    n_up = 1
-    n_down = 1
-    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_all_dets()
-    op = pyci.sparse_op(ham, wfn)
-    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    assert_allclose(eigenvals, -1.561552812)
+    assert_equal(h, np.array([[0., -1.],
+                              [-1., 0.]]))
+    assert_equal(v, v_true)
 
 
-def test_2():
+def test_hub4():
     """
     4 site hubbard model with periodic boundary conditions. The exact energy is Lieb-Wu equation:
     $\frac{E(U, d=1)}{t N_{s}}=-4 \int_{0}^{\infty} d x \frac{J_{0}(x) J_{1}(x)}{x[1+\exp (U x / 2)]}$
     """
     nsites = np.linspace(2, 8, 4).astype(int)
-    energies = []
     for nsite in nsites:
         nelec = nsite // 2
         hubbard = HamPPP([(f"C{i}", f"C{i + 1}", 1) for i in range(1, nsite)] + [(f"C{nsite}", f"C{1}", 1)],
@@ -43,21 +37,20 @@ def test_2():
         h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
         v = hubbard.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
-        ham = pyci.hamiltonian(ecore, h, 2 * v)  # multiply by two because test doesn't work
-        n_up = nelec
-        n_down = nelec
-        wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-        wfn.add_all_dets()
-        op = pyci.sparse_op(ham, wfn)
-        eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-        energies.append(eigenvals)
-    assert_allclose(energies, [[-1.56155281],
-                               [-3.34084762],
-                               [-6.60115829],
-                               [-7.9523256]])
+        # constructing the exact one body integral
+        h_true = np.diag(-1 * np.ones(nsite - 1), k=1)
+        h_true[0, -1] = -1
+        h_true += h_true.T
+        assert_equal(h, h_true)
+
+        # constructing the exact two body integral
+        v_true = np.zeros((nsite, nsite, nsite, nsite))
+        for i in range(nsite):
+            v_true[i, i, i, i] = 1
+        assert_equal(v, v_true)
 
 
-def test_3():
+def test_ethylene():
     """
     Ethylene Huckel model
 
@@ -65,7 +58,7 @@ def test_3():
     """
     a = -11.26
     b = -1.45
-    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)  # a=,b=
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=None, charges=None, sym=None)
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(basis='spinorbital basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1, basis='spinorbital basis', dense=True)
@@ -80,17 +73,10 @@ def test_3():
     assert ecore == 0.
 
     h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
-    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
-    assert np.allclose(h, np.array([[a, b], [b, a]]))
+    v = hubbard.to_spatial(sym=1, dense=True, nbody=2)
 
-    ham = pyci.hamiltonian(ecore, h, np.zeros((4, 4, 4, 4)))
-    n_up = 1
-    n_down = 1
-    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_all_dets()
-    op = pyci.sparse_op(ham, wfn)
-    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    assert_allclose(eigenvals[0], 2 * (a + b))
+    assert_allclose(v, np.zeros((2, 2, 2, 2)))
+    assert np.allclose(h, np.array([[a, b], [b, a]]))
 
 
 def test_4():
@@ -110,19 +96,9 @@ def test_4():
 
     assert v.shape[0] == 8
     assert np.allclose(h, np.array([[a, b, 0., b], [b, a, b, 0.], [0., b, a, b], [b, 0., b, a]]))
-    v = hubbard.to_spatial(v, sym=1, dense=True, nbody=2)
+    v = hubbard.to_spatial(sym=1, dense=True, nbody=2)
 
     assert v.shape[0] == 4
-
-    ham = pyci.hamiltonian(ecore, h, np.zeros((8, 8, 8, 8)))
-    n_up = 2
-    n_down = 2
-    wfn = pyci.fullci_wfn(ham.nbasis, n_up, n_down)
-    wfn.add_all_dets()
-    op = pyci.sparse_op(ham, wfn)
-    eigenvals, eigenvecs = op.solve(n=1, tol=1.0e-9)
-    answer = 2 * (a + 2 * b) + 2 * a
-    assert_allclose(eigenvals[0], answer)
 
 
 def test_ppp_api():
@@ -140,24 +116,5 @@ def test_ppp_api():
     h = ham.generate_one_body_integral(basis='spatial basis', dense=True)
     v = ham.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
 
-    print(h.shape)
-    print(h.shape)
     assert h.shape[0] == 6
     assert v.shape[0] == 6
-
-
-print("running test 1")
-test_1()
-print('ok')
-print("running test 2")
-test_2()
-print('ok')
-print("running test 3")
-test_3()
-print('ok')
-print("running test 4")
-test_4()
-print('ok')
-print("running api test")
-test_ppp_api()
-print('ok')
