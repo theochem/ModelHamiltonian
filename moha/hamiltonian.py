@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
+
 from typing import TextIO
-from utils import convert_indices
+
 import numpy as np
+
 from scipy.sparse import csr_matrix, diags, lil_matrix
-from utils import convert_indices
+
+from .utils import convert_indices
 
 
 class HamiltonianAPI(ABC):
@@ -50,11 +53,11 @@ class HamiltonianAPI(ABC):
 
         # Converting 4D array to csr_matrix using convert_indices from util.py.
         elif np.ndim(Md) == 4:
-            row = np.array([]);
-            col = np.array([]);
-            data = np.array([]);
+            row = np.array([])
+            col = np.array([])
+            data = np.array([])
             for ind in indices:
-                p, q = convert_indices(N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3]));
+                p, q = convert_indices(N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3]))
                 row = np.append(row, p)
                 col = np.append(col, q)
                 data = np.append(data, Md[tuple(ind)])
@@ -106,9 +109,9 @@ class HamiltonianAPI(ABC):
         n = 2 * self.n_sites
         if integral.shape[0] == 2 * self.n_sites:
             spatial_int = lil_matrix((self.n_sites, self.n_sites))
-            spatial_int = integral[:self.n_sites, :self.n_sites]
-        elif integral.shape[0] == 4 * self.n_sites ** 2:
-            spatial_int = lil_matrix((self.n_sites ** 2, self.n_sites ** 2))
+            spatial_int = integral[: self.n_sites, : self.n_sites]
+        elif integral.shape[0] == 4 * self.n_sites**2:
+            spatial_int = lil_matrix((self.n_sites**2, self.n_sites**2))
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
                 pp, pp = convert_indices(self.n_sites, p, p, p, p)
@@ -127,15 +130,18 @@ class HamiltonianAPI(ABC):
                     pp_, qq_ = convert_indices(n, p, p + self.n_sites, q, q + self.n_sites)
                     spatial_int[pp, qq] = integral[pp_, qq_]
         else:
-            raise ValueError('Wrong integral input.')
+            raise ValueError("Wrong integral input.")
         spatial_int = expand_sym(sym, spatial_int, nbody)
         spatial_int = spatial_int.tocsr()
 
         if dense:
-            if isinstance(spatial_int, csr_matrix):  # FixMe make sure that this works for every system
+            if isinstance(
+                spatial_int, csr_matrix
+            ):  # FixMe make sure that this works for every system
                 spatial_int = spatial_int.toarray()
-                spatial_int = np.reshape(spatial_int,
-                                         (self.n_sites, self.n_sites, self.n_sites, self.n_sites))
+                spatial_int = np.reshape(
+                    spatial_int, (self.n_sites, self.n_sites, self.n_sites, self.n_sites)
+                )
             else:
                 spatial_int = self.to_dense(spatial_int, dim=4 if nbody == 2 else 1)
         return spatial_int
@@ -167,10 +173,10 @@ class HamiltonianAPI(ABC):
 
         # Write header
         nactive = one_ints.shape[0]
-        print(f' &FCI NORB={nactive:d},NELEC={nelec:d},MS2={spinpol:d},', file=f)
+        print(f" &FCI NORB={nactive:d},NELEC={nelec:d},MS2={spinpol:d},", file=f)
         print(f"  ORBSYM= {','.join('1' for v in range(nactive))},", file=f)
-        print('  ISYM=1', file=f)
-        print(' &END', file=f)
+        print("  ISYM=1", file=f)
+        print(" &END", file=f)
 
         # Reduce symmetry of integrals
         two_ints = expand_sym(self._sym, self.two_body, 2)
@@ -185,16 +191,16 @@ class HamiltonianAPI(ABC):
             j, k = k, j  # changing indexing from physical to chemical notation
             if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
                 value = two_ints[(i, k, j, l)]
-                print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}', file=f)
+                print(f"{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}", file=f)
         for i in range(nactive):
             for j in range(i + 1):
                 value = one_ints[i, j]
                 if value != 0.0:
-                    print(f'{value:23.16e} {i + 1:4d} {j + 1:4d} {0:4d} {0:4d}', file=f)
+                    print(f"{value:23.16e} {i + 1:4d} {j + 1:4d} {0:4d} {0:4d}", file=f)
 
         core_energy = self.zero_energy
         if core_energy is not None:
-            print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
+            print(f"{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}", file=f)
 
     def save_triqs(self, fname: str, integral):
         """
@@ -222,28 +228,28 @@ def expand_sym(sym, integral, nbody):
     -----
     Given the one- or two-body Hamiltonian matrix terms, :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
     the supported permutational symmetries are:
-    sym = 2:  
-    :math:`h_{i,j} = h_{j,i}`  
-    :math:`g_{ij,kl} = g_{kl,ij}`  
-    sym = 4:  
-    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji}`  
-    sym = 8:  
-    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji} = g_{kj,il} = g_(il,kj) = g_(li,jk) = g_(jk,li)`  
+    sym = 2:
+    :math:`h_{i,j} = h_{j,i}`
+    :math:`g_{ij,kl} = g_{kl,ij}`
+    sym = 4:
+    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji}`
+    sym = 8:
+    :math:`g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji} = g_{kj,il} = g_(il,kj) = g_(li,jk) = g_(jk,li)`
     sym = 1 corresponds to no-symmetry
     where it is assumed the integrals are over real orbitals.
 
-    The input Hamiltonian terms are expected to be sparse arrays of dimensions :math:`(N,N)` or 
-    :math:`(N^2, N^2)` for the one- and two-body integrals respectively. :math:`N` represents 
-    the number of basis functions, which may be either of spatial or spin-orbital type. 
-    This function applies to the input array the permutations indicated by the symmetry parameter `sym` 
-    to adds the missing terms. 
-    Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the 
-    permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html). 
+    The input Hamiltonian terms are expected to be sparse arrays of dimensions :math:`(N,N)` or
+    :math:`(N^2, N^2)` for the one- and two-body integrals respectively. :math:`N` represents
+    the number of basis functions, which may be either of spatial or spin-orbital type.
+    This function applies to the input array the permutations indicated by the symmetry parameter `sym`
+    to adds the missing terms.
+    Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the
+    permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
     """
     if not sym in [1, 2, 4, 8]:
-        raise ValueError('Wrong input symmetry')
+        raise ValueError("Wrong input symmetry")
     if not nbody in [1, 2]:
-        raise ValueError(f'`nbody` must be an integer, either 1 or 2, but {nbody} given')
+        raise ValueError(f"`nbody` must be an integer, either 1 or 2, but {nbody} given")
     if sym == 1:
         return integral
     #
@@ -251,7 +257,7 @@ def expand_sym(sym, integral, nbody):
     #
     if nbody == 1:
         if not sym == 2:
-            raise ValueError('Wrong 1-body term symmetry')
+            raise ValueError("Wrong 1-body term symmetry")
         h_ii = diags(integral.diagonal()).copy()
         integral = integral + integral.T - h_ii
     else:
@@ -265,7 +271,7 @@ def expand_sym(sym, integral, nbody):
                 rs, pq = convert_indices(n, r, s, p, q)
                 integral[rs, pq] = integral[pq, rs]
             if sym >= 4:
-                # 2. Permute dummy indices (swap variables of particles 1 and 2): 
+                # 2. Permute dummy indices (swap variables of particles 1 and 2):
                 # <p_1 q_2|r_1 s_2> = <q_1 p_2|s_1 r_2>
                 qp, sr = convert_indices(n, q, p, s, r)
                 integral[qp, sr] = integral[pq, rs]

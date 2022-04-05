@@ -1,6 +1,9 @@
-import numpy as np
 from itertools import permutations
-from .Hamiltonian import HamiltonianAPI
+
+import numpy as np
+
+from .hamiltonian import HamiltonianAPI
+
 
 def to_spatial(v):
     """
@@ -8,7 +11,7 @@ def to_spatial(v):
     :param v: two body integral in spinorbital basis
     :return: np.array: two body integral in spatial basis
     """
-    new_shape = (np.array(v.shape)/2).astype(int)
+    new_shape = (np.array(v.shape) / 2).astype(int)
     all_p, all_q, all_r, all_s = new_shape
     v_new = np.zeros(tuple(new_shape))
     for p in range(all_p):
@@ -18,9 +21,9 @@ def to_spatial(v):
                     elem = 0
                     for sigma_1 in [0, 2]:
                         for sigma_2 in [0, 2]:
-                            elem += v[p+sigma_1, q+sigma_2, r+sigma_1, s+sigma_2]
+                            elem += v[p + sigma_1, q + sigma_2, r + sigma_1, s + sigma_2]
                     v_new[p, q, r, s] = elem
-    return v_new/2
+    return v_new / 2
 
 
 def distance(seq_1, seq_2):
@@ -32,6 +35,7 @@ def distance(seq_1, seq_2):
     """
     return sum([1 for i in range(len(seq_1)) if seq_1[i] != seq_2[i]])
 
+
 def sign_parity(ref, seq, count=0):
     """
     Calculate sign of permutations for sequence in relation to reference sequence
@@ -41,14 +45,14 @@ def sign_parity(ref, seq, count=0):
     :return: sign of permutations, amount of the necessary permutations to make from sequence reference sequence: tuple
     """
     if ref == seq:
-        return (-1)**count, count
+        return (-1) ** count, count
 
     n_elems = len(ref)
     tmp_seqs = []
     distances = []
     settled = [i for i in range(n_elems) if ref[i] == seq[i]]
     for i in range(n_elems):
-        for j in range(i+1, n_elems):
+        for j in range(i + 1, n_elems):
             if seq[i] != seq[j] and not (i in settled or j in settled):
                 seq_tmp = seq.copy()
                 seq_tmp[i], seq_tmp[j] = seq_tmp[j], seq_tmp[i]
@@ -58,7 +62,7 @@ def sign_parity(ref, seq, count=0):
     if distances == []:
         print(seq, ref)
     best_seq = tmp_seqs[np.argmin(distances)]
-    return sign_parity(ref, best_seq, count+1)
+    return sign_parity(ref, best_seq, count + 1)
 
 
 def fill_with_parity(V, ref_set):
@@ -69,9 +73,11 @@ def fill_with_parity(V, ref_set):
                     their parity
     :return: filled two electron integral matrix: np.array
     """
-    permutations_1 = list(permutations(ref_set[: 2], 2))
+    permutations_1 = list(permutations(ref_set[:2], 2))
     permutations_2 = list(permutations(ref_set[2:], 2))
-    permutation_indices = [list(ind_1)+list(ind_2) for ind_1 in permutations_1 for ind_2 in permutations_2]
+    permutation_indices = [
+        list(ind_1) + list(ind_2) for ind_1 in permutations_1 for ind_2 in permutations_2
+    ]
     ref_value = 0
     for ind in permutation_indices:
         p, q, r, s = ind
@@ -85,13 +91,26 @@ def fill_with_parity(V, ref_set):
     for ind in permutation_indices:
         p, q, r, s = ind
         sign, _ = sign_parity([p_, q_, r_, s_], list(ind))
-        
+
         V[p, q, r, s] = sign * ref_value
     return V
 
+
 class PPP(HamiltonianAPI):
-    def __init__(self, bond_types, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=0.0784, charges=0.417, g_pair=None,
-                 atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
+    def __init__(
+        self,
+        bond_types,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        gamma=0.0784,
+        charges=0.417,
+        g_pair=None,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
+    ):
         self.bond_types = bond_types
         self.alpha = alpha
         self.beta = beta
@@ -108,7 +127,7 @@ class PPP(HamiltonianAPI):
         Builds the connectivity matrix based on the bond_types
         :return: connectivuty matrix :np.array
         """
-        elements = set([atom for bond_type in self.bond_types for atom in bond_type[:2] ])
+        elements = set([atom for bond_type in self.bond_types for atom in bond_type[:2]])
         n_atoms = len(elements)
         self.atoms_num = {elem: i for i, elem in enumerate(elements)}
         connectivity = np.zeros((n_atoms, n_atoms))
@@ -169,51 +188,53 @@ class PPP(HamiltonianAPI):
         self.cm_len = self.connectivity.shape[0]
         n_sp = self.cm_len
 
-        h_huckel = np.diag([self.alpha for _ in range(n_sp)]) + self.beta*self.connectivity ## look at the Rauk's dictionary
-        h_hubbard = np.zeros((2*n_sp, 2*n_sp))
+        h_huckel = (
+            np.diag([self.alpha for _ in range(n_sp)]) + self.beta * self.connectivity
+        )  ## look at the Rauk's dictionary
+        h_hubbard = np.zeros((2 * n_sp, 2 * n_sp))
         for p in range(n_sp):
-            h_hubbard[p, p+n_sp] = self.u_onsite[p]
+            h_hubbard[p, p + n_sp] = self.u_onsite[p]
 
-        h_ppp = np.zeros((2*n_sp, 2*n_sp))
+        h_ppp = np.zeros((2 * n_sp, 2 * n_sp))
         for p in range(n_sp):
             for q in range(n_sp):
                 if p != q:
                     h_ppp[p, q] += self.gamma[p, q]
-                    h_ppp[p, q+n_sp] += self.gamma[p, q]
-                    h_ppp[p+n_sp, q] += self.gamma[p, q]
-                    h_ppp[p+n_sp, q+n_sp] += self.gamma[p, q]
-                    h_huckel[p, p] -= 2*self.gamma[p, q]*self.charges[q]
-                    h_huckel[p, p] -= 2*self.gamma[p, q] * self.charges[q]
-                    h_huckel[q, q] -= 2*self.gamma[p, q]*self.charges[p]
-                    h_huckel[q, q] -= 2*self.gamma[p, q] * self.charges[p]
+                    h_ppp[p, q + n_sp] += self.gamma[p, q]
+                    h_ppp[p + n_sp, q] += self.gamma[p, q]
+                    h_ppp[p + n_sp, q + n_sp] += self.gamma[p, q]
+                    h_huckel[p, p] -= 2 * self.gamma[p, q] * self.charges[q]
+                    h_huckel[p, p] -= 2 * self.gamma[p, q] * self.charges[q]
+                    h_huckel[q, q] -= 2 * self.gamma[p, q] * self.charges[p]
+                    h_huckel[q, q] -= 2 * self.gamma[p, q] * self.charges[p]
 
         h_ppp *= 0.5
         h_zero = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
         h_pair = self.g_pair
 
-        v = np.zeros((2*n_sp, 2*n_sp, 2*n_sp, 2*n_sp))
+        v = np.zeros((2 * n_sp, 2 * n_sp, 2 * n_sp, 2 * n_sp))
         for p in range(n_sp):
             for q in range(n_sp):
                 v[p, q, q, p] = h_ppp[p, q]
-                v[p, q+n_sp, q+n_sp, p] = h_ppp[p, q+n_sp]
-                v[p+n_sp, q, q, p+n_sp] = h_ppp[p+n_sp, q]
-                v[p+n_sp, q+n_sp, q+n_sp, p+n_sp] = h_ppp[p+n_sp, q+n_sp]
-                v[p, p+n_sp, q, q+n_sp] = -1*h_pair[p, q]
+                v[p, q + n_sp, q + n_sp, p] = h_ppp[p, q + n_sp]
+                v[p + n_sp, q, q, p + n_sp] = h_ppp[p + n_sp, q]
+                v[p + n_sp, q + n_sp, q + n_sp, p + n_sp] = h_ppp[p + n_sp, q + n_sp]
+                v[p, p + n_sp, q, q + n_sp] = -1 * h_pair[p, q]
                 # v[p, p+n_sp, p+n_sp, p] += h_hubbard[p, p+n_sp]
                 v[p, p + n_sp, p, p + n_sp] = h_hubbard[p, p + n_sp]
 
         for p in range(n_sp):
             for q in range(n_sp):
-                for ref_set in [[p, q, q, p],
-                                [p, q+n_sp, q+n_sp, p],
-                                [p+n_sp, q, q, p+n_sp],
-                                [p+n_sp, q+n_sp, q+n_sp, p+n_sp],
-                                [p, p+n_sp, q, q+n_sp],
-                                [p, p+n_sp, p, p+n_sp]]:##!
+                for ref_set in [
+                    [p, q, q, p],
+                    [p, q + n_sp, q + n_sp, p],
+                    [p + n_sp, q, q, p + n_sp],
+                    [p + n_sp, q + n_sp, q + n_sp, p + n_sp],
+                    [p, p + n_sp, q, q + n_sp],
+                    [p, p + n_sp, p, p + n_sp],
+                ]:  ##!
 
                     v = fill_with_parity(v, ref_set)
-
-
 
         return h_zero, h_huckel, v
 
@@ -222,20 +243,38 @@ class Huckel(PPP):
     def __init__(self, bond_types, alpha=-0.414, beta=-0.0533):
         elements = set([atom for bond_type in bond_types for atom in bond_type[:2]])
         n_atoms = len(elements)
-        super().__init__(bond_types=bond_types, alpha=alpha, beta=beta, u_onsite=np.zeros(n_atoms),
-                         gamma=np.zeros((n_atoms, n_atoms)), charges=np.zeros(n_atoms), g_pair=np.zeros((n_atoms, n_atoms)),
-                         atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None)
+        super().__init__(
+            bond_types=bond_types,
+            alpha=alpha,
+            beta=beta,
+            u_onsite=np.zeros(n_atoms),
+            gamma=np.zeros((n_atoms, n_atoms)),
+            charges=np.zeros(n_atoms),
+            g_pair=np.zeros((n_atoms, n_atoms)),
+            atom_types=None,
+            atom_dictionary=None,
+            bond_dictionary=None,
+            Bz=None,
+        )
+
 
 class Hubbard(PPP):
     def __init__(self, bond_types, u_onsite, alpha=-0.414, beta=-0.0533):
         elements = set([atom for bond_type in bond_types for atom in bond_type[:2]])
         n_atoms = len(elements)
-        super().__init__(bond_types=bond_types, alpha=alpha, beta=beta, u_onsite=u_onsite,
-                         gamma=np.zeros((n_atoms, n_atoms)), charges=np.zeros(n_atoms),
-                         g_pair=np.zeros((n_atoms, n_atoms)), atom_types=None, atom_dictionary=None,
-                         bond_dictionary=None, Bz=None)
-
-
+        super().__init__(
+            bond_types=bond_types,
+            alpha=alpha,
+            beta=beta,
+            u_onsite=u_onsite,
+            gamma=np.zeros((n_atoms, n_atoms)),
+            charges=np.zeros(n_atoms),
+            g_pair=np.zeros((n_atoms, n_atoms)),
+            atom_types=None,
+            atom_dictionary=None,
+            bond_dictionary=None,
+            Bz=None,
+        )
 
 
 # ref = [0, 2, 0, 2]

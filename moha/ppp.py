@@ -1,13 +1,30 @@
-from .Hamiltonian import HamiltonianAPI
-from .utils import get_atom_type, convert_indices
 import numpy as np
-import scipy.sparse
-from scipy.sparse import csr_matrix, diags, lil_matrix
+
+from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
+
+from .hamiltonian import HamiltonianAPI
+
+from .utils import get_atom_type, convert_indices
 
 
 class HamPPP(HamiltonianAPI):
-    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, gamma=None, charges=0.417,
-                 sym=1, g_pair=None, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
+    r""" """
+
+    def __init__(
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        gamma=None,
+        charges=0.417,
+        sym=1,
+        g_pair=None,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
+    ):
         """
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
         $\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+\
@@ -84,13 +101,16 @@ class HamPPP(HamiltonianAPI):
     def generate_zero_body_integral(self):
         if self.charges is None:
             return 0
-        self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(self.charges, self.charges)
+        self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(
+            self.charges, self.charges
+        )
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
-        one_body_term = diags(
-            [self.alpha for _ in range(self.n_sites)],
-            format="csr") + self.beta * self.connectivity_matrix
+        one_body_term = (
+            diags([self.alpha for _ in range(self.n_sites)], format="csr")
+            + self.beta * self.connectivity_matrix
+        )
 
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
@@ -99,15 +119,19 @@ class HamPPP(HamiltonianAPI):
                     if p != q:
                         one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
                         one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
-        if basis == 'spatial basis':
+        if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
-        elif basis == 'spinorbital basis':
-            one_body_term_spin = scipy.sparse.hstack([one_body_term, csr_matrix(one_body_term.shape)], format='csr')
-            one_body_term_spin = scipy.sparse.vstack([one_body_term_spin,
-                                                      scipy.sparse.hstack([csr_matrix(one_body_term.shape),
-                                                                           one_body_term],
-                                                                          format='csr')],
-                                                     format='csr')
+        elif basis == "spinorbital basis":
+            one_body_term_spin = hstack(
+                [one_body_term, csr_matrix(one_body_term.shape)], format="csr"
+            )
+            one_body_term_spin = vstack(
+                [
+                    one_body_term_spin,
+                    hstack([csr_matrix(one_body_term.shape), one_body_term], format="csr"),
+                ],
+                format="csr",
+            )
             self.one_body = one_body_term_spin
         else:
             raise TypeError("Wrong basis")
@@ -125,13 +149,14 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
-            if basis == 'spinorbital basis' and self.gamma.shape != (2 * n_sp, 2 * n_sp):
+            if basis == "spinorbital basis" and self.gamma.shape != (2 * n_sp, 2 * n_sp):
                 raise TypeError("Gamma matrix has wrong basis")
 
-            if basis == 'spatial basis' and self.gamma.shape == (n_sp, n_sp):
+            if basis == "spatial basis" and self.gamma.shape == (n_sp, n_sp):
                 zeros_block = np.zeros((n_sp, n_sp))
-                gamma = np.vstack([np.hstack([self.gamma, zeros_block]),
-                                   np.hstack([zeros_block, self.gamma])])
+                gamma = np.vstack(
+                    [np.hstack([self.gamma, zeros_block]), np.hstack([zeros_block, self.gamma])]
+                )
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
@@ -150,9 +175,9 @@ class HamPPP(HamiltonianAPI):
         v = v.tocsr()
         self.two_body = v
         # converting basis if necessary
-        if basis == 'spatial basis':
+        if basis == "spatial basis":
             v = self.to_spatial(sym=sym, dense=False, nbody=2)
-        elif basis == 'spinorbital basis':
+        elif basis == "spinorbital basis":
             pass
         else:
             raise TypeError("Wrong basis")
@@ -168,19 +193,31 @@ class HamHub(HamPPP):
     It can be invoked by choosing gamma = 0 from PPP hamiltonian
     """
 
-    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None,
-                 sym=1, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
-        super().__init__(connectivity=connectivity,
-                         alpha=alpha,
-                         beta=beta,
-                         u_onsite=u_onsite,
-                         gamma=None,
-                         charges=0,
-                         sym=sym,
-                         atom_types=atom_types,
-                         atom_dictionary=atom_dictionary,
-                         bond_dictionary=bond_dictionary,
-                         Bz=Bz)
+    def __init__(
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        sym=1,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
+    ):
+        super().__init__(
+            connectivity=connectivity,
+            alpha=alpha,
+            beta=beta,
+            u_onsite=u_onsite,
+            gamma=None,
+            charges=0,
+            sym=sym,
+            atom_types=atom_types,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
+            Bz=Bz,
+        )
         self.charges = np.zeros(self.n_sites)
 
 
@@ -190,17 +227,30 @@ class HamHuck(HamHub):
     It can be invoked by choosing gamma = 0 from PPP hamiltonian
     """
 
-    def __init__(self, connectivity: list, alpha=-0.414, beta=-0.0533, u_onsite=None, charges=0.417,
-                 sym=1, atom_types=None, atom_dictionary=None, bond_dictionary=None, Bz=None):
-        super().__init__(connectivity=connectivity,
-                         alpha=alpha,
-                         beta=beta,
-                         u_onsite=u_onsite,
-                         gamma=None,
-                         charges=charges,
-                         sym=sym,
-                         atom_types=atom_types,
-                         atom_dictionary=atom_dictionary,
-                         bond_dictionary=bond_dictionary,
-                         Bz=Bz)
+    def __init__(
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        charges=0.417,
+        sym=1,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
+    ):
+        super().__init__(
+            connectivity=connectivity,
+            alpha=alpha,
+            beta=beta,
+            u_onsite=u_onsite,
+            gamma=None,
+            charges=charges,
+            sym=sym,
+            atom_types=atom_types,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
+            Bz=Bz,
+        )
         self.u_onsite = np.zeros(self.n_sites)

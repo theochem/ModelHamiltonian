@@ -16,8 +16,8 @@ def convert_indices(N, *args):
 
         # converting indices
         i, j, k, l = args
-        p = int(i*N+j)
-        q = int(k*N+l)
+        p = int(i * N + j)
+        q = int(k * N + l)
         return [p, q]
 
     elif len(args) == 2:
@@ -30,7 +30,7 @@ def convert_indices(N, *args):
 
         # converting indices
         p, q = args
-        i, k = p//N, q//N
+        i, k = p // N, q // N
         j, l = p % N, q % N
         return [i, j, k, l]
     else:
