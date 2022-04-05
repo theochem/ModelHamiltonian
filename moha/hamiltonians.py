@@ -17,7 +17,7 @@ __all__ = [
 
 
 class HamPPP(HamiltonianAPI):
-    r""" """
+    r"""Pariser-Parr-Pople Hamiltonian."""
 
     def __init__(
         self,
@@ -36,26 +36,38 @@ class HamPPP(HamiltonianAPI):
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
-        $\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+\
-         \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2} \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
-         \hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q \beta}-Q_{q}\right)+
-         \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger} a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}$
-
-        :param connectivity: list of tuples that specifies sites and bonds between them: list
-        :param alpha: specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of
-                      Carbon: float
-        :param beta: specifies the resonance energy, hopping term, if all bonds are equivalent.
-                     The default value is appropriate for a pi-bond between Carbon atoms: float
-        :param u_onsite: on-site Coulomb interaction: 1d np.ndarray
-        :param gamma: parameter that specifies long-range Coulomb interaction: 2d np.ndarray
-        :param charges: Charges on sites: 1d np.ndarray
-        :param sym: symmetry of the Hamiltonian: int [2, 4, 8] or None. Default is 1
-        :param g_pair:  g_pq term that captures interaction between electron pairs
-        :param atom_types: A list of dimension equal to the number of sites specifying the atom type of each site
-                           If a list of atom types is specified, the values of alpha and beta are ignored.
-        :param atom_dictionary: Contains information about alpha and U values for each atom type: dict
-        :param bond_dictionary: Contains information about beta values for each bond type: dict
-        :param Bz:
+        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+
+        \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2} \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
+        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q \beta}-Q_{q}\right)+
+        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger} a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
+        Parameters
+        ----------
+        connectivity: list
+            list of tuples that specifies sites and bonds between them
+        alpha: float
+            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+        beta: float
+            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            The default value is appropriate for a pi-bond between Carbon atoms
+        u_onsite: np.ndarray
+            on-site Coulomb interaction; 1d np.ndarray
+        gamma: np.ndarray
+            parameter that specifies long-range Coulomb interaction; 2d
+        charges: np.ndarray
+            Charges on sites; 1d np.ndarray
+        sym: int
+             symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
+        g_pair: float
+            g_pq term that captures interaction between electron pairs
+        atom_types: list
+            A list of dimension equal to the number of sites specifying the atom type of each site
+            If a list of atom types is specified, the values of alpha and beta are ignored.
+        atom_dictionary: dict
+            Contains information about alpha and U values for each atom type
+        bond_dictionary: dict
+            Contains information about beta values for each bond type
+        Bz: np.ndarray
+            external magnetic field
         """
         self._sym = sym
         self.n_sites = None
@@ -76,8 +88,12 @@ class HamPPP(HamiltonianAPI):
 
     def generate_connectivity_matrix(self):
         r"""
-        Generates connectivity matrix
-        :return: dictionary in which np.ndarray
+        Generates connectivity matrix.
+
+        Returns
+        -------
+        tuple
+            (dictionary, np.ndarray)
         """
         max_site = 0
         atoms_sites_lst = []
@@ -108,7 +124,12 @@ class HamPPP(HamiltonianAPI):
         return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
-        r""" """
+        r"""Generate zero body integral.
+
+        Returns
+        -------
+        float
+        """
         if self.charges is None:
             return 0
         self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(
@@ -117,7 +138,19 @@ class HamPPP(HamiltonianAPI):
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
-        r""" """
+        r"""
+        Generate one body integral in spatial or spin orbital basis.
+        Parameters
+        ----------
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
+        """
         one_body_term = (
             diags([self.alpha for _ in range(self.n_sites)], format="csr")
             + self.beta * self.connectivity_matrix
@@ -150,7 +183,22 @@ class HamPPP(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
-        r""" """
+        r"""
+        Generate two body integral in spatial or spinorbital basis.
+
+        Parameters
+        ----------
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
+        """
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
@@ -218,7 +266,32 @@ class HamHub(HamPPP):
         bond_dictionary=None,
         Bz=None,
     ):
-        r""" """
+        r"""
+        Hubbard Hamiltonian
+
+        Parameters
+        ----------
+        connectivity: list
+            list of tuples that specifies sites and bonds between them
+        alpha: float
+            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+        beta: float
+            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            The default value is appropriate for a pi-bond between Carbon atoms
+        u_onsite: np.ndarray
+            on-site Coulomb interaction; 1d np.ndarray
+        sym: int
+             symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
+        atom_types: list
+            A list of dimension equal to the number of sites specifying the atom type of each site
+            If a list of atom types is specified, the values of alpha and beta are ignored.
+        atom_dictionary: dict
+            Contains information about alpha and U values for each atom type
+        bond_dictionary: dict
+            Contains information about beta values for each bond type
+        Bz: np.ndarray
+            external magnetic field
+        """
         super().__init__(
             connectivity=connectivity,
             alpha=alpha,
@@ -237,9 +310,7 @@ class HamHub(HamPPP):
 
 class HamHuck(HamHub):
     r"""
-    The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
-    It can be invoked by choosing gamma = 0 from PPP hamiltonian.
-
+    It can be invoked by choosing u_onsite = 0 from Hubbard hamiltonian.
     """
 
     def __init__(
@@ -247,20 +318,41 @@ class HamHuck(HamHub):
         connectivity: list,
         alpha=-0.414,
         beta=-0.0533,
-        u_onsite=None,
-        charges=0.417,
         sym=1,
         atom_types=None,
         atom_dictionary=None,
         bond_dictionary=None,
         Bz=None,
     ):
-        r""" """
+        r"""
+        Huckle hamiltonian
+
+        Parameters
+        ----------
+        connectivity: list
+            list of tuples that specifies sites and bonds between them
+        alpha: float
+            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+        beta: float
+            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            The default value is appropriate for a pi-bond between Carbon atoms
+        sym: int
+             symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
+        atom_types: list
+            A list of dimension equal to the number of sites specifying the atom type of each site
+            If a list of atom types is specified, the values of alpha and beta are ignored.
+        atom_dictionary: dict
+            Contains information about alpha and U values for each atom type
+        bond_dictionary: dict
+            Contains information about beta values for each bond type
+        Bz: np.ndarray
+            external magnetic field
+        """
         super().__init__(
             connectivity=connectivity,
             alpha=alpha,
             beta=beta,
-            u_onsite=u_onsite,
+            u_onsite=0,
             gamma=None,
             charges=charges,
             sym=sym,
@@ -269,4 +361,4 @@ class HamHuck(HamHub):
             bond_dictionary=bond_dictionary,
             Bz=Bz,
         )
-        self.u_onsite = np.zeros(self.n_sites)
+        self.charges = np.zeros(self.n_sites)
