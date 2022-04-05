@@ -92,6 +92,7 @@ class HamPPP(HamiltonianAPI):
             [self.alpha for _ in range(self.n_sites)],
             format="csr") + self.beta * self.connectivity_matrix
 
+        one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
                 for q in range(self.n_sites):
@@ -99,7 +100,7 @@ class HamPPP(HamiltonianAPI):
                         one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
                         one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
         if basis == 'spatial basis':
-            self.one_body = one_body_term
+            self.one_body = one_body_term.tocsr()
         elif basis == 'spinorbital basis':
             one_body_term_spin = scipy.sparse.hstack([one_body_term, csr_matrix(one_body_term.shape)], format='csr')
             one_body_term_spin = scipy.sparse.vstack([one_body_term_spin,
@@ -147,9 +148,10 @@ class HamPPP(HamiltonianAPI):
                         v[i, j] = gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
+        self.two_body = v
         # converting basis if necessary
         if basis == 'spatial basis':
-            v = self.to_spatial(integral=self.to_dense(v), sym=sym, dense=False, nbody=2)
+            v = self.to_spatial(sym=sym, dense=False, nbody=2)
         elif basis == 'spinorbital basis':
             pass
         else:
