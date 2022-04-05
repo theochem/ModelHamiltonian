@@ -1,11 +1,21 @@
+r"""MoHa utilities submodule."""
+
+
+__all__ = [
+    "convert_indices",
+    "get_atom_type",
+]
+
+
 def convert_indices(N, *args):
-    """
-    Convertin indices from 4d array to 2d numpy array and vice-versa
+    r"""
+    Convert indices from 4d array to 2d numpy array and vice-versa.
+
     :param N: size of corresponding _4d_ matrix: int
     :param args: indices i, j, k, l or p,q: int
     :return: list of converted indices: list
-    """
 
+    """
     if len(args) == 4:
         # Check if indices are right
         for elem in args:
@@ -16,8 +26,8 @@ def convert_indices(N, *args):
 
         # converting indices
         i, j, k, l = args
-        p = int(i*N+j)
-        q = int(k*N+l)
+        p = int(i * N + j)
+        q = int(k * N + l)
         return [p, q]
 
     elif len(args) == 2:
@@ -30,7 +40,7 @@ def convert_indices(N, *args):
 
         # converting indices
         p, q = args
-        i, k = p//N, q//N
+        i, k = p // N, q // N
         j, l = p % N, q % N
         return [i, j, k, l]
     else:
@@ -38,11 +48,12 @@ def convert_indices(N, *args):
 
 
 def get_atom_type(atom):
-    """
-    Returns atom type and site index
-    "C23" -> "C", 23
+    r"""
+    Return atom type and site index; "C23" -> "C", 23.
+
     :param atom: str
     :return: tuple
+
     """
     i = 1
     while atom[-i:].isdigit():
