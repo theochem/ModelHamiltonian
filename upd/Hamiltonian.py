@@ -43,21 +43,23 @@ class HamiltonianAPI(ABC):
         # Finding indices for non-zero elements and shape of Md.
         indices = np.array(np.where(Md != 0)).astype(int).T
         N = Md.shape[0]
-        
+
         # Converting 2D array to csr_matrix
         if np.ndim(Md) == 2:
             return csr_matrix(Md)
-        
+
         # Converting 4D array to csr_matrix using convert_indices from util.py.
         elif np.ndim(Md) == 4:
-            row = np.array([]); col = np.array([]); data = np.array([]);
+            row = np.array([]);
+            col = np.array([]);
+            data = np.array([]);
             for ind in indices:
-                p,q = convert_indices(N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3]));
-                row = np.append(row,p)
-                col = np.append(col,q)
-                data = np.append(data,Md[tuple(ind)])
-            return csr_matrix((data, (row, col)), shape=(N*N, N*N))
-        
+                p, q = convert_indices(N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3]));
+                row = np.append(row, p)
+                col = np.append(col, q)
+                data = np.append(data, Md[tuple(ind)])
+            return csr_matrix((data, (row, col)), shape=(N * N, N * N))
+
         # Return if array dimensions incompatible.
         else:
             print("Incompatible dense array dimension. Must be either 2 or 4 dimensions.")
@@ -77,10 +79,10 @@ class HamiltonianAPI(ABC):
         # Optionally, return dense 4D array for two-particle integrals.
         elif dim == 4:
             N = int(np.sqrt(Ms.shape[0]))
-            vd = np.zeros([N,N,N,N])
-            for p,q in np.array(Ms.nonzero()).T:
-                i,j,k,l = convert_indices(N, int(p),int(q))
-                vd[(i,j,k,l)] = Ms[p,q]
+            vd = np.zeros([N, N, N, N])
+            for p, q in np.array(Ms.nonzero()).T:
+                i, j, k, l = convert_indices(N, int(p), int(q))
+                vd[(i, j, k, l)] = Ms[p, q]
             return vd
 
         # Return if target dim is not 2 or 4.
@@ -88,8 +90,7 @@ class HamiltonianAPI(ABC):
             print("Target output dimension must be either 2 or 4.")
             return
 
-          
-    def to_spatial(self, integral: np.ndarray, sym: int, dense: bool, nbody: int):
+    def to_spatial(self, sym: int, dense: bool, nbody: int):
         """
         Converts one-/two- integral matrix from spin-orbital to spatial basis
         :param integral: input matrix
@@ -101,15 +102,16 @@ class HamiltonianAPI(ABC):
         #
         # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
         #
+        integral = self.one_body if nbody == 1 else self.two_body
         n = 2 * self.n_sites
-        if integral.shape[0] == 2*self.n_sites:
+        if integral.shape[0] == 2 * self.n_sites:
             spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[:self.n_sites, :self.n_sites]
-        elif integral.shape[0] == 4*self.n_sites**2:
-            spatial_int = lil_matrix((self.n_sites**2, self.n_sites**2))
+        elif integral.shape[0] == 4 * self.n_sites ** 2:
+            spatial_int = lil_matrix((self.n_sites ** 2, self.n_sites ** 2))
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
-                pp, pp = convert_indices(self.n_sites, p,p,p,p)
+                pp, pp = convert_indices(self.n_sites, p, p, p, p)
                 pp_, pp_ = convert_indices(n, p, p + self.n_sites, p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
                 for q in range(p, self.n_sites):
@@ -121,20 +123,21 @@ class HamiltonianAPI(ABC):
                     pq_, pq_ = convert_indices(n, p, q + self.n_sites, p, q + self.n_sites)
                     spatial_int[pq, pq] += integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
-                    pp, qq = convert_indices(self.n_sites, p,p,q,q)
+                    pp, qq = convert_indices(self.n_sites, p, p, q, q)
                     pp_, qq_ = convert_indices(n, p, p + self.n_sites, q, q + self.n_sites)
                     spatial_int[pp, qq] = integral[pp_, qq_]
         else:
             raise ValueError('Wrong integral input.')
-
         spatial_int = expand_sym(sym, spatial_int, nbody)
         spatial_int = spatial_int.tocsr()
-        
+
         if dense:
-            if isinstance(spatial_int, csr_matrix):
-                spatial_int.toarray()
+            if isinstance(spatial_int, csr_matrix):  # FixMe make sure that this works for every system
+                spatial_int = spatial_int.toarray()
+                spatial_int = np.reshape(spatial_int,
+                                         (self.n_sites, self.n_sites, self.n_sites, self.n_sites))
             else:
-                spatial_int = self.to_dense(spatial_int)
+                spatial_int = self.to_dense(spatial_int, dim=4 if nbody == 2 else 1)
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
@@ -193,8 +196,7 @@ class HamiltonianAPI(ABC):
         if core_energy is not None:
             print(f'{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}', file=f)
 
-
-    def save_triqs(self, fname:str, integral):
+    def save_triqs(self, fname: str, integral):
         """
         Save matrix in triqc format
         :param fname: filename
@@ -237,7 +239,7 @@ def expand_sym(sym, integral, nbody):
     to adds the missing terms. 
     Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the 
     permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html). 
-    """    
+    """
     if not sym in [1, 2, 4, 8]:
         raise ValueError('Wrong input symmetry')
     if not nbody in [1, 2]:
@@ -258,20 +260,20 @@ def expand_sym(sym, integral, nbody):
 
         for pq, rs in zip(pq_array, rs_array):
             p, q, r, s = convert_indices(n, pq, rs)
-            if sym >= 2: 
+            if sym >= 2:
                 # 1. Transpose: <pq|rs>=<rs|pq>
-                rs, pq = convert_indices(n, r,s,p,q)
+                rs, pq = convert_indices(n, r, s, p, q)
                 integral[rs, pq] = integral[pq, rs]
             if sym >= 4:
                 # 2. Permute dummy indices (swap variables of particles 1 and 2): 
                 # <p_1 q_2|r_1 s_2> = <q_1 p_2|s_1 r_2>
-                qp, sr = convert_indices(n, q,p,s,r)
+                qp, sr = convert_indices(n, q, p, s, r)
                 integral[qp, sr] = integral[pq, rs]
                 integral[sr, qp] = integral[rs, pq]
             if sym == 8:
                 # 3. Permute orbitals of the same variable, e.g. <p_1 q_2|r_1 s_2> = <r_1 q_2|p_1 s_2>
-                rq, ps = convert_indices(n, r,q,p,s)
-                sp, qr = convert_indices(n, s,p,q,r)               
+                rq, ps = convert_indices(n, r, q, p, s)
+                sp, qr = convert_indices(n, s, p, q, r)
                 integral[rq, ps] = integral[pq, rs]
                 integral[ps, rq] = integral[rs, pq]
                 integral[sp, qr] = integral[qp, sr]
