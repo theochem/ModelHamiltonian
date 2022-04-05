@@ -1,3 +1,5 @@
+r"""Model Hamiltonian API."""
+
 from abc import ABC, abstractmethod
 
 from typing import TextIO
@@ -9,39 +11,52 @@ from scipy.sparse import csr_matrix, diags, lil_matrix
 from .utils import convert_indices
 
 
+__all__ = [
+    "HamiltonianAPI",
+]
+
+
 class HamiltonianAPI(ABC):
+    r"""Hamiltonian abstract base class."""
+
     @abstractmethod
     def generate_zero_body_integral(self):
-        """Generates zero body integral"""
+        r"""Generate zero body integral."""
         pass
 
     @abstractmethod
     def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
-        """
-        Generates one body integral in spatial or spin orbital basis
+        r"""
+        Generate one body integral in spatial or spin orbital basis.
+
         :param sym: symmetry -- [2, 4, 8] default is None
         :param basis: basis -- ['spatial', 'spin orbital']
         :param dense: dense or sparse matrix; default dense
         :return: numpy.ndarray or scipy.sparse.csc_matrix
+
         """
         pass
 
     @abstractmethod
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
-        """
-        Generates two body integral in spatial or spinorbital basis
+        r"""
+        Generate two body integral in spatial or spinorbital basis.
+
         :param sym: symmetry -- [2, 4, 8] default is None
         :param basis: basis -- ['spatial', 'spin orbital']
         :param dense: dense or sparse matrix; default dense
         :return: numpy.ndarray or sparse
+
         """
         pass
 
     def to_sparse(self, Md):
-        """
-        Converts dense array of integrals to sparse array in scipy csr format.
+        r"""
+        Convert dense array of integrals to sparse array in scipy csr format.
+
         :param Md: 2 or 4 dimensional numpy.array
         :return scipy.sparse.csr_matrix
+
         """
         # Finding indices for non-zero elements and shape of Md.
         indices = np.array(np.where(Md != 0)).astype(int).T
@@ -69,11 +84,13 @@ class HamiltonianAPI(ABC):
             return
 
     def to_dense(self, Ms, dim=2):
-        """
-        Converts sparse arry of integrals in scipy csr format to dense numpy array.
+        r"""
+        Convert sparse arry of integrals in scipy csr format to dense numpy array.
+
         :param Ms: scipy.sparse.csr_matrix
         :param dim: target dimension of output array (either 2 or 4)
         :return: numpy.array
+
         """
         # return dense 2D array (default).
         if dim == 2:
@@ -94,17 +111,17 @@ class HamiltonianAPI(ABC):
             return
 
     def to_spatial(self, sym: int, dense: bool, nbody: int):
-        """
-        Converts one-/two- integral matrix from spin-orbital to spatial basis
+        r"""
+        Convert one-/two- integral matrix from spin-orbital to spatial basis
+
         :param integral: input matrix
         :param sym: symmetry -- [2, 4, 8] default is None
         :param dense: dense or sparse matrix; default sparse
         :param nbody: int, type of integral, one of 1 (one-body) or 2 (two-body)
         :return: one-/two-body integrals in spatial basis
+
         """
-        #
         # Assumption: spatial components of alpha and beta spin-orbitals are equivalent
-        #
         integral = self.one_body if nbody == 1 else self.two_body
         n = 2 * self.n_sites
         if integral.shape[0] == 2 * self.n_sites:
@@ -147,19 +164,23 @@ class HamiltonianAPI(ABC):
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
-        """
-        Converts one-/two- integral matrix from spatial to spin-orbital basis
+        r"""
+        Convert one-/two- integral matrix from spatial to spin-orbital basis
+
         :param integral: input matrix
         :param sym: symmetry -- [2, 4, 8] default 1
         :param dense: dense or sparse matrix; default is sparse
         :return:
+
         """
         pass
 
     def save_fcidump(self, f: TextIO, nelec=0, spinpol=0):
-        """
-        Save all parts of hamiltonian in fcidump format
+        r"""
+        Save all parts of hamiltonian in fcidump format.
+
         Adapted from https://github.com/theochem/iodata/blob/master/iodata/formats/fcidump.py
+
         :param f: TextIO file
         :param nelec: The number of electrons in the system
         :param spinpol: The spin polarization. By default, its value is derived from the
@@ -167,6 +188,7 @@ class HamiltonianAPI(ABC):
                         spinpol cannot be set. When no molecular orbitals are present, this
                         attribute can be set.
         :return: None
+
         """
         # Reduce symmetry of integral
         one_ints = expand_sym(self._sym, self.one_body, 1)
@@ -203,22 +225,25 @@ class HamiltonianAPI(ABC):
             print(f"{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}", file=f)
 
     def save_triqs(self, fname: str, integral):
-        """
-        Save matrix in triqc format
+        r"""
+        Save matrix in triqc format.
+
         :param fname: filename
         :param integral: matrix to be saved
         :return: None
+
         """
         pass
 
     def save(self, fname: str, integral, basis):
-        """Save file as regular numpy array"""
+        r"""Save file as regular numpy array."""
         pass
 
 
 def expand_sym(sym, integral, nbody):
-    """
-    Restore permutational symmetry of one- and two-body terms
+    r"""
+    Restore permutational symmetry of one- and two-body terms.
+
     :param integral: 2-D sparse array, the {one,two}-body integrals
     :param sym: int, integral symmetry, one of 1 (no symmetry), 2, 4 or 8.
     :param nbody: int, number of particle variables in the integral, one of 1 (one-body) or 2 (two-body)
@@ -245,6 +270,7 @@ def expand_sym(sym, integral, nbody):
     to adds the missing terms.
     Phicisist notation is used for the two-body integrals: :math:`<pq|rs>` and further details of the
     permutations considered can be found in [this site](http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
+
     """
     if not sym in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
@@ -252,9 +278,8 @@ def expand_sym(sym, integral, nbody):
         raise ValueError(f"`nbody` must be an integer, either 1 or 2, but {nbody} given")
     if sym == 1:
         return integral
-    #
+
     # Expanding Symmetries
-    #
     if nbody == 1:
         if not sym == 2:
             raise ValueError("Wrong 1-body term symmetry")
