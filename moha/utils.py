@@ -24,9 +24,9 @@ def convert_indices(N, *args):
                 raise TypeError("index is greater than size of the matrix")
 
         # converting indices
-        i, j, k, l = args
+        i, j, k, l_ = args
         p = int(i * N + j)
-        q = int(k * N + l)
+        q = int(k * N + l_)
         return [p, q]
 
     elif len(args) == 2:
@@ -40,8 +40,8 @@ def convert_indices(N, *args):
         # converting indices
         p, q = args
         i, k = p // N, q // N
-        j, l = p % N, q % N
-        return [i, j, k, l]
+        j, l_ = p % N, q % N
+        return [i, j, k, l_]
     else:
         raise TypeError("Wrong indices")
 
