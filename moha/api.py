@@ -282,7 +282,8 @@ class HamiltonianAPI(ABC):
             for j in range(i + 1):
                 value = one_ints[i, j]
                 if value != 0.0:
-                    print(f"{value:23.16e} {i + 1:4d} {j + 1:4d} {0:4d} {0:4d}", file=f)
+                    print(f"{value:23.16e} {i + 1:4d}"
+                          f" {j + 1:4d} {0:4d} {0:4d}", file=f)
 
         core_energy = self.zero_energy
         if core_energy is not None:
