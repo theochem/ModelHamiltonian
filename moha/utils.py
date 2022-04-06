@@ -14,7 +14,6 @@ def convert_indices(N, *args):
     :param N: size of corresponding _4d_ matrix: int
     :param args: indices i, j, k, l or p,q: int
     :return: list of converted indices: list
-
     """
     if len(args) == 4:
         # Check if indices are right
