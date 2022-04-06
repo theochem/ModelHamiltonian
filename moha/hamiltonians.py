@@ -166,14 +166,16 @@ class HamPPP(HamiltonianAPI):
         """
         if (self.alpha is not None) and (self.beta is not None):
             one_body_term = (
-                    diags([self.alpha for _ in range(self.n_sites)], format="csr")
+                    diags([self.alpha for _ in range(self.n_sites)], 
+                    format="csr")
                     + self.beta * self.connectivity_matrix
             )
 
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
-                one_body_term[(p,p)] -= np.sum(self.gamma[p,:]) * self.charges[p]
+                one_body_term[(p,p)] -= np.sum(self.gamma[p,:]) *\
+                     self.charges[p]
 
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
