@@ -8,7 +8,6 @@ from .api import HamiltonianAPI
 
 from .utils import get_atom_type, convert_indices
 
-
 __all__ = [
     "HamPPP",
     "HamHuck",
@@ -20,34 +19,40 @@ class HamPPP(HamiltonianAPI):
     r"""Pariser-Parr-Pople Hamiltonian."""
 
     def __init__(
-        self,
-        connectivity: list,
-        alpha=-0.414,
-        beta=-0.0533,
-        u_onsite=None,
-        gamma=None,
-        charges=0.417,
-        sym=1,
-        g_pair=None,
-        atom_types=None,
-        atom_dictionary=None,
-        bond_dictionary=None,
-        Bz=None,
+            self,
+            connectivity: list,
+            alpha=-0.414,
+            beta=-0.0533,
+            u_onsite=None,
+            gamma=None,
+            charges=0.417,
+            sym=1,
+            g_pair=None,
+            atom_types=None,
+            atom_dictionary=None,
+            bond_dictionary=None,
+            Bz=None,
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian in the form:
-        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q} h_{p q} a_{p}^{\dagger} a_{q}+
-        \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2} \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
-        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q \beta}-Q_{q}\right)+
-        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger} a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
+        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
+        h_{p q} a_{p}^{\dagger}
+        a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
+        \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
+        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q
+        \beta}-Q_{q}\right)+
+        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
+        a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
         Parameters
         ----------
         connectivity: list
             list of tuples that specifies sites and bonds between them
         alpha: float
-            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+            specifies the site energy if all sites are equivalent.
+            Default value is the 2p-pi orbital of Carbon
         beta: float
-            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            specifies the resonance energy, hopping term,
+            if all bonds are equivalent.
             The default value is appropriate for a pi-bond between Carbon atoms
         u_onsite: np.ndarray
             on-site Coulomb interaction; 1d np.ndarray
@@ -60,8 +65,10 @@ class HamPPP(HamiltonianAPI):
         g_pair: float
             g_pq term that captures interaction between electron pairs
         atom_types: list
-            A list of dimension equal to the number of sites specifying the atom type of each site
-            If a list of atom types is specified, the values of alpha and beta are ignored.
+            A list of dimension equal to the number of sites,
+            specifying the atom type of each site
+            If a list of atom types is specified,
+            the values of alpha and beta are ignored.
         atom_dictionary: dict
             Contains information about alpha and U values for each atom type
         bond_dictionary: dict
@@ -81,7 +88,8 @@ class HamPPP(HamiltonianAPI):
         self.atom_types = atom_types
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
-        self.atoms_num, self.connectivity_matrix = self.generate_connectivity_matrix()
+        self.atoms_num, self.connectivity_matrix = \
+            self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -103,7 +111,7 @@ class HamPPP(HamiltonianAPI):
             for pair in [(atom1_name, site1), (atom2_name, site2)]:
                 if pair not in atoms_sites_lst:
                     atoms_sites_lst.append(pair)
-            if max_site < max(site1, site2):  # finding the maximum index of site
+            if max_site < max(site1, site2):  # finding the max index of site
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
 
@@ -117,7 +125,8 @@ class HamPPP(HamiltonianAPI):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond  # numbering of sites should start from 1
+            connectivity_mtrx[site1 - 1, site2 - 1] = bond
+            # numbering of sites starts from 1
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
@@ -132,7 +141,8 @@ class HamPPP(HamiltonianAPI):
         """
         if self.charges is None:
             return 0
-        self.zero_energy = np.sum(np.outer(self.charges, self.charges)) - np.dot(
+        self.zero_energy = np.sum(np.outer(self.charges,
+                                           self.charges)) - np.dot(
             self.charges, self.charges
         )
         return self.zero_energy
@@ -152,8 +162,8 @@ class HamPPP(HamiltonianAPI):
         scipy.sparse.csr_matrix or np.ndarray
         """
         one_body_term = (
-            diags([self.alpha for _ in range(self.n_sites)], format="csr")
-            + self.beta * self.connectivity_matrix
+                diags([self.alpha for _ in range(self.n_sites)], format="csr")
+                + self.beta * self.connectivity_matrix
         )
 
         one_body_term = one_body_term.tolil()
@@ -161,8 +171,10 @@ class HamPPP(HamiltonianAPI):
             for p in range(self.n_sites):
                 for q in range(self.n_sites):
                     if p != q:
-                        one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
-                        one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
+                        mult = 2 * self.gamma[p, q]
+                        one_body_term[p, p] -= mult * self.charges[p]
+                        one_body_term[q, q] -= mult * self.charges[q]
+
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
         elif basis == "spinorbital basis":
@@ -172,7 +184,8 @@ class HamPPP(HamiltonianAPI):
             one_body_term_spin = vstack(
                 [
                     one_body_term_spin,
-                    hstack([csr_matrix(one_body_term.shape), one_body_term], format="csr"),
+                    hstack([csr_matrix(one_body_term.shape),
+                            one_body_term], format="csr"),
                 ],
                 format="csr",
             )
@@ -209,13 +222,16 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
-            if basis == "spinorbital basis" and self.gamma.shape != (2 * n_sp, 2 * n_sp):
+            if basis == "spinorbital basis" and \
+                    self.gamma.shape != (2 * n_sp, 2 * n_sp):
                 raise TypeError("Gamma matrix has wrong basis")
 
-            if basis == "spatial basis" and self.gamma.shape == (n_sp, n_sp):
+            if basis == "spatial basis" and \
+                    self.gamma.shape == (n_sp, n_sp):
                 zeros_block = np.zeros((n_sp, n_sp))
                 gamma = np.vstack(
-                    [np.hstack([self.gamma, zeros_block]), np.hstack([zeros_block, self.gamma])]
+                    [np.hstack([self.gamma, zeros_block]),
+                     np.hstack([zeros_block, self.gamma])]
                 )
             for p in range(n_sp):
                 for q in range(n_sp):
@@ -229,7 +245,11 @@ class HamPPP(HamiltonianAPI):
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
                         v[i, j] = gamma[p + n_sp, q]
 
-                        i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
+                        i, j = convert_indices(Nv,
+                                               p + n_sp,
+                                               q + n_sp,
+                                               p + n_sp,
+                                               q + n_sp)
                         v[i, j] = gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
@@ -255,16 +275,16 @@ class HamHub(HamPPP):
     """
 
     def __init__(
-        self,
-        connectivity: list,
-        alpha=-0.414,
-        beta=-0.0533,
-        u_onsite=None,
-        sym=1,
-        atom_types=None,
-        atom_dictionary=None,
-        bond_dictionary=None,
-        Bz=None,
+            self,
+            connectivity: list,
+            alpha=-0.414,
+            beta=-0.0533,
+            u_onsite=None,
+            sym=1,
+            atom_types=None,
+            atom_dictionary=None,
+            bond_dictionary=None,
+            Bz=None,
     ):
         r"""
         Hubbard Hamiltonian
@@ -274,17 +294,21 @@ class HamHub(HamPPP):
         connectivity: list
             list of tuples that specifies sites and bonds between them
         alpha: float
-            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+            specifies the site energy if all sites are equivalent.
+            Default value is the 2p-pi orbital of Carbon
         beta: float
-            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            specifies the resonance energy, hopping term,
+            if all bonds are equivalent.
             The default value is appropriate for a pi-bond between Carbon atoms
         u_onsite: np.ndarray
             on-site Coulomb interaction; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
         atom_types: list
-            A list of dimension equal to the number of sites specifying the atom type of each site
-            If a list of atom types is specified, the values of alpha and beta are ignored.
+            A list of dimension equal to the number of sites
+            specifying the atom type of each site
+            If a list of atom types is specified,
+            the values of alpha and beta are ignored.
         atom_dictionary: dict
             Contains information about alpha and U values for each atom type
         bond_dictionary: dict
@@ -314,15 +338,15 @@ class HamHuck(HamHub):
     """
 
     def __init__(
-        self,
-        connectivity: list,
-        alpha=-0.414,
-        beta=-0.0533,
-        sym=1,
-        atom_types=None,
-        atom_dictionary=None,
-        bond_dictionary=None,
-        Bz=None,
+            self,
+            connectivity: list,
+            alpha=-0.414,
+            beta=-0.0533,
+            sym=1,
+            atom_types=None,
+            atom_dictionary=None,
+            bond_dictionary=None,
+            Bz=None,
     ):
         r"""
         Huckle hamiltonian
@@ -332,15 +356,19 @@ class HamHuck(HamHub):
         connectivity: list
             list of tuples that specifies sites and bonds between them
         alpha: float
-            specifies the site energy if all sites are equivalent. Default value is the 2p-pi orbital of Carbon
+            specifies the site energy if all sites are equivalent.
+            Default value is the 2p-pi orbital of Carbon
         beta: float
-            specifies the resonance energy, hopping term, if all bonds are equivalent.
+            specifies the resonance energy, hopping term,
+            if all bonds are equivalent.
             The default value is appropriate for a pi-bond between Carbon atoms
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
         atom_types: list
-            A list of dimension equal to the number of sites specifying the atom type of each site
-            If a list of atom types is specified, the values of alpha and beta are ignored.
+            A list of dimension equal to the number of sites
+            specifying the atom type of each site
+            If a list of atom types is specified,
+            the values of alpha and beta are ignored.
         atom_dictionary: dict
             Contains information about alpha and U values for each atom type
         bond_dictionary: dict
