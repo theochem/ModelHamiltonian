@@ -164,19 +164,16 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        one_body_term = (
-                diags([self.alpha for _ in range(self.n_sites)], format="csr")
-                + self.beta * self.connectivity_matrix
-        )
+        if (self.alpha is not None) and (self.beta is not None):
+            one_body_term = (
+                    diags([self.alpha for _ in range(self.n_sites)], format="csr")
+                    + self.beta * self.connectivity_matrix
+            )
 
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
-                for q in range(self.n_sites):
-                    if p != q:
-                        mult = 2 * self.gamma[p, q]
-                        one_body_term[p, p] -= mult * self.charges[p]
-                        one_body_term[q, q] -= mult * self.charges[q]
+                one_body_term[(p,p)] -= np.sum(self.gamma[p,:]) * self.charges[p]
 
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
@@ -240,20 +237,20 @@ class HamPPP(HamiltonianAPI):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = gamma[p, q]
+                        v[i, j] = 0.5*gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = gamma[p, q + n_sp]
+                        v[i, j] = 0.5*gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = gamma[p + n_sp, q]
+                        v[i, j] = 0.5*gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5*gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
