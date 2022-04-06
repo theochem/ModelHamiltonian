@@ -108,6 +108,8 @@ class HamiltonianAPI(ABC):
 
     def to_dense(self, Ms, dim=2):
         r"""
+        Convert to dense matrix.
+
         Convert sparse array of integrals
         in scipy csr format to dense numpy array.
 
@@ -304,7 +306,6 @@ class HamiltonianAPI(ABC):
         -------
         None
         """
-
         pass
 
     def save(self, fname: str, integral, basis):
@@ -361,7 +362,6 @@ def expand_sym(sym, integral, nbody):
         found in [this site]
         (http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
     """
-
     if sym not in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
     if nbody not in [1, 2]:
