@@ -49,7 +49,7 @@ jobs:
         python -m pip install .
     - name: Run tests
       shell: bash
-      run: 
+      run: |
         python -m pytest moha/test/test*
         python -m pycodestyle moha/. 
         python -m pydocstyle moha/.
