@@ -166,8 +166,8 @@ class HamPPP(HamiltonianAPI):
         """
         if (self.alpha is not None) and (self.beta is not None):
             one_body_term = (
-                    diags([self.alpha for _ in range(self.n_sites)], 
-                    format="csr")
+                    diags([self.alpha for _ in range(self.n_sites)],
+                          format="csr")
                     + self.beta * self.connectivity_matrix
             )
 
