@@ -174,7 +174,7 @@ class HamPPP(HamiltonianAPI):
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
-                one_body_term[(p,p)] -= np.sum(self.gamma[p,:]) *\
+                one_body_term[(p, p)] -= np.sum(self.gamma[p, :]) *\
                      self.charges[p]
 
         if basis == "spatial basis":
