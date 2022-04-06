@@ -50,6 +50,6 @@ jobs:
     - name: Run tests
       shell: bash
       run: |
-        python -m pytest moha/test/test*
+        python -m pytest -v moha/test/test*
         python -m pycodestyle moha/. 
         python -m pydocstyle moha/.
