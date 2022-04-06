@@ -4,7 +4,7 @@ import numpy as np
 
 from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
-from .api import HamiltonianAPI
+from .api import HamiltonianAPI, expand_sym
 
 from .utils import get_atom_type, convert_indices
 
@@ -256,7 +256,7 @@ class HamPPP(HamiltonianAPI):
                         v[i, j] = gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
-        self.two_body = v
+        self.two_body = expand_sym(sym, v, 2)
         # converting basis if necessary
         if basis == "spatial basis":
             v = self.to_spatial(sym=sym, dense=False, nbody=2)
