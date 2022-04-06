@@ -4,7 +4,7 @@ import numpy as np
 
 from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
-from .api import HamiltonianAPI
+from .api import HamiltonianAPI, expand_sym
 
 from .utils import get_atom_type, convert_indices
 
@@ -194,7 +194,7 @@ class HamPPP(HamiltonianAPI):
         else:
             raise TypeError("Wrong basis")
 
-        self.two_body = v
+        self.two_body = expand_sym(sym, v, 2)
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
 

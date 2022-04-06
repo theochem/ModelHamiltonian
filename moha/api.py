@@ -288,9 +288,10 @@ def expand_sym(sym, integral, nbody):
     else:
         # getting nonzero elements from the 2d _sparse_ array
         pq_array, rs_array = integral.nonzero()
+        n = int(np.sqrt(integral.shape[0]))
 
         for pq, rs in zip(pq_array, rs_array):
-            p, q, r, s = convert_indices(n, pq, rs)
+            p, q, r, s = convert_indices(n, int(pq), int(rs))
             if sym >= 2:
                 # 1. Transpose: <pq|rs>=<rs|pq>
                 rs, pq = convert_indices(n, r, s, p, q)
