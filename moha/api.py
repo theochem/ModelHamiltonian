@@ -254,7 +254,8 @@ class HamiltonianAPI(ABC):
 
         # Write header
         nactive = one_ints.shape[0]
-        print(f" &FCI NORB={nactive:d},NELEC={nelec:d},MS2={spinpol:d},", file=f)
+        print(f" &FCI NORB={nactive:d},"
+              f"NELEC={nelec:d},MS2={spinpol:d},", file=f)
         print(f"  ORBSYM= {','.join('1' for v in range(nactive))},", file=f)
         print("  ISYM=1", file=f)
         print(" &END", file=f)
@@ -268,12 +269,15 @@ class HamiltonianAPI(ABC):
         # converting 2d indices to 4d indices
         N = int(np.sqrt(two_ints.shape[0]))
         for p, q in zip(p_array, q_array):
-            i, j, k, l = convert_indices(N, int(p), int(q))
+            i, j, k, l_ = convert_indices(N, int(p), int(q))
             # changing indexing from physical to chemical notation
             j, k = k, j
-            if j > i and l > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l:
-                value = two_ints[(i, k, j, l)]
-                print(f"{value:23.16e} {i + 1:4d} {j + 1:4d} {k + 1:4d} {l + 1:4d}", file=f)
+            if j > i and l_ > k and\
+                    (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l_:
+                value = two_ints[(i, k, j, l_)]
+                print(f"{value:23.16e} "
+                      f"{i + 1:4d} {j + 1:4d} {k + 1:4d} "
+                      f"{l_ + 1:4d}", file=f)
         for i in range(nactive):
             for j in range(i + 1):
                 value = one_ints[i, j]
