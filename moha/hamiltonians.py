@@ -34,7 +34,9 @@ class HamPPP(HamiltonianAPI):
             Bz=None,
     ):
         r"""
-        Initialize Pariser-Parr-Pople Hamiltonian in the form:
+        Initialize Pariser-Parr-Pople Hamiltonian.
+
+        The form:
         :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
         h_{p q} a_{p}^{\dagger}
         a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
@@ -96,7 +98,7 @@ class HamPPP(HamiltonianAPI):
 
     def generate_connectivity_matrix(self):
         r"""
-        Generates connectivity matrix.
+        Generate connectivity matrix.
 
         Returns
         -------
@@ -150,6 +152,7 @@ class HamPPP(HamiltonianAPI):
     def generate_one_body_integral(self, basis: str, dense: bool):
         r"""
         Generate one body integral in spatial or spin orbital basis.
+
         Parameters
         ----------
         basis: str
@@ -269,6 +272,8 @@ class HamPPP(HamiltonianAPI):
 
 class HamHub(HamPPP):
     r"""
+    Hubbard Hamiltonian.
+
     The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
     It can be invoked by choosing gamma = 0 from PPP hamiltonian.
 
@@ -287,7 +292,7 @@ class HamHub(HamPPP):
             Bz=None,
     ):
         r"""
-        Hubbard Hamiltonian
+        Hubbard Hamiltonian.
 
         Parameters
         ----------
@@ -334,6 +339,8 @@ class HamHub(HamPPP):
 
 class HamHuck(HamHub):
     r"""
+    Huckle Hamiltonian.
+
     It can be invoked by choosing u_onsite = 0 from Hubbard hamiltonian.
     """
 
@@ -349,7 +356,7 @@ class HamHuck(HamHub):
             Bz=None,
     ):
         r"""
-        Huckle hamiltonian
+        Huckle hamiltonian.
 
         Parameters
         ----------

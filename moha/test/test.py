@@ -1,3 +1,5 @@
+"""Testing file."""
+
 import numpy as np
 from moha import *
 from numpy.testing import assert_allclose, assert_equal
@@ -6,10 +8,10 @@ from numpy.testing import assert_allclose, assert_equal
 def test_hub2():
     r"""
     2 site hubbard model with 2 electrons.
+
     Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812
     """
-
     hubbard = HamHub([("C1", "C2", 1)],
                      alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
     ecore = hubbard.generate_zero_body_integral()
@@ -31,6 +33,7 @@ def test_hub2():
 def test_hub4():
     r"""
     4 site hubbard model with periodic boundary conditions.
+
     The exact energy is Lieb-Wu equation:
     $\frac{E(U, d=1)}{t N_{s}}=-4 \int_{0}^{\infty} d x
     \frac{J_{0}(x) J_{1}(x)}{x[1+\exp (U x / 2)]}$
@@ -64,7 +67,7 @@ def test_hub4():
 
 def test_ethylene():
     r"""
-    Ethylene Huckel model
+    Ethylene Huckel model.
 
     $E_0 = 2 (\alpha + \beta)$
     """
@@ -97,7 +100,7 @@ def test_ethylene():
 
 def test_4():
     r"""
-    Cyclobutadiene, 4 site Huckel model with periodic boundary conditions
+    Cyclobutadiene, 4 site Huckel model with periodic boundary conditions.
 
     $E_0 = 2 (\alpha + 2 \beta) + 2 \alpha$
     """
@@ -127,9 +130,7 @@ def test_4():
 
 
 def test_ppp_api():
-    r"""
-    Six sites PPP model
-    """
+    r"""Six sites PPP model."""
     norb = 6
     connectivity = [("C1", "C2", 1),
                     ("C2", "C3", 1),
