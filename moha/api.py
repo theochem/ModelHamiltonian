@@ -8,6 +8,8 @@ import numpy as np
 
 from scipy.sparse import csr_matrix, lil_matrix
 
+from .utils import convert_indices
+
 __all__ = [
     "HamiltonianAPI",
 ]
@@ -401,4 +403,3 @@ def expand_sym(sym, integral, nbody):
                 integral[sp, qr] = integral[qp, sr]
                 integral[qr, sp] = integral[sr, qp]
     return integral
-  

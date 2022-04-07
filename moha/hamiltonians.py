@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
 from .api import HamiltonianAPI
 
-from .utils import get_atom_type, convert_indices
+from .utils import get_atom_type, convert_indices, expand_sym
 
 __all__ = [
     "HamPPP",
