@@ -25,7 +25,7 @@ class HamPPP(HamiltonianAPI):
             beta=-0.0533,
             u_onsite=None,
             gamma=None,
-            charges=0.417,
+            charges=None,
             sym=1,
             g_pair=None,
             atom_types=None,
@@ -141,12 +141,10 @@ class HamPPP(HamiltonianAPI):
         -------
         float
         """
-        if self.charges is None:
+        if self.charges is None or self.gamma is None:
             return 0
-        self.zero_energy = np.sum(np.outer(self.charges,
-                                           self.charges)) - np.dot(
-            self.charges, self.charges
-        )
+        else:
+            self.zero_energy = 0.5*self.charges@self.gamma@self.charges
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
