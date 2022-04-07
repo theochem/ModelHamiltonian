@@ -172,9 +172,9 @@ class HamPPP(HamiltonianAPI):
             for p in range(self.n_sites):
                 for q in range(self.n_sites):
                     if p != q:
-                        mult = 2 * self.gamma[p, q]
-                        one_body_term[p, p] -= 0.5 * mult * self.charges[p]
-                        one_body_term[q, q] -= 0.5 * mult * self.charges[q]
+                        mult = 0.5 * self.gamma[p, q]
+                        one_body_term[p, p] -= mult * self.charges[p]
+                        one_body_term[q, q] -= mult * self.charges[q]
 
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
