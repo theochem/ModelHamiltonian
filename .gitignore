@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+/build/
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
