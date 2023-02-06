@@ -106,7 +106,7 @@ class HamPPP(HamiltonianAPI):
         if self.charges is None or self.gamma is None:
             return 0
         else:
-            self.zero_energy = 0.5*self.charges@self.gamma@self.charges
+            self.zero_energy = 0.5 * self.charges @ self.gamma @ self.charges
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
@@ -200,20 +200,20 @@ class HamPPP(HamiltonianAPI):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = 0.5*gamma[p, q]
+                        v[i, j] = 0.5 * gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.5*gamma[p, q + n_sp]
+                        v[i, j] = 0.5 * gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.5*gamma[p + n_sp, q]
+                        v[i, j] = 0.5 * gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = 0.5*gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5 * gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
@@ -368,8 +368,9 @@ class HamHeisenberg(HamiltonianAPI):
         """
         Initialize XXZ Heisenberg Hamiltonian according to the formula:
         $$
-        \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+
-        \sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+        \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+         S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+          J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
         $$
 
         Parameters
@@ -396,11 +397,18 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         zero_energy: float
         """
-        zero_energy = -0.5*np.sum(self.mu-np.diag(self.J_eq)) + 0.25*np.sum(self.J_ax)
+        zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
+            + 0.25 * np.sum(self.J_ax)
         return zero_energy
 
-    def generate_one_body_integral(self, sym: int, dense: bool, basis='spinorbital'):
+    def generate_one_body_integral(self,
+                                   sym: int,
+                                   dense: bool,
+                                   basis='spinorbital'):
         pass
 
-    def generate_two_body_integral(self, sym: int, dense: bool, basis='spinorbital'):
+    def generate_two_body_integral(self,
+                                   sym: int,
+                                   dense: bool,
+                                   basis='spinorbital'):
         pass
