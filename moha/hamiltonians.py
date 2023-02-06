@@ -406,9 +406,9 @@ class HamHeisenberg(HamiltonianAPI):
                                    sym: int,
                                    dense: bool,
                                    basis='spinorbital'):
-        """
+        r"""
         Generate one body integral.
-        
+
         Parameters
         ----------
         sym
