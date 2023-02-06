@@ -365,13 +365,12 @@ class HamHeisenberg(HamiltonianAPI):
                  J_eq: np.ndarray,
                  J_ax: np.ndarray
                  ):
-        """
+        r"""
         Initialize XXZ Heisenberg Hamiltonian according to the formula:
-        $$
-        \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
-         S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
-          J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
-        $$
+
+        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
 
         Parameters
         ----------
