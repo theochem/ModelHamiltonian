@@ -385,9 +385,19 @@ class HamHeisenberg(HamiltonianAPI):
         self.J_ax = J_ax
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
+        self.zero_energy = None
+        self.one_body = None
+        self.two_body = None
 
     def generate_zero_body_integral(self):
-        pass
+        """
+        Generate zero body term
+        Returns
+        -------
+        zero_energy: float
+        """
+        zero_energy = -0.5*np.sum(self.mu-np.diag(self.J_eq)) + 0.25*np.sum(self.J_ax)
+        return zero_energy
 
     def generate_one_body_integral(self, sym: int, dense: bool, basis='spinorbital'):
         pass
