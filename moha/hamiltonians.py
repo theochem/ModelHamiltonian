@@ -366,8 +366,9 @@ class HamHeisenberg(HamiltonianAPI):
                  J_ax: np.ndarray
                  ):
         r"""
-        Initialize XXZ Heisenberg Hamiltonian according to the formula:
+        Initialize XXZ Heisenberg Hamiltonian.
 
+        The form:
         :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
         S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
         J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
@@ -391,7 +392,8 @@ class HamHeisenberg(HamiltonianAPI):
 
     def generate_zero_body_integral(self):
         """
-        Generate zero body term
+        Generate zero body term.
+
         Returns
         -------
         zero_energy: float
@@ -404,10 +406,36 @@ class HamHeisenberg(HamiltonianAPI):
                                    sym: int,
                                    dense: bool,
                                    basis='spinorbital'):
+        """
+        Generate one body integral.
+        
+        Parameters
+        ----------
+        sym
+        dense
+        basis
+
+        Returns
+        -------
+        None
+        """
         pass
 
     def generate_two_body_integral(self,
                                    sym: int,
                                    dense: bool,
                                    basis='spinorbital'):
+        """
+        Generate two body integral.
+
+        Parameters
+        ----------
+        sym
+        dense
+        basis
+
+        Returns
+        -------
+        None
+        """
         pass
