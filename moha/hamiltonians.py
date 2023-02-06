@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
 from .api import HamiltonianAPI
 
-from .utils import get_atom_type, convert_indices, expand_sym
+from .utils import convert_indices, expand_sym
 
 __all__ = [
     "HamPPP",
@@ -95,44 +95,6 @@ class HamPPP(HamiltonianAPI):
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
-
-    def generate_connectivity_matrix(self):
-        r"""
-        Generate connectivity matrix.
-
-        Returns
-        -------
-        tuple
-            (dictionary, np.ndarray)
-        """
-        max_site = 0
-        atoms_sites_lst = []
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            for pair in [(atom1_name, site1), (atom2_name, site2)]:
-                if pair not in atoms_sites_lst:
-                    atoms_sites_lst.append(pair)
-            if max_site < max(site1, site2):  # finding the max index of site
-                max_site = max(site1, site2)
-        self.n_sites = len(atoms_sites_lst)
-
-        if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
-            for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
-            self.atom_types = atom_types
-        connectivity_mtrx = np.zeros((max_site, max_site))
-
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond
-            # numbering of sites starts from 1
-
-        connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
-        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
-        return atoms_sites_lst, self.connectivity_matrix
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
@@ -325,7 +287,7 @@ class HamHub(HamPPP):
             beta=beta,
             u_onsite=u_onsite,
             gamma=None,
-            charges=0,
+            charges=np.array(0),
             sym=sym,
             atom_types=atom_types,
             atom_dictionary=atom_dictionary,
@@ -387,7 +349,6 @@ class HamHuck(HamHub):
             beta=beta,
             u_onsite=0,
             gamma=None,
-            charges=charges,
             sym=sym,
             atom_types=atom_types,
             atom_dictionary=atom_dictionary,
@@ -404,13 +365,32 @@ class HamHeisenberg(HamiltonianAPI):
                  J_eq: np.ndarray,
                  J_ax: np.ndarray
                  ):
-        pass
+        """
+        Initialize XXZ Heisenberg Hamiltonian according to the formula:
+        $$
+        \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+
+        \sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+        $$
+
+        Parameters
+        ----------
+        connectivity
+        mu
+        J_eq
+        J_ax
+        """
+        self.connectivity = connectivity
+        self.mu = np.array(mu)
+        self.J_eq = J_eq
+        self.J_ax = J_ax
+        self.atoms_num, self.connectivity_matrix = \
+            self.generate_connectivity_matrix()
 
     def generate_zero_body_integral(self):
         pass
 
-    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_one_body_integral(self, sym: int, dense: bool, basis='spinorbital'):
         pass
 
-    def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_two_body_integral(self, sym: int, dense: bool, basis='spinorbital'):
         pass
