@@ -395,3 +395,22 @@ class HamHuck(HamHub):
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
+
+
+class HamHeisenberg(HamiltonianAPI):
+    def __init__(self,
+                 connectivity: list,
+                 mu: list,
+                 J_eq: np.ndarray,
+                 J_ax: np.ndarray
+                 ):
+        pass
+
+    def generate_zero_body_integral(self):
+        pass
+
+    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+        pass
+
+    def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
+        pass
