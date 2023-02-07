@@ -403,17 +403,15 @@ class HamHeisenberg(HamiltonianAPI):
         return zero_energy
 
     def generate_one_body_integral(self,
-                                   sym: int,
                                    dense: bool,
-                                   basis='spinorbital'):
+                                   basis='spin orbital'):
         r"""
         Generate one body integral.
 
         Parameters
         ----------
-        sym
-        dense
-        basis
+        dense: bool
+        basis: str
 
         Returns
         -------

@@ -62,14 +62,12 @@ class HamiltonianAPI(ABC):
         pass
 
     @abstractmethod
-    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_one_body_integral(self, dense: bool, basis: str):
         r"""
         Generate one body integral in spatial or spin orbital basis.
 
         Parameters
         ----------
-        sym: int
-            symmetry -- [1, 2] default is 1
         basis: str
             ['spatial', 'spin orbital']
         dense: bool
