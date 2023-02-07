@@ -384,8 +384,12 @@ class HamHeisenberg(HamiltonianAPI):
         self.mu = np.array(mu)
         self.J_eq = J_eq
         self.J_ax = J_ax
-        self.atoms_num, self.connectivity_matrix = \
-            self.generate_connectivity_matrix()
+
+        # I live this commented till we decide whether we need
+        # to provide connectivity
+
+        # self.atoms_num, self.connectivity_matrix = \
+        #     self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -415,9 +419,16 @@ class HamHeisenberg(HamiltonianAPI):
 
         Returns
         -------
-        None
+        scipy.sparse.csr_matrix or np.ndarray
         """
-        pass
+        if basis != 'spin orbital':
+            raise ValueError('Selected Hamiltonian supports'
+                             ' only spin orbital basis')
+        one_body_term = 0.5*diags(self.mu - np.diag(self.J_eq) -
+                                  np.sum(self.J_ax, axis=1),
+                                  format="csr")
+        self.one_body = one_body_term
+        return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
                                    sym: int,
