@@ -463,25 +463,24 @@ class HamHeisenberg(HamiltonianAPI):
         if self.J_eq is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
-                    if p != q:
-                        i, j = convert_indices(n_sites, p, q, p, q)
-                        v[i, j] = 0.25 * self.J_eq[p, q]
+                    i, j = convert_indices(n_sites, p, q, p, q)
+                    v[i, j] = 0.25 * self.J_eq[p, q]
 
-                        i, j = convert_indices(n_sites, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
+                    i, j = convert_indices(n_sites, p, q + n_sp, p, q + n_sp)
+                    v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
 
-                        i, j = convert_indices(n_sites, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
+                    i, j = convert_indices(n_sites, p + n_sp, q, p + n_sp, q)
+                    v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
 
-                        i, j = convert_indices(n_sites,
-                                               p + n_sp,
-                                               q + n_sp,
-                                               p + n_sp,
-                                               q + n_sp)
-                        v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
+                    i, j = convert_indices(n_sites,
+                                           p + n_sp,
+                                           q + n_sp,
+                                           p + n_sp,
+                                           q + n_sp)
+                    v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
 
-                        i, j = convert_indices(n_sites, p, p + n_sp, q + n_sp, q)
-                        v[i, j] = self.J_eq[p, q]
+                    i, j = convert_indices(n_sites, p, p + n_sp, q + n_sp, q)
+                    v[i, j] = self.J_eq[p, q]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
