@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
 from .api import HamiltonianAPI
 
-from .utils import get_atom_type, convert_indices, expand_sym
+from .utils import convert_indices, expand_sym
 
 __all__ = [
     "HamPPP",
@@ -96,44 +96,6 @@ class HamPPP(HamiltonianAPI):
         self.one_body = None
         self.two_body = None
 
-    def generate_connectivity_matrix(self):
-        r"""
-        Generate connectivity matrix.
-
-        Returns
-        -------
-        tuple
-            (dictionary, np.ndarray)
-        """
-        max_site = 0
-        atoms_sites_lst = []
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            for pair in [(atom1_name, site1), (atom2_name, site2)]:
-                if pair not in atoms_sites_lst:
-                    atoms_sites_lst.append(pair)
-            if max_site < max(site1, site2):  # finding the max index of site
-                max_site = max(site1, site2)
-        self.n_sites = len(atoms_sites_lst)
-
-        if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
-            for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
-            self.atom_types = atom_types
-        connectivity_mtrx = np.zeros((max_site, max_site))
-
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond
-            # numbering of sites starts from 1
-
-        connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
-        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
-        return atoms_sites_lst, self.connectivity_matrix
-
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
 
@@ -144,7 +106,7 @@ class HamPPP(HamiltonianAPI):
         if self.charges is None or self.gamma is None:
             return 0
         else:
-            self.zero_energy = 0.5*self.charges@self.gamma@self.charges
+            self.zero_energy = 0.5 * self.charges @ self.gamma @ self.charges
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
@@ -238,20 +200,20 @@ class HamPPP(HamiltonianAPI):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = 0.5*gamma[p, q]
+                        v[i, j] = 0.5 * gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.5*gamma[p, q + n_sp]
+                        v[i, j] = 0.5 * gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.5*gamma[p + n_sp, q]
+                        v[i, j] = 0.5 * gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = 0.5*gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5 * gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
@@ -325,7 +287,7 @@ class HamHub(HamPPP):
             beta=beta,
             u_onsite=u_onsite,
             gamma=None,
-            charges=0,
+            charges=np.array(0),
             sym=sym,
             atom_types=atom_types,
             atom_dictionary=atom_dictionary,
@@ -387,7 +349,6 @@ class HamHuck(HamHub):
             beta=beta,
             u_onsite=0,
             gamma=None,
-            charges=charges,
             sym=sym,
             atom_types=atom_types,
             atom_dictionary=atom_dictionary,
@@ -395,3 +356,95 @@ class HamHuck(HamHub):
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
+
+
+class HamHeisenberg(HamiltonianAPI):
+    def __init__(self,
+                 connectivity: list,
+                 mu: list,
+                 J_eq: np.ndarray,
+                 J_ax: np.ndarray
+                 ):
+        r"""
+        Initialize XXZ Heisenberg Hamiltonian.
+
+        The form:
+        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
+
+        Parameters
+        ----------
+        connectivity
+        mu
+        J_eq
+        J_ax
+        """
+        self.connectivity = connectivity
+        self.mu = np.array(mu)
+        self.J_eq = J_eq
+        self.J_ax = J_ax
+
+        # I live this commented till we decide whether we need
+        # to provide connectivity
+
+        # self.atoms_num, self.connectivity_matrix = \
+        #     self.generate_connectivity_matrix()
+        self.zero_energy = None
+        self.one_body = None
+        self.two_body = None
+
+    def generate_zero_body_integral(self):
+        """
+        Generate zero body term.
+
+        Returns
+        -------
+        zero_energy: float
+        """
+        zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
+            + 0.25 * np.sum(self.J_ax)
+        return zero_energy
+
+    def generate_one_body_integral(self,
+                                   dense: bool,
+                                   basis='spin orbital'):
+        r"""
+        Generate one body integral.
+
+        Parameters
+        ----------
+        dense: bool
+        basis: str
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
+        """
+        if basis != 'spin orbital':
+            raise ValueError('Selected Hamiltonian supports'
+                             ' only spin orbital basis')
+        one_body_term = 0.5*diags(self.mu - np.diag(self.J_eq) -
+                                  np.sum(self.J_ax, axis=1),
+                                  format="csr")
+        self.one_body = one_body_term
+        return self.one_body.todense() if dense else self.one_body
+
+    def generate_two_body_integral(self,
+                                   sym: int,
+                                   dense: bool,
+                                   basis='spinorbital'):
+        """
+        Generate two body integral.
+
+        Parameters
+        ----------
+        sym
+        dense
+        basis
+
+        Returns
+        -------
+        None
+        """
+        pass

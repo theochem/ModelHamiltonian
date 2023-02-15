@@ -8,7 +8,7 @@ import numpy as np
 
 from scipy.sparse import csr_matrix, lil_matrix
 
-from .utils import convert_indices
+from .utils import convert_indices, get_atom_type
 
 __all__ = [
     "HamiltonianAPI",
@@ -18,20 +18,56 @@ __all__ = [
 class HamiltonianAPI(ABC):
     r"""Hamiltonian abstract base class."""
 
+    def generate_connectivity_matrix(self):
+        r"""
+        Generate connectivity matrix.
+
+        Returns
+        -------
+        tuple
+            (dictionary, np.ndarray)
+        """
+        max_site = 0
+        atoms_sites_lst = []
+        for atom1, atom2, bond in self.connectivity:
+            atom1_name, site1 = get_atom_type(atom1)
+            atom2_name, site2 = get_atom_type(atom2)
+            for pair in [(atom1_name, site1), (atom2_name, site2)]:
+                if pair not in atoms_sites_lst:
+                    atoms_sites_lst.append(pair)
+            if max_site < max(site1, site2):  # finding the max index of site
+                max_site = max(site1, site2)
+        self.n_sites = len(atoms_sites_lst)
+
+        if self.atom_types is None:
+            atom_types = [None for i in range(max_site + 1)]
+            for atom, site in atoms_sites_lst:
+                atom_types[site] = atom
+            self.atom_types = atom_types
+        connectivity_mtrx = np.zeros((max_site, max_site))
+
+        for atom1, atom2, bond in self.connectivity:
+            atom1_name, site1 = get_atom_type(atom1)
+            atom2_name, site2 = get_atom_type(atom2)
+            connectivity_mtrx[site1 - 1, site2 - 1] = bond
+            # numbering of sites starts from 1
+
+        connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
+        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
+        return atoms_sites_lst, self.connectivity_matrix
+
     @abstractmethod
     def generate_zero_body_integral(self):
         r"""Generate zero body integral."""
         pass
 
     @abstractmethod
-    def generate_one_body_integral(self, sym: int, basis: str, dense: bool):
+    def generate_one_body_integral(self, dense: bool, basis: str):
         r"""
         Generate one body integral in spatial or spin orbital basis.
 
         Parameters
         ----------
-        sym: int
-            symmetry -- [1, 2] default is 1
         basis: str
             ['spatial', 'spin orbital']
         dense: bool
