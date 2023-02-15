@@ -12,6 +12,7 @@ __all__ = [
     "HamPPP",
     "HamHuck",
     "HamHub",
+    "HamHeisenberg"
 ]
 
 
@@ -403,12 +404,12 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-            + 0.25 * np.sum(self.J_ax)
+                      + 0.25 * np.sum(self.J_ax)
         return zero_energy
 
     def generate_one_body_integral(self,
                                    dense: bool,
-                                   basis='spin orbital'):
+                                   basis='spinorbital basis'):
         r"""
         Generate one body integral.
 
@@ -421,30 +422,67 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        if basis != 'spin orbital':
+        if basis != 'spinorbital basis':
             raise ValueError('Selected Hamiltonian supports'
-                             ' only spin orbital basis')
-        one_body_term = 0.5*diags(self.mu - np.diag(self.J_eq) -
-                                  np.sum(self.J_ax, axis=1),
-                                  format="csr")
+                             ' only spinorbital basis')
+        one_body_term = 0.5 * diags(self.mu - np.diag(self.J_eq) -
+                                    np.sum(self.J_ax, axis=1),
+                                    format="csr")
         self.one_body = one_body_term
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
                                    sym: int,
                                    dense: bool,
-                                   basis='spinorbital'):
-        """
-        Generate two body integral.
+                                   basis='spinorbital basis'):
+        r"""
+        Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
-        sym
-        dense
-        basis
+        basis: str
+            ['spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
 
         Returns
         -------
-        None
+        scipy.sparse.csr_matrix or np.ndarray
         """
-        pass
+        if basis != 'spinorbital basis':
+            raise ValueError('Selected Hamiltonian supports'
+                             ' only spinorbital basis')
+
+        n_sp = self.n_sites
+        v = lil_matrix((n_sp * n_sp, n_sp * n_sp))
+
+        if self.J_eq is not None:
+            for p in range(n_sp):
+                for q in range(n_sp):
+                    if p != q:
+                        i, j = convert_indices(n_sp, p, q, p, q)
+                        v[i, j] = 0.25 * self.J_eq[p, q]
+
+                        i, j = convert_indices(n_sp, p, q + n_sp, p, q + n_sp)
+                        v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
+
+                        i, j = convert_indices(n_sp, p + n_sp, q, p + n_sp, q)
+                        v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
+
+                        i, j = convert_indices(n_sp,
+                                               p + n_sp,
+                                               q + n_sp,
+                                               p + n_sp,
+                                               q + n_sp)
+                        v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
+
+                        i, j = convert_indices(n_sp, p, p + n_sp, q + n_sp, q)
+                        v[i, j] = self.J_eq[p, q]
+
+        v = v.tocsr()
+        self.two_body = expand_sym(sym, v, 2)
+        self.two_body = v
+        # return either sparse csr array (default) or dense N^2*N^2 array
+        return self.to_dense(v, dim=4) if dense else v
