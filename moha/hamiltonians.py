@@ -385,6 +385,7 @@ class HamHeisenberg(HamiltonianAPI):
         self.mu = np.array(mu)
         self.J_eq = J_eq
         self.J_ax = J_ax
+        self.n_sites = self.J_eq.shape[0]
 
         # I live this commented till we decide whether we need
         # to provide connectivity
@@ -455,30 +456,31 @@ class HamHeisenberg(HamiltonianAPI):
             raise ValueError('Selected Hamiltonian supports'
                              ' only spinorbital basis')
 
-        n_sp = self.n_sites
-        v = lil_matrix((n_sp * n_sp, n_sp * n_sp))
+        n_sp = self.n_sites//2
+        n_sites = self.n_sites
+        v = lil_matrix((n_sites * n_sites, n_sites * n_sites))
 
         if self.J_eq is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
-                        i, j = convert_indices(n_sp, p, q, p, q)
+                        i, j = convert_indices(n_sites, p, q, p, q)
                         v[i, j] = 0.25 * self.J_eq[p, q]
 
-                        i, j = convert_indices(n_sp, p, q + n_sp, p, q + n_sp)
+                        i, j = convert_indices(n_sites, p, q + n_sp, p, q + n_sp)
                         v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
 
-                        i, j = convert_indices(n_sp, p + n_sp, q, p + n_sp, q)
+                        i, j = convert_indices(n_sites, p + n_sp, q, p + n_sp, q)
                         v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
 
-                        i, j = convert_indices(n_sp,
+                        i, j = convert_indices(n_sites,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
                         v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
 
-                        i, j = convert_indices(n_sp, p, p + n_sp, q + n_sp, q)
+                        i, j = convert_indices(n_sites, p, p + n_sp, q + n_sp, q)
                         v[i, j] = self.J_eq[p, q]
 
         v = v.tocsr()
