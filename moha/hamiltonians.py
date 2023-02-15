@@ -360,6 +360,8 @@ class HamHuck(HamHub):
 
 
 class HamHeisenberg(HamiltonianAPI):
+    r"""XXZ Heisenberg Hamiltonian."""
+
     def __init__(self,
                  connectivity: list,
                  mu: list,
@@ -405,7 +407,7 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-                      + 0.25 * np.sum(self.J_ax)
+            + 0.25 * np.sum(self.J_ax)
         return zero_energy
 
     def generate_one_body_integral(self,
