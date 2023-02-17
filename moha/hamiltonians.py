@@ -398,7 +398,6 @@ class HamHeisenberg(HamiltonianAPI):
         self.one_body = None
         self.two_body = None
 
-
     def generate_zero_body_integral(self):
         """
         Generate zero body term.
@@ -468,7 +467,6 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
