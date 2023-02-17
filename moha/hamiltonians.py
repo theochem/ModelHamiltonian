@@ -387,13 +387,13 @@ class HamHeisenberg(HamiltonianAPI):
         self.mu = np.array(mu)
         self.J_eq = J_eq
         self.J_ax = J_ax
-        self.n_sites = self.J_eq.shape[0]
-
+        self.n_sites = None
+        self.atom_types = None
         # I live this commented till we decide whether we need
         # to provide connectivity
 
-        # self.atoms_num, self.connectivity_matrix = \
-        #     self.generate_connectivity_matrix()
+        self.atoms_num, self.connectivity_matrix = \
+            self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -431,7 +431,20 @@ class HamHeisenberg(HamiltonianAPI):
         one_body_term = 0.5 * diags(self.mu - np.diag(self.J_eq) -
                                     np.sum(self.J_ax, axis=1),
                                     format="csr")
-        self.one_body = one_body_term
+
+        # converting to spinorbital basis
+        one_body_term_spin = hstack(
+            [one_body_term, csr_matrix(one_body_term.shape)], format="csr"
+        )
+        one_body_term_spin = vstack(
+            [
+                one_body_term_spin,
+                hstack([csr_matrix(one_body_term.shape),
+                        one_body_term], format="csr"),
+            ],
+            format="csr",
+        )
+        self.one_body = one_body_term_spin
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
@@ -458,30 +471,39 @@ class HamHeisenberg(HamiltonianAPI):
             raise ValueError('Selected Hamiltonian supports'
                              ' only spinorbital basis')
 
-        n_sp = self.n_sites//2
-        n_sites = self.n_sites
-        v = lil_matrix((n_sites * n_sites, n_sites * n_sites))
+        n_sp = self.n_sites
+        Nv = 2 * n_sp
+        v = lil_matrix((Nv * Nv, Nv * Nv))
+
+        if basis == "spinorbital basis" and \
+                self.J_eq.shape != (2 * n_sp, 2 * n_sp):
+            raise TypeError("J_eq matrix has wrong basis")
+
+        if basis == "spinorbital basis" and \
+                self.J_ax.shape != (2 * n_sp, 2 * n_sp):
+            raise TypeError("J_ax matrix has wrong basis")
+
 
         if self.J_eq is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
-                    i, j = convert_indices(n_sites, p, q, p, q)
+                    i, j = convert_indices(Nv, p, q, p, q)
                     v[i, j] = 0.25 * self.J_eq[p, q]
 
-                    i, j = convert_indices(n_sites, p, q + n_sp, p, q + n_sp)
+                    i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
                     v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
 
-                    i, j = convert_indices(n_sites, p + n_sp, q, p + n_sp, q)
+                    i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
                     v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
 
-                    i, j = convert_indices(n_sites,
+                    i, j = convert_indices(Nv,
                                            p + n_sp,
                                            q + n_sp,
                                            p + n_sp,
                                            q + n_sp)
                     v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
 
-                    i, j = convert_indices(n_sites, p, p + n_sp, q + n_sp, q)
+                    i, j = convert_indices(Nv, p, p + n_sp, q + n_sp, q)
                     v[i, j] = self.J_eq[p, q]
 
         v = v.tocsr()
