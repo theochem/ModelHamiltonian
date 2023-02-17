@@ -483,7 +483,6 @@ class HamHeisenberg(HamiltonianAPI):
                 self.J_ax.shape != (2 * n_sp, 2 * n_sp):
             raise TypeError("J_ax matrix has wrong basis")
 
-
         if self.J_eq is not None:
             for p in range(n_sp):
                 for q in range(n_sp):
