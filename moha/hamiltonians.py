@@ -398,6 +398,7 @@ class HamHeisenberg(HamiltonianAPI):
         self.one_body = None
         self.two_body = None
 
+
     def generate_zero_body_integral(self):
         """
         Generate zero body term.
@@ -425,26 +426,26 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        if basis != 'spinorbital basis':
-            raise ValueError('Selected Hamiltonian supports'
-                             ' only spinorbital basis')
-        one_body_term = 0.5 * diags(self.mu - np.diag(self.J_eq) -
-                                    np.sum(self.J_ax, axis=1),
+        if basis == 'spatial basis':
+            if self.J_ax.shape != (self.n_sites, self.n_sites):
+                raise TypeError("J_ax matrix has wrong basis")
+            if self.J_eq.shape != (self.n_sites, self.n_sites):
+                raise TypeError("J_eq matrix has wrong basis")
+
+            J_ax = self.J_ax
+            J_eq = self.J_eq
+
+        elif basis == "spinorbital basis":
+            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites):
+                raise TypeError("J_ax matrix has wrong basis")
+            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites):
+                raise TypeError("J_eq matrix has wrong basis")
+
+        one_body_term = 0.5 * diags(self.mu - np.diag(J_eq) -
+                                    np.sum(J_ax, axis=1),
                                     format="csr")
 
-        # converting to spinorbital basis
-        one_body_term_spin = hstack(
-            [one_body_term, csr_matrix(one_body_term.shape)], format="csr"
-        )
-        one_body_term_spin = vstack(
-            [
-                one_body_term_spin,
-                hstack([csr_matrix(one_body_term.shape),
-                        one_body_term], format="csr"),
-            ],
-            format="csr",
-        )
-        self.one_body = one_body_term_spin
+        self.one_body = one_body_term
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
@@ -467,46 +468,56 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        if basis != 'spinorbital basis':
-            raise ValueError('Selected Hamiltonian supports'
-                             ' only spinorbital basis')
 
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
 
-        if basis == "spinorbital basis" and \
-                self.J_eq.shape != (2 * n_sp, 2 * n_sp):
-            raise TypeError("J_eq matrix has wrong basis")
-
-        if basis == "spinorbital basis" and \
-                self.J_ax.shape != (2 * n_sp, 2 * n_sp):
-            raise TypeError("J_ax matrix has wrong basis")
-
         if self.J_eq is not None:
+            if basis == "spinorbital basis":
+                if self.J_eq.shape != (2 * n_sp, 2 * n_sp):
+                    raise TypeError("J_eq matrix has wrong basis")
+                J_eq = self.J_eq
+
+            if basis == "spatial basis" and \
+                    self.J_eq.shape == (n_sp, n_sp):
+                zeros_block = np.zeros((n_sp, n_sp))
+                J_eq = np.vstack(
+                    [np.hstack([self.J_eq, zeros_block]),
+                     np.hstack([zeros_block, self.J_eq])]
+                )
+
             for p in range(n_sp):
                 for q in range(n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
-                    v[i, j] = 0.25 * self.J_eq[p, q]
+                    v[i, j] = 0.25 * J_eq[p, q]
 
                     i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                    v[i, j] = 0.25 * self.J_eq[p, q + n_sp]
+                    v[i, j] = 0.25 * J_eq[p, q + n_sp]
 
                     i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                    v[i, j] = 0.25 * self.J_eq[p + n_sp, q]
+                    v[i, j] = 0.25 * J_eq[p + n_sp, q]
 
                     i, j = convert_indices(Nv,
                                            p + n_sp,
                                            q + n_sp,
                                            p + n_sp,
                                            q + n_sp)
-                    v[i, j] = 0.25 * self.J_eq[p + n_sp, q + n_sp]
+                    v[i, j] = 0.25 * J_eq[p + n_sp, q + n_sp]
 
                     i, j = convert_indices(Nv, p, p + n_sp, q + n_sp, q)
-                    v[i, j] = self.J_eq[p, q]
+                    v[i, j] = J_eq[p, q]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
+        self.two_body = v
+        if basis == "spatial basis":
+            v = self.to_spatial(sym=sym, dense=False, nbody=2)
+        elif basis == "spinorbital basis":
+            pass
+        else:
+            raise TypeError("Wrong basis")
+
         self.two_body = v
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
