@@ -227,6 +227,11 @@ class HamiltonianAPI(ABC):
                                                p, p + self.n_sites,
                                                q, q + self.n_sites)
                     spatial_int[pp, qq] = integral[pp_, qq_]
+
+                    p_q, p_q = convert_indices(n,
+                                               p+self.n_sites, q,
+                                               p+self.n_sites, q)
+                    spatial_int[pq, pq] += integral[p_q, p_q]
         else:
             raise ValueError("Wrong integral input.")
         spatial_int = expand_sym(sym, spatial_int, nbody)
