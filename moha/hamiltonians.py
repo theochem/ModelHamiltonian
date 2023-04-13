@@ -394,7 +394,7 @@ class HamHuck(HamHub):
         kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T)
         
         for atom in self.atom_types:
-            self.atom_dictionary[atom] = hx_dictionary[atom]
+            self.atom_dictionary[atom] = -0.414 + hx_dictionary[atom]*abs(-0.0533)
 
         """"
         alphax_dictionary = {}
