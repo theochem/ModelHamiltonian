@@ -321,7 +321,7 @@ class HamHuck(HamHub):
         Parameters
         ----------
         connectivity: list
-            list of tuples that specifies sites and bonds between them
+            list of tuples that specifies sites, bonds between them and atom coordination
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -337,7 +337,7 @@ class HamHuck(HamHub):
             If a list of atom types is specified,
             the values of alpha and beta are ignored.
         atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
+            Contains information about alpha values for each atom type
         bond_dictionary: dict
             Contains information about beta values for each bond type
         Bz: np.ndarray
@@ -356,6 +356,29 @@ class HamHuck(HamHub):
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
+    
+    def assign_Rauks_parameters(self):
+        r"""Assigns the alpha and beta value from Rauk's table"""
+        hx_dictionary = {
+            "C":  0.0, 
+            "B":  0.45, 
+            "N2":-0.51,
+            "N3":-1.37,
+            "O1":-0.97,
+            "O2":-2.09,
+            "F": -2.71,
+            "Si":  0.0,
+            "P2": -0.19,
+            "P3": -0.75,
+            "S1": -0.46,
+            "S2": -1.11,
+            "Cl": -1.48
+            }
+        alphax_dictionary = {}
+        for x in hx_dictionary.keys():
+            alpha_x = (-0.414 + hx_dictionary[x]*abs(-0.0533))
+            alphax_dictionary[x] = alpha_x
+
 
 
 class HamHeisenberg(HamiltonianAPI):
