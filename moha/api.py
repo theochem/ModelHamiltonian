@@ -32,17 +32,20 @@ class HamiltonianAPI(ABC):
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1, atom1_coord = get_atom_type(atom1)
             atom2_name, site2, atom2_coord = get_atom_type(atom2)
-            for pair in [(atom1_name, site1), (atom2_name, site2)]:
-                if pair not in atoms_sites_lst:
-                    atoms_sites_lst.append(pair)
+            for trip in [(atom1_name, site1,atom1_coord), (atom2_name, site2,atom2_coord)]:
+                if trip not in atoms_sites_lst:
+                    atoms_sites_lst.append(trip)
             if max_site < max(site1, site2):  # finding the max index of site
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
             atom_types = [None for i in range(max_site)] 
-            for atom, site in atoms_sites_lst:
-                atom_types[site-1] = atom
+            for atom, site, cor in atoms_sites_lst:
+                if cor != None:
+                    atom_types[site-1] = atom + str(cor)
+                else:
+                    atom_types[site-1] = atom
             self.atom_types = atom_types
         
         connectivity_mtrx = np.zeros((max_site, max_site))

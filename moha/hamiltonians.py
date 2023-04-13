@@ -333,7 +333,7 @@ class HamHuck(HamHub):
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
         atom_types: list
             A list of dimension equal to the number of sites
-            specifying the atom type of each site
+            specifying the atom type of each site and coordination
             If a list of atom types is specified,
             the values of alpha and beta are ignored.
         atom_dictionary: dict
@@ -392,7 +392,6 @@ class HamHuck(HamHub):
         ])
         kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T)
 
-        
         """"
         alphax_dictionary = {}
         for x in hx_dictionary.keys():
