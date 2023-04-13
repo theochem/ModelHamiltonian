@@ -30,8 +30,8 @@ class HamiltonianAPI(ABC):
         max_site = 0
         atoms_sites_lst = []
         for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
             for pair in [(atom1_name, site1), (atom2_name, site2)]:
                 if pair not in atoms_sites_lst:
                     atoms_sites_lst.append(pair)
@@ -47,8 +47,8 @@ class HamiltonianAPI(ABC):
         
         connectivity_mtrx = np.zeros((max_site, max_site))
         for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
             connectivity_mtrx[site1 - 1, site2 - 1] = bond
             # numbering of sites starts from 1
 
