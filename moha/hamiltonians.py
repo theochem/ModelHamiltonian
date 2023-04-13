@@ -337,7 +337,8 @@ class HamHuck(HamHub):
             If a list of atom types is specified,
             the values of alpha and beta are ignored.
         atom_dictionary: dict
-            Contains information about alpha values for each atom type
+            Contains information about alpha values for each atom
+            If atom_types is given it is automatically constructed from Rauks table
         bond_dictionary: dict
             Contains information about beta values for each bond type
         Bz: np.ndarray
@@ -391,6 +392,9 @@ class HamHuck(HamHub):
         [-0.62 , -0.41 , -0.77 , -0.80 , -0.88 , -0.70 , -0.51 , -0.34 , -0.35 , -0.55 , -0.52 , -0.59  ,-0.68 ],
         ])
         kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T)
+        
+        for atom in self.atom_types:
+            self.atom_dictionary[atom] = hx_dictionary[atom]
 
         """"
         alphax_dictionary = {}
