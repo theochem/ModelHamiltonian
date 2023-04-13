@@ -53,17 +53,26 @@ def convert_indices(N, *args):
 
 def get_atom_type(atom):
     r"""
-    Return atom type and site index; "C23" -> "C", 23.
+    Return atom type, site index and coordination if given; 
+    "C23" -> "C", 23. "C5_4" -> "C", 5, 4. 
 
     :param atom: str
     :return: tuple
-
     """
-    i = 1
-    while atom[-i:].isdigit():
-        i += 1
-    i -= 1
-    return atom[:-i], int(atom[-i:])
+    if "_" in atom:
+        c = atom[-1]
+        atom = atom[:-2]
+        i = 1
+        while atom[-i:].isdigit():
+            i += 1
+        i -= 1
+    else:
+        i = 1
+        while atom[-i:].isdigit():
+            i += 1
+        i -= 1
+        c= None
+    return atom[:-i], int(atom[-i:]), c
 
 
 def expand_sym(sym, integral, nbody):
