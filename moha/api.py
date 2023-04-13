@@ -40,12 +40,12 @@ class HamiltonianAPI(ABC):
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
+            atom_types = [None for i in range(max_site)] 
             for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
+                atom_types[site-1] = atom
             self.atom_types = atom_types
+        
         connectivity_mtrx = np.zeros((max_site, max_site))
-
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
