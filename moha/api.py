@@ -121,9 +121,9 @@ class HamiltonianAPI(ABC):
         param_diag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
         for atom, site, cor in self.atoms_num:
             if cor != None:
-                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom+str(cor)] - (-0.414)
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom+str(cor)] 
             else:
-                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom] - (-0.414)
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom] 
         self.param_diag_mtrx = param_diag_mtrx
         
         #Defines the non diagonal elements of the huckel parameters matrix
@@ -132,13 +132,13 @@ class HamiltonianAPI(ABC):
             atom1_name, site1, atom1_coord = get_atom_type(atom1)
             atom2_name, site2, atom2_coord = get_atom_type(atom2)
             if atom1_coord and atom2_coord!= None:
-                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name+str(atom2_coord)]  / abs(-0.0533)
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name+str(atom2_coord)]  
             elif atom1_coord != None:
-                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name] / abs(-0.0533)
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name] 
             elif atom2_coord != None:
-                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name+str(atom2_coord)] / abs(-0.0533)
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name+str(atom2_coord)] 
             else:
-                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name] / abs(-0.0533)
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name] 
         param_nodiag_mtrx = np.minimum(param_nodiag_mtrx, param_nodiag_mtrx.T)
         self.param_nodiag_mtrx = param_nodiag_mtrx
 

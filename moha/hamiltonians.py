@@ -128,9 +128,7 @@ class HamPPP(HamiltonianAPI):
             )
         else:
             one_body_term = (
-                np.multiply(0.0533 * self.connectivity_matrix,
-                            self.param_nodiag_mtrx) +
-                diags([-0.414 for _ in range(self.n_sites)], format="csr") + self.param_diag_mtrx
+                np.multiply(self.connectivity_matrix, self.param_nodiag_mtrx) + self.param_diag_mtrx
             )
 
         one_body_term  = csr_matrix(one_body_term)
