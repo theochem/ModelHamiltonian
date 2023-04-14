@@ -21,6 +21,8 @@ class HamPPP(HamiltonianAPI):
     def __init__(
             self,
             connectivity: list,
+            alpha=-0.414,
+            beta=-0.0533,
             u_onsite=None,
             gamma=None,
             charges=None,
@@ -79,6 +81,8 @@ class HamPPP(HamiltonianAPI):
         self._sym = sym
         self.n_sites = None
         self.connectivity = connectivity
+        self.alpha = alpha
+        self.beta = beta
         self.u_onsite = u_onsite
         self.gamma = gamma
         self.charges = charges
@@ -86,11 +90,11 @@ class HamPPP(HamiltonianAPI):
         #self.atom_types = atom_types
         #self.atom_dictionary = atom_dictionary
         #self.bond_dictionary = bond_dictionary
+        self.atoms_num, self.connectivity_matrix, self.atom_types= \
+        self.generate_connectivity_matrix()
         self.param_diag_mtrx,self.param_nodiag_mtrx, \
         self.atom_dictionary,self.bond_dictionary = \
             self.assign_Huckel_parameters()
-        self.atoms_num, self.connectivity_matrix, self.atom_types= \
-            self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -125,16 +129,17 @@ class HamPPP(HamiltonianAPI):
         """
         if all(l == 'C' for l in self.atom_types):
             one_body_term = (
-                diags([-0.414 for _ in range(self.n_sites)], format="csr")
-                + -0.0533 * self.connectivity_matrix
+                diags([self.alpha for _ in range(self.n_sites)])
+                + self.beta * self.connectivity_matrix
             )
         else:
             one_body_term = (
+                np.multiply(0.0533 * self.connectivity_matrix,
+                            self.param_nodiag_mtrx) +
                 diags([-0.414 for _ in range(self.n_sites)], format="csr") + self.param_diag_mtrx
-                + np.multiply(0.0533 * self.connectivity_matrix ,self.param_nodiag_mtrx)
             )
 
-
+        one_body_term  = csr_matrix(one_body_term)
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
@@ -143,7 +148,7 @@ class HamPPP(HamiltonianAPI):
                         mult = 0.5 * self.gamma[p, q]
                         one_body_term[p, p] -= mult * self.charges[p]
                         one_body_term[q, q] -= mult * self.charges[q]
-
+        
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
         elif basis == "spinorbital basis":
@@ -249,6 +254,8 @@ class HamHub(HamPPP):
             self,
             connectivity: list,
             u_onsite=None,
+            alpha=-0.414,
+            beta=-0.0533,
             sym=1,
             #atom_types=None,
             #atom_dictionary=None,
@@ -287,13 +294,15 @@ class HamHub(HamPPP):
         """
         super().__init__(
             connectivity=connectivity,
+            alpha=-0.414,
+            beta=-0.0533,
             u_onsite=u_onsite,
             gamma=None,
             charges=np.array(0),
             sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
+            #atom_types=atom_types,
+            #atom_dictionary=atom_dictionary,
+            #bond_dictionary=bond_dictionary,
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
@@ -309,6 +318,8 @@ class HamHuck(HamHub):
     def __init__(
             self,
             connectivity: list,
+            alpha=-0.414,
+            beta=-0.0533,
             sym=1,
             #atom_types=None,
             #atom_dictionary=None,
@@ -347,7 +358,9 @@ class HamHuck(HamHub):
         super().__init__(
             connectivity=connectivity,
             u_onsite=0,
-            gamma=None,
+            alpha=-0.414,
+            beta=-0.0533,
+            #gamma=None,
             sym=sym,
             #atom_types=atom_types,
             #atom_dictionary=atom_dictionary,

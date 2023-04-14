@@ -39,14 +39,14 @@ class HamiltonianAPI(ABC):
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
 
-        if self.atom_types is None:
-            atom_types = [None for i in range(max_site)] 
-            for atom, site, cor in atoms_sites_lst:
-                if cor != None:
-                    atom_types[site-1] = atom + str(cor)
-                else:
-                    atom_types[site-1] = atom
-            self.atom_types = atom_types
+        atom_types = [None for i in range(max_site)] 
+        for atom, site, cor in atoms_sites_lst:
+            if cor != None:
+                atom_types[site-1] = atom + str(cor)
+            else:
+                atom_types[site-1] = atom
+        self.atom_types = atom_types
+            
         
         connectivity_mtrx = np.zeros((max_site, max_site))
         for atom1, atom2, bond in self.connectivity:
@@ -56,7 +56,8 @@ class HamiltonianAPI(ABC):
             # numbering of sites starts from 1
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
-        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
+        #self.connectivity_matrix_csr = csr_matrix(connectivity_mtrx)
+        self.connectivity_matrix = connectivity_mtrx
         return atoms_sites_lst, self.connectivity_matrix, atom_types
 
     def assign_Huckel_parameters(self):
@@ -94,12 +95,13 @@ class HamiltonianAPI(ABC):
         [-0.62 , -0.41 , -0.77 , -0.80 , -0.88 , -0.70 , -0.51 , -0.34 , -0.35 , -0.55 , -0.52 , -0.59  ,-0.68 ],
         ])
         kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T) #Symmetric
-        
+
         atom_dictionary = {}
         #Creates the atom dictionary with the alphax values for the atoms in the system
         for atom in self.atom_types:
             atom_dictionary[atom] = -0.414 + hx_dictionary[atom]*abs(-0.0533)
         self.atom_dictionary = atom_dictionary
+        
         #Creates the bond dictionary from the Rauk table from the atom_types list
         j = 0
         bond_dictionary={}
@@ -107,7 +109,13 @@ class HamiltonianAPI(ABC):
             if j < len(self.atom_types)-1:
                 next_atom = self.atom_types[j+1]
                 bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                bond_dictionary[next_atom+atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
                 j += 1
+            else:
+                next_atom = self.atom_types[0]
+                bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                bond_dictionary[next_atom+atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+
         self.bond_dictionary = bond_dictionary
         #Defines the diagonal elements of the huckel parameters matrix
         param_diag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
