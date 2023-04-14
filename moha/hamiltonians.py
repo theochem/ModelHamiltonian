@@ -28,9 +28,6 @@ class HamPPP(HamiltonianAPI):
             charges=None,
             sym=1,
             g_pair=None,
-            #atom_types=None,
-            #atom_dictionary=None,
-            #bond_dictionary=None,
             Bz=None,
     ):
         r"""
@@ -87,9 +84,6 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.g_pair = g_pair
-        #self.atom_types = atom_types
-        #self.atom_dictionary = atom_dictionary
-        #self.bond_dictionary = bond_dictionary
         self.atoms_num, self.connectivity_matrix, self.atom_types= \
         self.generate_connectivity_matrix()
         self.param_diag_mtrx,self.param_nodiag_mtrx, \
@@ -257,9 +251,6 @@ class HamHub(HamPPP):
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
-            #atom_types=None,
-            #atom_dictionary=None,
-            #bond_dictionary=None,
             Bz=None,
     ):
         r"""
@@ -300,9 +291,6 @@ class HamHub(HamPPP):
             gamma=None,
             charges=np.array(0),
             sym=sym,
-            #atom_types=atom_types,
-            #atom_dictionary=atom_dictionary,
-            #bond_dictionary=bond_dictionary,
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
@@ -321,9 +309,6 @@ class HamHuck(HamHub):
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
-            #atom_types=None,
-            #atom_dictionary=None,
-            #bond_dictionary=None,
             Bz=None,
     ):
         r"""
@@ -362,9 +347,6 @@ class HamHuck(HamHub):
             beta=-0.0533,
             #gamma=None,
             sym=sym,
-            #atom_types=atom_types,
-            #atom_dictionary=atom_dictionary,
-            #bond_dictionary=bond_dictionary,
             Bz=Bz,
         )
         self.charges = np.zeros(self.n_sites)
