@@ -8,10 +8,12 @@ def print_hamiltonian(h1):
     np.set_printoptions(precision=3)      
     print('h1=\n',h1,'\n')
 
+#atom_dictionary={'B':2.4, 'Cl':4, 'F':5, 'Si':3 }
+
 from moha import HamHuck
 norb = 6
 #polyene = HamHuck([(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)] + [(f"C{norb}", f"C{1}", 1)])
-C_Cl_F_Si =  HamHuck([('B1','Cl2',1),('Cl2','F3',1),('F3','Si4',1),('Si4','B1',1)])
+C_Cl_F_Si =  HamHuck([('B1','Cl2',1),('Cl2','F3',1),('F3','Si4',1),('Si4','B1',1)],atom_dictionary=atom_dictionary)
 #h1 = polyene.generate_one_body_integral(dense=True, basis='spatial basis')
 h1 = C_Cl_F_Si.generate_one_body_integral(dense=True, basis='spatial basis')
 print_hamiltonian(h1)

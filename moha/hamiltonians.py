@@ -29,6 +29,8 @@ class HamPPP(HamiltonianAPI):
             sym=1,
             g_pair=None,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -86,6 +88,8 @@ class HamPPP(HamiltonianAPI):
         self.g_pair = g_pair
         self.atoms_num, self.connectivity_matrix, self.atom_types= \
         self.generate_connectivity_matrix()
+        self.atom_dictionary = atom_dictionary
+        self.bond_dictionary = bond_dictionary
         self.param_diag_mtrx,self.param_nodiag_mtrx, \
         self.atom_dictionary,self.bond_dictionary = \
             self.assign_Huckel_parameters()
@@ -250,6 +254,8 @@ class HamHub(HamPPP):
             beta=-0.0533,
             sym=1,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Hubbard Hamiltonian.
@@ -290,6 +296,8 @@ class HamHub(HamPPP):
             charges=np.array(0),
             sym=sym,
             Bz=Bz,
+            atom_dictionary = atom_dictionary,
+            bond_dictionary = bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -308,6 +316,8 @@ class HamHuck(HamHub):
             beta=-0.0533,
             sym=1,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Huckle hamiltonian.
@@ -346,6 +356,8 @@ class HamHuck(HamHub):
             #gamma=None,
             sym=sym,
             Bz=Bz,
+            atom_dictionary = atom_dictionary,
+            bond_dictionary = bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 
