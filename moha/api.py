@@ -57,7 +57,85 @@ class HamiltonianAPI(ABC):
 
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
-        return atoms_sites_lst, self.connectivity_matrix
+        return atoms_sites_lst, self.connectivity_matrix, atom_types
+
+    def assign_Huckel_parameters(self):
+        r"""Assigns the alpha and beta value from Rauk's table in matrix form"""
+        hx_dictionary = { #The order of the elements is important 
+            "C":  0.0, 
+            "B":  0.45, 
+            "N2":-0.51,
+            "N3":-1.37,
+            "O1":-0.97,
+            "O2":-2.09,
+            "F": -2.71,
+            "Si":  0.0,
+            "P2": -0.19,
+            "P3": -0.75,
+            "S1": -0.46,
+            "S2": -1.11,
+            "Cl": -1.48
+            }
+        
+        #kxy elements
+        kxy_matrix_1 = np.array([
+        [-1.0  , 0.    ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.73 , -0.87 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-1.02 , -0.66 , -1.09 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.89 , -0.53 , -0.99 , -0.98 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-1.06 , -0.60 , -1.14 , -1.13 , -1.26 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.66 , -0.35 , -0.80 , -0.89 , -1.02 , -0.95 ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.52 , -0.26 , -0.65 , -0.77 , -0.92 , -0.94 , -1.04 ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.75 , -0.57 , -0.72 , -0.43 , -0.65 , -0.24 , -0.17 , -0.64 ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.77 , -0.53 , -0.78 , -0.55 , -0.75 , -0.31 , -0.21 , -0.62 , -0.63 ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.76 , -0.54 , -0.81 , -0.64 , -0.82 , -0.39 , -0.22 , -0.52 , -0.58 , -0.63 , 0.    ,  0.    , 0.   ],
+        [-0.81 , -0.51 , -0.83 , -0.68 , -0.84 , -0.43 , -0.28 , -0.61 , -0.65 , -0.65 , -0.68 ,  0.    , 0.   ],
+        [-0.69 , -0.44 , -0.78 , -0.73 , -0.85 , -0.54 , -0.32 , -0.40 , -0.48 , -0.60 , -0.58 , -0.63  , 0.   ],
+        [-0.62 , -0.41 , -0.77 , -0.80 , -0.88 , -0.70 , -0.51 , -0.34 , -0.35 , -0.55 , -0.52 , -0.59  ,-0.68 ],
+        ])
+        kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T) #Symmetric
+        
+        atom_dictionary = {}
+        #Creates the atom dictionary with the alphax values for the atoms in the system
+        for atom in self.atom_types:
+            atom_dictionary[atom] = -0.414 + hx_dictionary[atom]*abs(-0.0533)
+        self.atom_dictionary = atom_dictionary
+        #Creates the bond dictionary from the Rauk table from the atom_types list
+        j = 0
+        bond_dictionary={}
+        for atom in self.atom_types:
+            if j < len(self.atom_types)-1:
+                next_atom = self.atom_types[j+1]
+                bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                j += 1
+        self.bond_dictionary = bond_dictionary
+        #Defines the diagonal elements of the huckel parameters matrix
+        param_diag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
+        for atom, site, cor in self.atoms_num:
+            if cor != None:
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom+str(cor)] - (-0.414)
+            else:
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom] - (-0.414)
+        self.param_diag_mtrx = param_diag_mtrx
+        
+        #Defines the non diagonal elements of the huckel parameters matrix
+        param_nodiag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
+        for atom1, atom2, bond in self.connectivity:
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
+            if atom1_coord and atom2_coord!= None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name+str(atom2_coord)]  / abs(-0.0533)
+            elif atom1_coord != None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name] / abs(-0.0533)
+            elif atom2_coord != None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name+str(atom2_coord)] / abs(-0.0533)
+            else:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name] / abs(-0.0533)
+        param_nodiag_mtrx = np.minimum(param_nodiag_mtrx, param_nodiag_mtrx.T)
+        self.param_nodiag_mtrx = param_nodiag_mtrx
+
+        return self.param_diag_mtrx,self.param_nodiag_mtrx,self.atom_dictionary,self.bond_dictionary
+    
 
     @abstractmethod
     def generate_zero_body_integral(self):
