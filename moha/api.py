@@ -6,6 +6,10 @@ from typing import TextIO
 
 import numpy as np
 
+import pandas as pd
+
+from scipy.special import gamma, factorial
+
 from scipy.sparse import csr_matrix, lil_matrix
 
 from .utils import convert_indices, get_atom_type
@@ -149,7 +153,69 @@ class HamiltonianAPI(ABC):
 
         return self.param_diag_mtrx,self.param_nodiag_mtrx,self.atom_dictionary,self.bond_dictionary
     
+    def compute_param_dist_overlap(self):
+        ### This function calculates the beta value from the Wolfsberg-Helmholz approximation and uses alpha as 
+        # the first ionization potential of the atom
 
+        #input : Distance, elements
+        #output: alpha and beta
+
+        df=pd.read_csv('../docs/ionization.csv')
+        ionization = {}
+        for index, row in df.iterrows():
+            d=row.to_dict()
+            for i in d.keys():
+                ionization[d['Element']]=  d['I_potential']
+        
+        alpha_x = float(-ionization['C']) * 0.036749308136649 ##element input
+        alpha_y = float(-ionization['C']) * 0.036749308136649 ##element input
+        Rxy = 1 ### input
+        p = -(( (alpha_x) + (alpha_y) )* Rxy) /(2) 
+        t = abs((alpha_x - alpha_y )/(alpha_x + alpha_y))
+
+        def an(n,x):
+            sum = 0
+            for k in range(1, n+2):
+                frac = (1.0) / (  (x**k)*gamma( (n-k+1) + 1 )  )
+                sum += frac
+            return gamma(n + 1) * sum
+
+        def bn(n,x):
+            sum = 0
+            for k in range(1, n+2):
+                frac = ( (-1)**(n-k) ) / (  (x**k)*gamma((n-k+1) + 1 ) )
+                sum += frac
+            return gamma(n + 1) * sum
+
+        def Bn(n,t,p):
+            if t == 0:
+                val = (2) / (n + 1)
+            else:
+                val = -np.exp(-p*t) * (an(n,p*t)) - np.exp(p*t)* (bn(n,p*t))
+            return val
+
+        def An(n,p):
+            return (np.exp(-p))*(an(n,p))
+
+        def Sxy(t,p):
+            if t == 0:
+                Sxy = (np.exp(-p))*(1 + p + (2/5)*p**2 + (1/15)*(p**3))
+            elif p == 0:
+                Sxy = (1- (t**2))**(5/2)
+            else:
+                A4 = Bn(0,t,p) - Bn(2,t,p)
+                A2 = Bn(4,t,p) - Bn(0,t,p)
+                A0 = Bn(2,t,p) - Bn(4,t,p)
+                Sxy =  ( A4*An(4,p) + A2*An(2,p) + A0*An(0,p) )*((1- (t**2))**(5/2) )*(p**5)/32
+            return Sxy
+
+        beta_xy = 1.75*(Sxy(0.1,0.5))* ((alpha_x + alpha_y)/(2) )
+        
+        return alpha_x,alpha_y,beta_xy
+
+
+
+    
     @abstractmethod
     def generate_zero_body_integral(self):
         r"""Generate zero body integral."""
