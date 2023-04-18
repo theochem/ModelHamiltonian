@@ -95,12 +95,14 @@ class HamiltonianAPI(ABC):
         [-0.62 , -0.41 , -0.77 , -0.80 , -0.88 , -0.70 , -0.51 , -0.34 , -0.35 , -0.55 , -0.52 , -0.59  ,-0.68 ],
         ])
         kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T) #Symmetric
-
+        
+        alphaC = -0.414 #Value for sp2 orbital of Carbon atom.
+        betaC = -0.0533 #Value for sp2 orbitals of Carbon atom.
         if self.atom_dictionary is None:
             atom_dictionary = {}
             #Creates the atom dictionary with the alphax values for the atoms in the system from the Rauk table
             for atom in self.atom_types:
-                atom_dictionary[atom] = -0.414 + hx_dictionary[atom]*abs(-0.0533)
+                atom_dictionary[atom] = alphaC + hx_dictionary[atom]*abs(betaC)
             self.atom_dictionary = atom_dictionary
 
         if self.bond_dictionary is None:

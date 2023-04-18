@@ -59,9 +59,9 @@ def get_atom_type(atom):
     :param atom: str
     :return: tuple
     """
+    c = None
     if "_" in atom:
-        c = atom[-1]
-        atom = atom[:-2]
+        atom, c = atom.split("_")
         i = 1
         while atom[-i:].isdigit():
             i += 1
