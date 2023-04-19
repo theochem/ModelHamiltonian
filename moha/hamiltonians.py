@@ -86,7 +86,7 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.g_pair = g_pair
-        self.atoms_num, self.connectivity_matrix, self.atom_types= \
+        self.atoms_num, self.connectivity_matrix, self.atom_types,self.dist_atoms= \
         self.generate_connectivity_matrix()
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
