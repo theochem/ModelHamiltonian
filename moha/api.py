@@ -119,7 +119,7 @@ class HamiltonianAPI(ABC):
             for atom in self.atom_types:
                 atom_dictionary[atom] = alphaC + hx_dictionary[atom]*abs(betaC)
             self.atom_dictionary = atom_dictionary
-        else :
+        elif self.bond_dictionary is None :
             atom_dicOverlap, bond_dicOverlap = self.compute_param_dist_overlap()
             self.atom_dictionary = atom_dicOverlap
 
@@ -139,7 +139,7 @@ class HamiltonianAPI(ABC):
                     bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
                     bond_dictionary[next_atom+atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
             self.bond_dictionary = bond_dictionary
-        else :
+        elif  self.bond_dictionary is None:
             atom_dicOverlap, bond_dicOverlap = self.compute_param_dist_overlap()
             self.bond_dictionary = bond_dicOverlap
 
