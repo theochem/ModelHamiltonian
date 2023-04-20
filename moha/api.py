@@ -6,13 +6,15 @@ from typing import TextIO
 
 import numpy as np
 
-import pandas as pd
+from scipy import constants 
 
 from scipy.special import gamma, factorial
 
 from scipy.sparse import csr_matrix, lil_matrix
 
 from .utils import convert_indices, get_atom_type
+
+from .utils import ionization
 
 __all__ = [
     "HamiltonianAPI",
@@ -174,25 +176,10 @@ class HamiltonianAPI(ABC):
     def compute_param_dist_overlap(self):
         ### This function calculates the beta value from the Wolfsberg-Helmholz approximation and uses alpha as 
         # the first ionization potential of the atom
-        #input: atom types, distances:dictionary
-        #return: atom_dictionary, bond_dictionary
-        df=pd.read_csv('../docs/ionization.csv')
-        ionization = {}
-        for index, row in df.iterrows():
-           d=row.to_dict()
-           for i in d.keys():
-               ionization[d['Element']]=  d['I_potential']
-
-        def generate_alpha_beta(distance,atom1_name,atom2_name):
-            df = pd.read_csv('../docs/ionization.csv')
-            ionization = {}
-            for index, row in df.iterrows():
-               d = row.to_dict()
-               for i in d.keys():
-                   ionization[d['Element']] = d['I_potential']
-
-            alpha_x = float(-ionization[atom1_name]) * 0.036749308136649 #eV to Hartree
-            alpha_y = float(-ionization[atom2_name]) * 0.036749308136649  # eV to Hartree
+        ev_H = constants.value('electron volt-hartree relationship')
+        def generate_alpha_beta(distance,atom1_name,atom2_name,ionization):
+            alpha_x = float(-ionization[atom1_name]) * ev_H  
+            alpha_y = float(-ionization[atom2_name]) * ev_H  
             Rxy = distance 
             p = -(( (alpha_x) + (alpha_y) )* Rxy) /(2) 
             t = abs((alpha_x - alpha_y )/(alpha_x + alpha_y))
@@ -242,12 +229,12 @@ class HamiltonianAPI(ABC):
         atom_dictionary = {} #Defines alpha values as first ionization potential 
         for atom in self.atom_types:
             if atom not in atom_dictionary.keys():
-                atom_dictionary[atom] = -ionization[atom] * 0.036749308136649  #eV to Hartree
+                atom_dictionary[atom] = -ionization[atom] * ev_H  #eV to Hartree
             self.atom_dictionary = atom_dictionary
             
         bond_dictionary = {}
         for trip in self.dist_atoms:
-            beta_xy = generate_alpha_beta(trip[2],trip[0],trip[1]) 
+            beta_xy = generate_alpha_beta(trip[2],trip[0],trip[1],ionization) 
             bond_dictionary[trip[0]+trip[1]] = beta_xy
             bond_dictionary[trip[1]+trip[0]] = beta_xy
         
