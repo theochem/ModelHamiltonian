@@ -157,3 +157,24 @@ def expand_sym(sym, integral, nbody):
                 integral[sp, qr] = integral[qp, sr]
                 integral[qr, sp] = integral[sr, qp]
     return integral
+
+def fill_o2(o2):
+    """
+    Fill the 2-body matrix with the missing elements.
+
+    Parameters
+    ----------
+    o2: np.ndarray
+        4-D array, the two-body integrals
+
+    Returns
+    -------
+    o2: np.ndarray
+        4d array with the symmetry 1
+    """
+    # loop over nonzero elements
+    for i, j, k, l in np.nonzero(o2):
+        o2[j, i, k, l] = - o2[i, j, k, l]
+        o2[j, i, l, k] = o2[i, j, k, l]
+        o2[i, j, l, k] = -o2[i, j, k, l]
+    return o2
