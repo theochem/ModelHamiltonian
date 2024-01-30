@@ -193,7 +193,7 @@ class HamPPP(HamiltonianAPI):
             if basis == "spatial basis" and \
                     self.gamma.shape == (n_sp, n_sp):
                 zeros_block = np.zeros((n_sp, n_sp))
-                gamma = np.vstack(
+                self.gamma = np.vstack(
                     [np.hstack([self.gamma, zeros_block]),
                      np.hstack([zeros_block, self.gamma])]
                 )
@@ -201,20 +201,20 @@ class HamPPP(HamiltonianAPI):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = 0.5 * gamma[p, q]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.5 * gamma[p, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p, q + n_sp]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.5 * gamma[p + n_sp, q]
+                        v[i, j] = 0.5 * self.gamma[p + n_sp, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = 0.5 * gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
