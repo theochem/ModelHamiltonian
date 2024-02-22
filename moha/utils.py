@@ -1,7 +1,7 @@
 r"""MoHa utilities submodule."""
 
 import numpy as np
-
+from scipy.sparse import csr_matrix, lil_matrix
 from scipy.sparse import diags
 
 
@@ -157,3 +157,47 @@ def expand_sym(sym, integral, nbody):
                 integral[sp, qr] = integral[qp, sr]
                 integral[qr, sp] = integral[sr, qp]
     return integral
+
+
+def to_sparse(Md):
+    r"""
+    Convert dense array of integrals to sparse array in scipy csr format.
+
+    Parameters
+    ----------
+    Md: np.ndarray
+        input matrix of the shape 2d or 4d
+
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+    """
+    # Finding indices for non-zero elements and shape of Md.
+    indices = np.array(np.where(Md != 0)).astype(int).T
+    N = Md.shape[0]
+
+    # Converting 2D array to csr_matrix
+    if np.ndim(Md) == 2:
+        return csr_matrix(Md)
+
+    # Converting 4D array to csr_matrix using convert_indices from util.py.
+    elif np.ndim(Md) == 4:
+        row = np.array([])
+        col = np.array([])
+        data = np.array([])
+        for ind in indices:
+            p, q = convert_indices(N,
+                                    int(ind[0]),
+                                    int(ind[1]),
+                                    int(ind[2]),
+                                    int(ind[3]))
+            row = np.append(row, p)
+            col = np.append(col, q)
+            data = np.append(data, Md[tuple(ind)])
+        return csr_matrix((data, (row, col)), shape=(N * N, N * N))
+
+    # Return if array dimensions incompatible.
+    else:
+        print("Incompatible dense array dimension.",
+                " Must be either 2 or 4 dimensions.")
+        return
