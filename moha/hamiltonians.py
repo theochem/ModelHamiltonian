@@ -12,6 +12,7 @@ __all__ = [
     "HamPPP",
     "HamHuck",
     "HamHub",
+    "HamHeisenberg"
 ]
 
 
@@ -359,6 +360,8 @@ class HamHuck(HamHub):
 
 
 class HamHeisenberg(HamiltonianAPI):
+    r"""XXZ Heisenberg Hamiltonian."""
+
     def __init__(self,
                  connectivity: list,
                  mu: list,
@@ -384,12 +387,13 @@ class HamHeisenberg(HamiltonianAPI):
         self.mu = np.array(mu)
         self.J_eq = J_eq
         self.J_ax = J_ax
-
+        self.n_sites = None
+        self.atom_types = None
         # I live this commented till we decide whether we need
         # to provide connectivity
 
-        # self.atoms_num, self.connectivity_matrix = \
-        #     self.generate_connectivity_matrix()
+        self.atoms_num, self.connectivity_matrix = \
+            self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -408,7 +412,7 @@ class HamHeisenberg(HamiltonianAPI):
 
     def generate_one_body_integral(self,
                                    dense: bool,
-                                   basis='spin orbital'):
+                                   basis='spinorbital basis'):
         r"""
         Generate one body integral.
 
@@ -421,30 +425,97 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        if basis != 'spin orbital':
-            raise ValueError('Selected Hamiltonian supports'
-                             ' only spin orbital basis')
-        one_body_term = 0.5*diags(self.mu - np.diag(self.J_eq) -
-                                  np.sum(self.J_ax, axis=1),
-                                  format="csr")
+        if basis == 'spatial basis':
+            if self.J_ax.shape != (self.n_sites, self.n_sites):
+                raise TypeError("J_ax matrix has wrong basis")
+            if self.J_eq.shape != (self.n_sites, self.n_sites):
+                raise TypeError("J_eq matrix has wrong basis")
+
+            J_ax = self.J_ax
+            J_eq = self.J_eq
+
+        elif basis == "spinorbital basis":
+            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites):
+                raise TypeError("J_ax matrix has wrong basis")
+            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites):
+                raise TypeError("J_eq matrix has wrong basis")
+
+        one_body_term = 0.5 * diags(self.mu - np.diag(J_eq) -
+                                    np.sum(J_ax, axis=1),
+                                    format="csr")
+
         self.one_body = one_body_term
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
                                    sym: int,
                                    dense: bool,
-                                   basis='spinorbital'):
-        """
-        Generate two body integral.
+                                   basis='spinorbital basis'):
+        r"""
+        Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
-        sym
-        dense
-        basis
+        basis: str
+            ['spin orbital']
+        dense: bool
+            dense or sparse matrix; default False
+        sym: int
+            symmetry -- [2, 4, 8] default is 1
 
         Returns
         -------
-        None
+        scipy.sparse.csr_matrix or np.ndarray
         """
-        pass
+        n_sp = self.n_sites
+        Nv = 2 * n_sp
+        v = lil_matrix((Nv * Nv, Nv * Nv))
+
+        if self.J_eq is not None:
+            if basis == "spinorbital basis":
+                if self.J_eq.shape != (2 * n_sp, 2 * n_sp):
+                    raise TypeError("J_eq matrix has wrong basis")
+                J_eq = self.J_eq
+
+            if basis == "spatial basis" and \
+                    self.J_eq.shape == (n_sp, n_sp):
+                zeros_block = np.zeros((n_sp, n_sp))
+                J_eq = np.vstack(
+                    [np.hstack([self.J_eq, zeros_block]),
+                     np.hstack([zeros_block, self.J_eq])]
+                )
+
+            for p in range(n_sp):
+                for q in range(n_sp):
+                    i, j = convert_indices(Nv, p, q, p, q)
+                    v[i, j] = 0.25 * J_eq[p, q]
+
+                    i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
+                    v[i, j] = 0.25 * J_eq[p, q + n_sp]
+
+                    i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
+                    v[i, j] = 0.25 * J_eq[p + n_sp, q]
+
+                    i, j = convert_indices(Nv,
+                                           p + n_sp,
+                                           q + n_sp,
+                                           p + n_sp,
+                                           q + n_sp)
+                    v[i, j] = 0.25 * J_eq[p + n_sp, q + n_sp]
+
+                    i, j = convert_indices(Nv, p, p + n_sp, q + n_sp, q)
+                    v[i, j] = J_eq[p, q]
+
+        v = v.tocsr()
+        self.two_body = expand_sym(sym, v, 2)
+        self.two_body = v
+        if basis == "spatial basis":
+            v = self.to_spatial(sym=sym, dense=False, nbody=2)
+        elif basis == "spinorbital basis":
+            pass
+        else:
+            raise TypeError("Wrong basis")
+
+        self.two_body = v
+        # return either sparse csr array (default) or dense N^2*N^2 array
+        return self.to_dense(v, dim=4) if dense else v
