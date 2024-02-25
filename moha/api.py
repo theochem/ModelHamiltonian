@@ -99,7 +99,6 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-
     def to_dense(self, Ms, dim=2):
         r"""
         Convert to dense matrix.
