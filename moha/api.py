@@ -6,9 +6,15 @@ from typing import TextIO
 
 import numpy as np
 
+from scipy import constants 
+
+from scipy.special import gamma, factorial
+
 from scipy.sparse import csr_matrix, lil_matrix
 
 from .utils import convert_indices, get_atom_type
+
+from .utils import ionization
 
 __all__ = [
     "HamiltonianAPI",
@@ -29,33 +35,214 @@ class HamiltonianAPI(ABC):
         """
         max_site = 0
         atoms_sites_lst = []
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            for pair in [(atom1_name, site1), (atom2_name, site2)]:
-                if pair not in atoms_sites_lst:
-                    atoms_sites_lst.append(pair)
+        for atom1, atom2, bond, dist in self.connectivity:
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
+            for trip in [(atom1_name, site1,atom1_coord), (atom2_name, site2,atom2_coord)]:
+                if trip not in atoms_sites_lst:
+                    atoms_sites_lst.append(trip)
             if max_site < max(site1, site2):  # finding the max index of site
                 max_site = max(site1, site2)
         self.n_sites = len(atoms_sites_lst)
 
-        if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
-            for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
-            self.atom_types = atom_types
+        atom_types = [None for i in range(max_site)] 
+        for atom, site, cor in atoms_sites_lst:
+            if cor != None:
+                atom_types[site-1] = atom + str(cor)
+            else:
+                atom_types[site-1] = atom
+        self.atom_types = atom_types
+            
+        
         connectivity_mtrx = np.zeros((max_site, max_site))
-
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
+        dist_atoms = []
+        flagdist = False
+        for atom1, atom2, bond, dist in self.connectivity:
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
             connectivity_mtrx[site1 - 1, site2 - 1] = bond
+            dist_atoms.append((atom1_name,atom2_name,dist))
+            if dist == None:
+                flagdist = True
+        self.flagdist = flagdist
             # numbering of sites starts from 1
-
+        
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
-        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
-        return atoms_sites_lst, self.connectivity_matrix
+        #self.connectivity_matrix_csr = csr_matrix(connectivity_mtrx)
+        self.connectivity_matrix = connectivity_mtrx
+        return atoms_sites_lst, self.connectivity_matrix, atom_types, dist_atoms
 
+    def assign_Huckel_parameters(self):
+        r"""Assigns the alpha and beta value from Rauk's table in matrix form"""
+        hx_dictionary = { #The order of the elements is important 
+            "C":  0.0, 
+            "B":  0.45, 
+            "N2":-0.51,
+            "N3":-1.37,
+            "O1":-0.97,
+            "O2":-2.09,
+            "F": -2.71,
+            "Si":  0.0,
+            "P2": -0.19,
+            "P3": -0.75,
+            "S1": -0.46,
+            "S2": -1.11,
+            "Cl": -1.48
+            }
+        
+        #kxy elements
+        kxy_matrix_1 = np.array([
+        [-1.0  , 0.    ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.73 , -0.87 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-1.02 , -0.66 , -1.09 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.89 , -0.53 , -0.99 , -0.98 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-1.06 , -0.60 , -1.14 , -1.13 , -1.26 ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.66 , -0.35 , -0.80 , -0.89 , -1.02 , -0.95 ,  0.   ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.52 , -0.26 , -0.65 , -0.77 , -0.92 , -0.94 , -1.04 ,  0.   ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.75 , -0.57 , -0.72 , -0.43 , -0.65 , -0.24 , -0.17 , -0.64 ,  0.   ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.77 , -0.53 , -0.78 , -0.55 , -0.75 , -0.31 , -0.21 , -0.62 , -0.63 ,  0.   , 0.    ,  0.    , 0.   ],
+        [-0.76 , -0.54 , -0.81 , -0.64 , -0.82 , -0.39 , -0.22 , -0.52 , -0.58 , -0.63 , 0.    ,  0.    , 0.   ],
+        [-0.81 , -0.51 , -0.83 , -0.68 , -0.84 , -0.43 , -0.28 , -0.61 , -0.65 , -0.65 , -0.68 ,  0.    , 0.   ],
+        [-0.69 , -0.44 , -0.78 , -0.73 , -0.85 , -0.54 , -0.32 , -0.40 , -0.48 , -0.60 , -0.58 , -0.63  , 0.   ],
+        [-0.62 , -0.41 , -0.77 , -0.80 , -0.88 , -0.70 , -0.51 , -0.34 , -0.35 , -0.55 , -0.52 , -0.59  ,-0.68 ],
+        ])
+        kxy_matrix = np.minimum(kxy_matrix_1, kxy_matrix_1.T) #Symmetric
+        
+      #  if self.flagdist:
+      #      atom_dicOverlap, bond_dicOverlap = self.compute_param_dist_overlap()
+
+        alphaC = -0.414 #Value for sp2 orbital of Carbon atom.
+        betaC = -0.0533 #Value for sp2 orbitals of Carbon atom.
+        
+
+        if self.atom_dictionary is None and self.flagdist:
+            atom_dictionary = {}
+            #Creates the atom dictionary with the alphax values for the atoms in the system from the Rauk table
+            for atom in self.atom_types:
+                atom_dictionary[atom] = alphaC + hx_dictionary[atom]*abs(betaC)
+            self.atom_dictionary = atom_dictionary
+        elif self.bond_dictionary is None :
+            atom_dicOverlap, bond_dicOverlap = self.compute_param_dist_overlap()
+            self.atom_dictionary = atom_dicOverlap
+
+
+        if self.bond_dictionary is None and self.flagdist:
+            #Creates the bond dictionary from the Rauk table from the atom_types list
+            j = 0
+            bond_dictionary={}
+            for atom in self.atom_types:
+                if j < len(self.atom_types)-1:
+                    next_atom = self.atom_types[j+1]
+                    bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                    bond_dictionary[next_atom+atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                    j += 1
+                else:
+                    next_atom = self.atom_types[0]
+                    bond_dictionary[atom+next_atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+                    bond_dictionary[next_atom+atom] = kxy_matrix[list(hx_dictionary.keys()).index(atom),list(hx_dictionary.keys()).index(next_atom)]*abs(-0.0533)
+            self.bond_dictionary = bond_dictionary
+        elif  self.bond_dictionary is None:
+            atom_dicOverlap, bond_dicOverlap = self.compute_param_dist_overlap()
+            self.bond_dictionary = bond_dicOverlap
+
+        
+        #Defines the diagonal elements of the huckel parameters matrix
+        param_diag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
+        for atom, site, cor in self.atoms_num:
+            if cor != None:
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom+str(cor)] 
+            else:
+                param_diag_mtrx[site-1,site-1] = self.atom_dictionary[atom] 
+        self.param_diag_mtrx = param_diag_mtrx
+        
+        #Defines the non diagonal elements of the huckel parameters matrix
+        param_nodiag_mtrx = np.zeros((self.connectivity_matrix.shape[0],self.connectivity_matrix.shape[0]))
+        for atom1, atom2, bond,dist in self.connectivity:
+            atom1_name, site1, atom1_coord = get_atom_type(atom1)
+            atom2_name, site2, atom2_coord = get_atom_type(atom2)
+            if atom1_coord and atom2_coord!= None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name+str(atom2_coord)]  
+            elif atom1_coord != None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+str(atom1_coord)+atom2_name] 
+            elif atom2_coord != None:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name+str(atom2_coord)] 
+            else:
+                param_nodiag_mtrx[site1 - 1, site2 - 1] = self.bond_dictionary[atom1_name+atom2_name] 
+        param_nodiag_mtrx = np.minimum(param_nodiag_mtrx, param_nodiag_mtrx.T)
+        self.param_nodiag_mtrx = param_nodiag_mtrx
+
+        return self.param_diag_mtrx,self.param_nodiag_mtrx,self.atom_dictionary,self.bond_dictionary
+    
+    def compute_param_dist_overlap(self):
+        ### This function calculates the beta value from the Wolfsberg-Helmholz approximation and uses alpha as 
+        # the first ionization potential of the atom
+        ev_H = constants.value('electron volt-hartree relationship')
+        def generate_alpha_beta(distance,atom1_name,atom2_name,ionization):
+            alpha_x = float(-ionization[atom1_name]) * ev_H  
+            alpha_y = float(-ionization[atom2_name]) * ev_H  
+            Rxy = distance 
+            p = -(( (alpha_x) + (alpha_y) )* Rxy) /(2) 
+            t = abs((alpha_x - alpha_y )/(alpha_x + alpha_y))
+
+            def an(n, x):
+                sum = 0
+                for k in range(1, n+2):
+                    frac = (1.0) / ((x**k)*gamma((n-k+1) + 1))
+                    sum += frac
+                return gamma(n + 1) * sum
+
+            def bn(n, x):
+                sum = 0
+                for k in range(1, n+2):
+                    frac = ((-1)**(n-k)) / ((x**k)*gamma((n-k+1) + 1))
+                    sum += frac
+                return gamma(n + 1) * sum
+
+            def Bn(n, t, p):
+                if t == 0:
+                    val = (2) / (n + 1)
+                else:
+                    val = -np.exp(-p*t) * (an(n, p*t)) - \
+                        np.exp(p*t) * (bn(n, p*t))
+                return val
+
+            def An(n, p):
+                return (np.exp(-p))*(an(n, p))
+
+            def Sxy(t, p):
+                if t == 0:
+                    Sxy = (np.exp(-p))*(1 + p + (2/5)*p**2 + (1/15)*(p**3))
+                elif p == 0:
+                    Sxy = (1 - (t**2))**(5/2)
+                else:
+                    A4 = Bn(0, t, p) - Bn(2, t, p)
+                    A2 = Bn(4, t, p) - Bn(0, t, p)
+                    A0 = Bn(2, t, p) - Bn(4, t, p)
+                    Sxy = (A4*An(4, p) + A2*An(2, p) + A0*An(0, p)) * \
+                        ((1 - (t**2))**(5/2))*(p**5)/32
+                return Sxy
+
+            beta_xy = 1.75*(Sxy(t, p)) * ((alpha_x + alpha_y)/(2))
+
+            return beta_xy
+        
+        atom_dictionary = {} #Defines alpha values as first ionization potential 
+        for atom in self.atom_types:
+            if atom not in atom_dictionary.keys():
+                atom_dictionary[atom] = -ionization[atom] * ev_H  #eV to Hartree
+            self.atom_dictionary = atom_dictionary
+            
+        bond_dictionary = {}
+        for trip in self.dist_atoms:
+            beta_xy = generate_alpha_beta(trip[2],trip[0],trip[1],ionization) 
+            bond_dictionary[trip[0]+trip[1]] = beta_xy
+            bond_dictionary[trip[1]+trip[0]] = beta_xy
+        
+        return atom_dictionary, bond_dictionary
+
+
+
+    
     @abstractmethod
     def generate_zero_body_integral(self):
         r"""Generate zero body integral."""

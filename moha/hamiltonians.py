@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
 
 from .api import HamiltonianAPI
 
-from .utils import convert_indices, expand_sym
+from .utils import convert_indices, expand_sym, get_atom_type
 
 __all__ = [
     "HamPPP",
@@ -29,10 +29,9 @@ class HamPPP(HamiltonianAPI):
             charges=None,
             sym=1,
             g_pair=None,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -88,11 +87,13 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.g_pair = g_pair
-        self.atom_types = atom_types
+        self.atoms_num, self.connectivity_matrix, self.atom_types,self.dist_atoms= \
+        self.generate_connectivity_matrix()
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
-        self.atoms_num, self.connectivity_matrix = \
-            self.generate_connectivity_matrix()
+        self.param_diag_mtrx,self.param_nodiag_mtrx, \
+        self.atom_dictionary,self.bond_dictionary = \
+            self.assign_Huckel_parameters()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -125,11 +126,17 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        one_body_term = (
-                diags([self.alpha for _ in range(self.n_sites)], format="csr")
+        if all(l == 'C' for l in self.atom_types):
+            one_body_term = (
+                diags([self.alpha for _ in range(self.n_sites)])
                 + self.beta * self.connectivity_matrix
-        )
+            )
+        else:
+            one_body_term = (
+                np.multiply(self.connectivity_matrix, self.param_nodiag_mtrx) + self.param_diag_mtrx
+            )
 
+        one_body_term  = csr_matrix(one_body_term)
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
             for p in range(self.n_sites):
@@ -138,7 +145,7 @@ class HamPPP(HamiltonianAPI):
                         mult = 0.5 * self.gamma[p, q]
                         one_body_term[p, p] -= mult * self.charges[p]
                         one_body_term[q, q] -= mult * self.charges[q]
-
+        
         if basis == "spatial basis":
             self.one_body = one_body_term.tocsr()
         elif basis == "spinorbital basis":
@@ -243,14 +250,13 @@ class HamHub(HamPPP):
     def __init__(
             self,
             connectivity: list,
+            u_onsite=None,
             alpha=-0.414,
             beta=-0.0533,
-            u_onsite=None,
             sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Hubbard Hamiltonian.
@@ -284,16 +290,15 @@ class HamHub(HamPPP):
         """
         super().__init__(
             connectivity=connectivity,
-            alpha=alpha,
-            beta=beta,
+            alpha=-0.414,
+            beta=-0.0533,
             u_onsite=u_onsite,
             gamma=None,
             charges=np.array(0),
             sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
             Bz=Bz,
+            atom_dictionary = atom_dictionary,
+            bond_dictionary = bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -311,10 +316,9 @@ class HamHuck(HamHub):
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
             Bz=None,
+            atom_dictionary = None,
+            bond_dictionary = None,
     ):
         r"""
         Huckle hamiltonian.
@@ -322,7 +326,7 @@ class HamHuck(HamHub):
         Parameters
         ----------
         connectivity: list
-            list of tuples that specifies sites and bonds between them
+            list of tuples that specifies sites, bonds between them and atom coordination
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -334,11 +338,12 @@ class HamHuck(HamHub):
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
         atom_types: list
             A list of dimension equal to the number of sites
-            specifying the atom type of each site
+            specifying the atom type of each site and coordination
             If a list of atom types is specified,
             the values of alpha and beta are ignored.
         atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
+            Contains information about alpha values for each atom
+            If atom_types is given it is automatically constructed from Rauks table
         bond_dictionary: dict
             Contains information about beta values for each bond type
         Bz: np.ndarray
@@ -346,19 +351,20 @@ class HamHuck(HamHub):
         """
         super().__init__(
             connectivity=connectivity,
-            alpha=alpha,
-            beta=beta,
             u_onsite=0,
-            gamma=None,
+            alpha=-0.414,
+            beta=-0.0533,
+            #gamma=None,
             sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
             Bz=Bz,
+            atom_dictionary = atom_dictionary,
+            bond_dictionary = bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 
 
+
+            
 class HamHeisenberg(HamiltonianAPI):
     r"""XXZ Heisenberg Hamiltonian."""
 
