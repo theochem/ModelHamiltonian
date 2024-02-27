@@ -1,10 +1,15 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v4.5.0
     hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: https://github.com/asottile/pyupgrade
-    rev: v1.25.0
+-   repo: https://github.com/psf/black
+    rev: 24.2.0
     hooks:
-    -   id: pyupgrade
-        args: [--py36-plus]
+    -   id: black
+-   repo: https://github.com/hhatto/autopep8
+    rev: v2.0.4  # select the tag or revision you want, or run `pre-commit autoupdate`
+    hooks:
+    -   id: autopep8
