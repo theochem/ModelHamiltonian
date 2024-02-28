@@ -26,6 +26,7 @@ class HeisenbergHamiltonian:
 
 
     """
+
     def __init__(self, e_matrix, g_matrix, h_matrix):
         """Generate the transformation from Heisenberg Hamiltonian to general Hamiltonian.
 
@@ -53,7 +54,7 @@ class HeisenbergHamiltonian:
 
     def generate_zero_energy(self, e_matrix, h_matrix):
         """."""
-        return np.sum(e_matrix * -1/2) + np.sum(h_matrix * 1/4)
+        return np.sum(e_matrix * -1 / 2) + np.sum(h_matrix * 1 / 4)
 
     def generate_one_elec_matrix(self, e_matrix, h_matrix):
         """Generate the compact one-electron matrix for the general Hamiltonian.
@@ -66,38 +67,39 @@ class HeisenbergHamiltonian:
             ...
 
         """
-        return np.diag(e_matrix/2 + (h_matrix.sum(0)+h_matrix.sum(1))/4)
+        return np.diag(e_matrix / 2 + (h_matrix.sum(0) + h_matrix.sum(1)) / 4)
 
     # FIXME: this outputs a dict, while ppp uses a DOK.
     def generate_two_elec_matrix(self, g_matrix, h_matrix):
-        """Generate the compact two-electron matrix for the general Hamiltonian.
-
-
-        """
+        """Generate the compact two-electron matrix for the general Hamiltonian."""
         two_electron_matrix = defaultdict(float)
         for i in range(self.k):
             for j in range(i, self.k):
-                h_ij = h_matrix[i, j]/4
+                h_ij = h_matrix[i, j] / 4
                 two_electron_matrix[i, j, i, j] += h_ij
                 two_electron_matrix[j, i, j, i] += h_ij
 
-                two_electron_matrix[i, j+self.k, i, j+self.k] += h_ij
-                two_electron_matrix[j+self.k, i, j+self.k, i] += h_ij
+                two_electron_matrix[i, j + self.k, i, j + self.k] += h_ij
+                two_electron_matrix[j + self.k, i, j + self.k, i] += h_ij
 
-                two_electron_matrix[i+self.k, j, i+self.k, j] += h_ij
-                two_electron_matrix[j, i+self.k, j, i+self.k] += h_ij
+                two_electron_matrix[i + self.k, j, i + self.k, j] += h_ij
+                two_electron_matrix[j, i + self.k, j, i + self.k] += h_ij
 
-                two_electron_matrix[i+self.k, j+self.k, i+self.k, j+self.k] += h_ij
-                two_electron_matrix[j+self.k, i+self.k, j+self.k, i+self.k] += h_ij
+                two_electron_matrix[
+                    i + self.k, j + self.k, i + self.k, j + self.k
+                ] += h_ij
+                two_electron_matrix[
+                    j + self.k, i + self.k, j + self.k, i + self.k
+                ] += h_ij
 
                 g_ij = g_matrix[i, j]
-                two_electron_matrix[i, i + self.k, j, j+self.k] += g_ij
-                two_electron_matrix[j, j+self.k, i, i+self.k] += g_ij
+                two_electron_matrix[i, i + self.k, j, j + self.k] += g_ij
+                two_electron_matrix[j, j + self.k, i, i + self.k] += g_ij
 
-                two_electron_matrix[i, i+self.k, j+self.k, j] += g_ij
+                two_electron_matrix[i, i + self.k, j + self.k, j] += g_ij
                 two_electron_matrix[j + self.k, j, i, i + self.k] += g_ij
 
-                two_electron_matrix[i + self.k, i, j, j+self.k] += g_ij
+                two_electron_matrix[i + self.k, i, j, j + self.k] += g_ij
                 two_electron_matrix[j, j + self.k, i + self.k, i] += g_ij
 
                 two_electron_matrix[i + self.k, i, j + self.k, j] += g_ij
@@ -139,9 +141,9 @@ class HeisenbergHamiltonian:
         envelope calculation for total array size is 8 bytes * (2 * K) ** 4.
         75 sites (150 total orbitals) is over 4 GB of memory.
         """
-        one_electron_matrix = np.zeros((2*self.k, 2*self.k))
-        one_electron_matrix[:self.k, :self.k] = self.one_electron_matrix
-        one_electron_matrix[self.k:, self.k:] = self.one_electron_matrix
+        one_electron_matrix = np.zeros((2 * self.k, 2 * self.k))
+        one_electron_matrix[: self.k, : self.k] = self.one_electron_matrix
+        one_electron_matrix[self.k :, self.k :] = self.one_electron_matrix
         two_electron_matrix = np.zeros((2 * self.k, 2 * self.k, 2 * self.k, 2 * self.k))
         for key in self.two_electron_matrix.keys():
             two_electron_matrix[key] = self.two_electron_matrix[key]
@@ -150,10 +152,9 @@ class HeisenbergHamiltonian:
 
 class RichardsonHamiltonian(HeisenbergHamiltonian):
     """."""
+
     def __init__(self, e_matrix, g):
         self.k = e_matrix.shape[0]
-        super().__init__(e_matrix, np.ones((self.k, self.k)) * g, np.zeros((self.k, self.k)))
-
-
-
-
+        super().__init__(
+            e_matrix, np.ones((self.k, self.k)) * g, np.zeros((self.k, self.k))
+        )

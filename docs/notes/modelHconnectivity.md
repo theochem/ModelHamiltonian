@@ -40,4 +40,3 @@ Note that both $h_{pq}$ and $d_{pq}$ can be converted to valid adjacency matrice
 We support the format of connectivity information in [`Gaussian`](https://gaussian.com/geom/). In this case, for each atom, one specifies the atoms it is bonded to according to:
 `Atom-index   Atom-index-bonded-to    bond-type    Atom-index-bonded-to    bond-type ...`
 All bonds are assumed to be symmetric, so if one only lists atoms that come before the present atom in the list, that suffices. At this stage, all nonzero bond orders are treated equivalent, as `True` entries in the adjacency matrix. If two different bond-types are listed for the same atom pair, the program will fail (gracefully). The bond-type is an integer that is ordinarily interpreted as a bond order. Note that the information defined in the connectivity list can be used to directly specify the adjacency matrix.
-

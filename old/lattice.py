@@ -138,7 +138,10 @@ class Lattice:
         coords = np.zeros((n_sites, 3))
         coords[:, axis] = np.linspace(0, dist * (n_sites - 1), n_sites)
         atom_types = cycle(atom_types)
-        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
+        sites = [
+            LatticeSite(number=site, coords=coords, atom_type=atom)
+            for (site, coords), atom in zip(enumerate(coords), atom_types)
+        ]
         lat = cls(sites=sites)
         [lat.add_bond(i, i + 1) for i in range(len(sites) - 1)]
         """
@@ -192,7 +195,10 @@ class Lattice:
             np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]
         )
         atom_types = cycle(atom_types)
-        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
+        sites = [
+            LatticeSite(number=site, coords=coords, atom_type=atom)
+            for (site, coords), atom in zip(enumerate(coords), atom_types)
+        ]
         lat = cls(sites=sites)
         # Add neighbours along axis 0
         [
@@ -210,7 +216,9 @@ class Lattice:
         return lat
 
     @classmethod
-    def oblique(cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=np.pi/4, atom_types=[""]):
+    def oblique(
+        cls, n_sites, dist=(1.0, 1.0), axis=(0, 1), angle=np.pi / 4, atom_types=[""]
+    ):
         """Produce a 2-D oblique Lattice of evenly-spaced sites.
 
         Generate 2-dimensional primitive Bravais lattices of the following types:
@@ -252,9 +260,14 @@ class Lattice:
         coords[:, axis[0]] = np.tile(
             np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1]
         ) + np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[0] * np.cos(angle)
-        coords[:, axis[1]] = np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[1] * np.sin(angle)
+        coords[:, axis[1]] = (
+            np.repeat(np.arange(n_sites[1]), n_sites[0]) * dist[1] * np.sin(angle)
+        )
         atom_types = cycle(atom_types)
-        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
+        sites = [
+            LatticeSite(number=site, coords=coords, atom_type=atom)
+            for (site, coords), atom in zip(enumerate(coords), atom_types)
+        ]
         lat = cls(sites=sites)
         # Add neighbours along axis 0
         [
@@ -304,31 +317,52 @@ class Lattice:
             raise ValueError("Too many atom types specified")
 
         coords = np.zeros((n_sites[0] * n_sites[1] * n_sites[2], 3))
-        coords[:, 0] = np.tile(np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]), n_sites[1] * n_sites[2])
-        coords[:, 1] = np.tile(np.repeat(np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]), n_sites[2])
+        coords[:, 0] = np.tile(
+            np.linspace(0, dist[0] * (n_sites[0] - 1), n_sites[0]),
+            n_sites[1] * n_sites[2],
+        )
+        coords[:, 1] = np.tile(
+            np.repeat(
+                np.linspace(0, dist[1] * (n_sites[1] - 1), n_sites[1]), n_sites[0]
+            ),
+            n_sites[2],
+        )
         coords[:, 2] = np.repeat(
-            np.linspace(0, dist[2] * (n_sites[2] - 1), n_sites[2]), n_sites[0] * n_sites[1]
+            np.linspace(0, dist[2] * (n_sites[2] - 1), n_sites[2]),
+            n_sites[0] * n_sites[1],
         )
         atom_types = cycle(atom_types)
-        sites = [LatticeSite(number=site, coords=coords, atom_type=atom) for (site, coords), atom in zip(enumerate(coords), atom_types)]
+        sites = [
+            LatticeSite(number=site, coords=coords, atom_type=atom)
+            for (site, coords), atom in zip(enumerate(coords), atom_types)
+        ]
         lat = cls(sites=sites)
         # Add neighbours along x axis
         [
-            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * c + n_sites[0] * b + a + 1)
+            lat.add_bond(
+                n_sites[0] * n_sites[1] * c + n_sites[0] * b + a,
+                n_sites[0] * n_sites[1] * c + n_sites[0] * b + a + 1,
+            )
             for a in range(n_sites[0] - 1)
             for b in range(n_sites[1])
             for c in range(n_sites[2])
         ]
         # Add neighbours along y axis
         [
-            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * c + n_sites[0] * (b + 1) + a)
+            lat.add_bond(
+                n_sites[0] * n_sites[1] * c + n_sites[0] * b + a,
+                n_sites[0] * n_sites[1] * c + n_sites[0] * (b + 1) + a,
+            )
             for a in range(n_sites[0])
             for b in range(n_sites[1] - 1)
             for c in range(n_sites[2])
         ]
         # Add neighbours along z axis
         [
-            lat.add_bond(n_sites[0] * n_sites[1] * c + n_sites[0] * b + a, n_sites[0] * n_sites[1] * (c + 1) + n_sites[0] * b + a)
+            lat.add_bond(
+                n_sites[0] * n_sites[1] * c + n_sites[0] * b + a,
+                n_sites[0] * n_sites[1] * (c + 1) + n_sites[0] * b + a,
+            )
             for a in range(n_sites[0])
             for b in range(n_sites[1])
             for c in range(n_sites[2] - 1)

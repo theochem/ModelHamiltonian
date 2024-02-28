@@ -159,14 +159,12 @@ class HamiltonianAPI(ABC):
         if integral.shape[0] == 2 * self.n_sites:
             spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[: self.n_sites, : self.n_sites]
-        elif integral.shape[0] == 4 * self.n_sites ** 2:
-            spatial_int = lil_matrix((self.n_sites ** 2, self.n_sites ** 2))
+        elif integral.shape[0] == 4 * self.n_sites**2:
+            spatial_int = lil_matrix((self.n_sites**2, self.n_sites**2))
             for p in range(self.n_sites):
                 # v_pppp = U_pppp_ab
                 pp, pp = convert_indices(self.n_sites, p, p, p, p)
-                pp_, pp_ = convert_indices(n,
-                                           p, p + self.n_sites,
-                                           p, p + self.n_sites)
+                pp_, pp_ = convert_indices(n, p, p + self.n_sites, p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
                 for q in range(p, self.n_sites):
                     # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
@@ -174,15 +172,15 @@ class HamiltonianAPI(ABC):
                     pq_, pq_ = convert_indices(n, p, q, p, q)
                     spatial_int[pq, pq] = integral[pq_, pq_]
                     # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
-                    pq_, pq_ = convert_indices(n,
-                                               p, q + self.n_sites,
-                                               p, q + self.n_sites)
+                    pq_, pq_ = convert_indices(
+                        n, p, q + self.n_sites, p, q + self.n_sites
+                    )
                     spatial_int[pq, pq] += integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
                     pp, qq = convert_indices(self.n_sites, p, p, q, q)
-                    pp_, qq_ = convert_indices(n,
-                                               p, p + self.n_sites,
-                                               q, q + self.n_sites)
+                    pp_, qq_ = convert_indices(
+                        n, p, p + self.n_sites, q, q + self.n_sites
+                    )
                     spatial_int[pp, qq] = integral[pp_, qq_]
         else:
             raise ValueError("Wrong integral input.")
@@ -191,18 +189,15 @@ class HamiltonianAPI(ABC):
 
         if dense:
             if isinstance(
-                    spatial_int, csr_matrix
+                spatial_int, csr_matrix
             ):  # FixMe make sure that this works for every system
                 spatial_int = spatial_int.toarray()
                 spatial_int = np.reshape(
-                    spatial_int, (self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites)
+                    spatial_int,
+                    (self.n_sites, self.n_sites, self.n_sites, self.n_sites),
                 )
             else:
-                spatial_int = self.to_dense(spatial_int,
-                                            dim=4 if nbody == 2 else 1)
+                spatial_int = self.to_dense(spatial_int, dim=4 if nbody == 2 else 1)
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
@@ -249,8 +244,7 @@ class HamiltonianAPI(ABC):
 
         # Write header
         nactive = one_ints.shape[0]
-        print(f" &FCI NORB={nactive:d},"
-              f"NELEC={nelec:d},MS2={spinpol:d},", file=f)
+        print(f" &FCI NORB={nactive:d}," f"NELEC={nelec:d},MS2={spinpol:d},", file=f)
         print(f"  ORBSYM= {','.join('1' for v in range(nactive))},", file=f)
         print("  ISYM=1", file=f)
         print(" &END", file=f)
@@ -267,18 +261,22 @@ class HamiltonianAPI(ABC):
             i, j, k, l_ = convert_indices(N, int(p), int(q))
             # changing indexing from physical to chemical notation
             j, k = k, j
-            if j > i and l_ > k and\
-                    (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l_:
+            if j > i and l_ > k and (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l_:
                 value = two_ints[(i, k, j, l_)]
-                print(f"{value:23.16e} "
-                      f"{i + 1:4d} {j + 1:4d} {k + 1:4d} "
-                      f"{l_ + 1:4d}", file=f)
+                print(
+                    f"{value:23.16e} "
+                    f"{i + 1:4d} {j + 1:4d} {k + 1:4d} "
+                    f"{l_ + 1:4d}",
+                    file=f,
+                )
         for i in range(nactive):
             for j in range(i + 1):
                 value = one_ints[i, j]
                 if value != 0.0:
-                    print(f"{value:23.16e} {i + 1:4d}"
-                          f" {j + 1:4d} {0:4d} {0:4d}", file=f)
+                    print(
+                        f"{value:23.16e} {i + 1:4d}" f" {j + 1:4d} {0:4d} {0:4d}",
+                        file=f,
+                    )
 
         core_energy = self.zero_energy
         if core_energy is not None:
@@ -358,8 +356,9 @@ def expand_sym(sym, integral, nbody):
     if sym not in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
     if nbody not in [1, 2]:
-        raise ValueError(f"`nbody` must be an integer, "
-                         f"either 1 or 2, but {nbody} given")
+        raise ValueError(
+            f"`nbody` must be an integer, " f"either 1 or 2, but {nbody} given"
+        )
     if sym == 1:
         return integral
 

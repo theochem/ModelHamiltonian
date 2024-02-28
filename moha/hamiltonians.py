@@ -19,19 +19,19 @@ class HamPPP(HamiltonianAPI):
     r"""Pariser-Parr-Pople Hamiltonian."""
 
     def __init__(
-            self,
-            connectivity: list,
-            alpha=-0.414,
-            beta=-0.0533,
-            u_onsite=None,
-            gamma=None,
-            charges=None,
-            sym=1,
-            g_pair=None,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        gamma=None,
+        charges=None,
+        sym=1,
+        g_pair=None,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -90,8 +90,7 @@ class HamPPP(HamiltonianAPI):
         self.atom_types = atom_types
         self.atom_dictionary = atom_dictionary
         self.bond_dictionary = bond_dictionary
-        self.atoms_num, self.connectivity_matrix = \
-            self.generate_connectivity_matrix()
+        self.atoms_num, self.connectivity_matrix = self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -125,8 +124,8 @@ class HamPPP(HamiltonianAPI):
         scipy.sparse.csr_matrix or np.ndarray
         """
         one_body_term = (
-                diags([self.alpha for _ in range(self.n_sites)], format="csr")
-                + self.beta * self.connectivity_matrix
+            diags([self.alpha for _ in range(self.n_sites)], format="csr")
+            + self.beta * self.connectivity_matrix
         )
 
         one_body_term = one_body_term.tolil()
@@ -147,8 +146,9 @@ class HamPPP(HamiltonianAPI):
             one_body_term_spin = vstack(
                 [
                     one_body_term_spin,
-                    hstack([csr_matrix(one_body_term.shape),
-                            one_body_term], format="csr"),
+                    hstack(
+                        [csr_matrix(one_body_term.shape), one_body_term], format="csr"
+                    ),
                 ],
                 format="csr",
             )
@@ -185,16 +185,19 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
-            if basis == "spinorbital basis" and \
-                    self.gamma.shape != (2 * n_sp, 2 * n_sp):
+            if basis == "spinorbital basis" and self.gamma.shape != (
+                2 * n_sp,
+                2 * n_sp,
+            ):
                 raise TypeError("Gamma matrix has wrong basis")
 
-            if basis == "spatial basis" and \
-                    self.gamma.shape == (n_sp, n_sp):
+            if basis == "spatial basis" and self.gamma.shape == (n_sp, n_sp):
                 zeros_block = np.zeros((n_sp, n_sp))
                 gamma = np.vstack(
-                    [np.hstack([self.gamma, zeros_block]),
-                     np.hstack([zeros_block, self.gamma])]
+                    [
+                        np.hstack([self.gamma, zeros_block]),
+                        np.hstack([zeros_block, self.gamma]),
+                    ]
                 )
             for p in range(n_sp):
                 for q in range(n_sp):
@@ -208,11 +211,9 @@ class HamPPP(HamiltonianAPI):
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
                         v[i, j] = 0.5 * gamma[p + n_sp, q]
 
-                        i, j = convert_indices(Nv,
-                                               p + n_sp,
-                                               q + n_sp,
-                                               p + n_sp,
-                                               q + n_sp)
+                        i, j = convert_indices(
+                            Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp
+                        )
                         v[i, j] = 0.5 * gamma[p + n_sp, q + n_sp]
 
         v = v.tocsr()
@@ -240,16 +241,16 @@ class HamHub(HamPPP):
     """
 
     def __init__(
-            self,
-            connectivity: list,
-            alpha=-0.414,
-            beta=-0.0533,
-            u_onsite=None,
-            sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        u_onsite=None,
+        sym=1,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
     ):
         r"""
         Hubbard Hamiltonian.
@@ -305,15 +306,15 @@ class HamHuck(HamHub):
     """
 
     def __init__(
-            self,
-            connectivity: list,
-            alpha=-0.414,
-            beta=-0.0533,
-            sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
+        self,
+        connectivity: list,
+        alpha=-0.414,
+        beta=-0.0533,
+        sym=1,
+        atom_types=None,
+        atom_dictionary=None,
+        bond_dictionary=None,
+        Bz=None,
     ):
         r"""
         Huckle hamiltonian.
@@ -359,12 +360,9 @@ class HamHuck(HamHub):
 
 
 class HamHeisenberg(HamiltonianAPI):
-    def __init__(self,
-                 connectivity: list,
-                 mu: list,
-                 J_eq: np.ndarray,
-                 J_ax: np.ndarray
-                 ):
+    def __init__(
+        self, connectivity: list, mu: list, J_eq: np.ndarray, J_ax: np.ndarray
+    ):
         r"""
         Initialize XXZ Heisenberg Hamiltonian.
 
@@ -402,13 +400,12 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         zero_energy: float
         """
-        zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-            + 0.25 * np.sum(self.J_ax)
+        zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) + 0.25 * np.sum(
+            self.J_ax
+        )
         return zero_energy
 
-    def generate_one_body_integral(self,
-                                   dense: bool,
-                                   basis='spin orbital'):
+    def generate_one_body_integral(self, dense: bool, basis="spin orbital"):
         r"""
         Generate one body integral.
 
@@ -421,19 +418,15 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        if basis != 'spin orbital':
-            raise ValueError('Selected Hamiltonian supports'
-                             ' only spin orbital basis')
-        one_body_term = 0.5*diags(self.mu - np.diag(self.J_eq) -
-                                  np.sum(self.J_ax, axis=1),
-                                  format="csr")
+        if basis != "spin orbital":
+            raise ValueError("Selected Hamiltonian supports" " only spin orbital basis")
+        one_body_term = 0.5 * diags(
+            self.mu - np.diag(self.J_eq) - np.sum(self.J_ax, axis=1), format="csr"
+        )
         self.one_body = one_body_term
         return self.one_body.todense() if dense else self.one_body
 
-    def generate_two_body_integral(self,
-                                   sym: int,
-                                   dense: bool,
-                                   basis='spinorbital'):
+    def generate_two_body_integral(self, sym: int, dense: bool, basis="spinorbital"):
         """
         Generate two body integral.
 

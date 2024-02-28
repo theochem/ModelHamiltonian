@@ -111,7 +111,7 @@ class PPPHamiltonian:
         """
         two_electron_matrix = dok_matrix((2 * self.k, 2 * self.k))
         for i in range(self.k):
-            two_electron_matrix[i, i+self.k] = u_matrix[i]
+            two_electron_matrix[i, i + self.k] = u_matrix[i]
             two_electron_matrix[i + self.k, i] = u_matrix[i]
         for i in range(self.k):
             for j in range(i, self.k):
@@ -119,14 +119,14 @@ class PPPHamiltonian:
                 two_electron_matrix[i, j] = v_ij
                 two_electron_matrix[j, i] = v_ij
 
-                two_electron_matrix[i, j+self.k] = v_ij
-                two_electron_matrix[j+self.k, i] = v_ij
+                two_electron_matrix[i, j + self.k] = v_ij
+                two_electron_matrix[j + self.k, i] = v_ij
 
-                two_electron_matrix[i+self.k, j] = v_ij
-                two_electron_matrix[j, i+self.k] = v_ij
+                two_electron_matrix[i + self.k, j] = v_ij
+                two_electron_matrix[j, i + self.k] = v_ij
 
-                two_electron_matrix[i+self.k, j+self.k] = v_ij
-                two_electron_matrix[j+self.k, i+self.k] = v_ij
+                two_electron_matrix[i + self.k, j + self.k] = v_ij
+                two_electron_matrix[j + self.k, i + self.k] = v_ij
         return two_electron_matrix
 
     def return_compact(self):
@@ -164,9 +164,9 @@ class PPPHamiltonian:
         envelope calculation for total array size is 8 bytes * (2 * K) ** 4.
         75 sites (150 total orbitals) is over 4 GB of memory.
         """
-        one_electron_matrix = np.zeros((2*self.k, 2*self.k))
-        one_electron_matrix[:self.k, :self.k] = self.one_electron_matrix
-        one_electron_matrix[self.k:, self.k:] = self.one_electron_matrix
+        one_electron_matrix = np.zeros((2 * self.k, 2 * self.k))
+        one_electron_matrix[: self.k, : self.k] = self.one_electron_matrix
+        one_electron_matrix[self.k :, self.k :] = self.one_electron_matrix
         two_electron_matrix = np.zeros((2 * self.k, 2 * self.k, 2 * self.k, 2 * self.k))
         for key in self.two_electron_matrix.keys():
             two_electron_matrix[key + key] = self.two_electron_matrix[key]
@@ -180,6 +180,7 @@ class HubbardHamiltonian(PPPHamiltonian):
     ----------
 
     """
+
     def __init__(self, alpha, beta, u_matrix):
         # TODO: Update docstring
         """Generate the transformation from Hubbard Hamiltonian to general Hamiltonian.
@@ -221,7 +222,7 @@ class HubbardHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        two_electron_matrix = dok_matrix((2*self.k, 2*self.k))
+        two_electron_matrix = dok_matrix((2 * self.k, 2 * self.k))
         for i in range(self.k):
             two_electron_matrix[i, i + self.k] = u_matrix[i]
             two_electron_matrix[i + self.k, i] = u_matrix[i]
@@ -236,6 +237,7 @@ class HuckelHamiltonian(PPPHamiltonian):
 
 
     """
+
     def __init__(self, alpha, beta):
         # TODO: Update docstring
         """Generate the transformation from Huckel Hamiltonian to general Hamiltonian.
@@ -274,7 +276,7 @@ class HuckelHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        return dok_matrix((2*self.k, 2*self.k))
+        return dok_matrix((2 * self.k, 2 * self.k))
 
 
 class IsingHamiltonian(PPPHamiltonian):
@@ -284,6 +286,7 @@ class IsingHamiltonian(PPPHamiltonian):
     ----------
 
     """
+
     def __init__(self, alpha, v_matrix):
         super().__init__(alpha, None, None, v_matrix)
 
@@ -329,19 +332,19 @@ class IsingHamiltonian(PPPHamiltonian):
         dense numpy array.
 
         """
-        two_electron_matrix = dok_matrix((2*self.k, 2*self.k))
+        two_electron_matrix = dok_matrix((2 * self.k, 2 * self.k))
         for i in range(self.k):
             for j in range(i, self.k):
                 v_ij = v_matrix[i, j]
                 two_electron_matrix[i, j] = v_ij
                 two_electron_matrix[j, i] = v_ij
 
-                two_electron_matrix[i, j+self.k] = v_ij
-                two_electron_matrix[j+self.k, i] = v_ij
+                two_electron_matrix[i, j + self.k] = v_ij
+                two_electron_matrix[j + self.k, i] = v_ij
 
-                two_electron_matrix[i+self.k, j] = v_ij
-                two_electron_matrix[j, i+self.k] = v_ij
+                two_electron_matrix[i + self.k, j] = v_ij
+                two_electron_matrix[j, i + self.k] = v_ij
 
-                two_electron_matrix[i+self.k, j+self.k] = v_ij
-                two_electron_matrix[j+self.k, i+self.k] = v_ij
+                two_electron_matrix[i + self.k, j + self.k] = v_ij
+                two_electron_matrix[j + self.k, i + self.k] = v_ij
         return two_electron_matrix

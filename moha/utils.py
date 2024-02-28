@@ -118,8 +118,9 @@ def expand_sym(sym, integral, nbody):
     if sym not in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
     if nbody not in [1, 2]:
-        raise ValueError(f"`nbody` must be an integer, "
-                         f"either 1 or 2, but {nbody} given")
+        raise ValueError(
+            f"`nbody` must be an integer, " f"either 1 or 2, but {nbody} given"
+        )
     if sym == 1:
         return integral
 
@@ -186,11 +187,9 @@ def to_sparse(Md):
         col = np.array([])
         data = np.array([])
         for ind in indices:
-            p, q = convert_indices(N,
-                                   int(ind[0]),
-                                   int(ind[1]),
-                                   int(ind[2]),
-                                   int(ind[3]))
+            p, q = convert_indices(
+                N, int(ind[0]), int(ind[1]), int(ind[2]), int(ind[3])
+            )
             row = np.append(row, p)
             col = np.append(col, q)
             data = np.append(data, Md[tuple(ind)])
@@ -198,6 +197,7 @@ def to_sparse(Md):
 
     # Return if array dimensions incompatible.
     else:
-        print("Incompatible dense array dimension.",
-              " Must be either 2 or 4 dimensions.")
+        print(
+            "Incompatible dense array dimension.", " Must be either 2 or 4 dimensions."
+        )
         return
