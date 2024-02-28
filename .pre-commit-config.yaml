@@ -5,11 +5,7 @@ repos:
     -   id: check-yaml #check the existence of the .yaml file at the root of the repo
     -   id: end-of-file-fixer #check and add an end-of-file
     -   id: trailing-whitespace #check and remove all trailing-whitespace
-    repo: https://github.com/psf/black
+-   repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
     -   id: black
--   repo: https://github.com/hhatto/autopep8
-    rev: v2.0.4
-    hooks:
-    -   id: autopep8 #automatically force files to follow the python pep8 or pycodestyle convention
