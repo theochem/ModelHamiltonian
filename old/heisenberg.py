@@ -153,7 +153,7 @@ class RichardsonHamiltonian(HeisenbergHamiltonian):
     def __init__(self, e_matrix, g):
         self.k = e_matrix.shape[0]
         super().__init__(e_matrix, np.ones((self.k, self.k)) * g, np.zeros((self.k, self.k)))
-        
+
 
 
 
