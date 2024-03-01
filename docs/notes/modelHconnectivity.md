@@ -3,9 +3,9 @@
 Connectivity can be specified in several different ways. If multiple methods are specified, then only the first in the below list is used. (The specifications become decreasingly informative as one moves down this file.)
 
 ## One-Electron Hamiltonian matrix `h[:,:]`
-If the one-electron Hamiltonian is defined, then $h_{pq}$ is used to define connectivity. 
+If the one-electron Hamiltonian is defined, then $h_{pq}$ is used to define connectivity.
 $$
-h_{pq} = 
+h_{pq} =
 \begin{cases}
 h_{pq} \ne 0 \qquad &p\text{ and }q\text{ are connected} \\
 0 \qquad &p\text{ and }q\text{ are not connected}
@@ -15,7 +15,7 @@ $$
 ## Distance matrix, `distance[:,:]`
 Specify a symmetric, positive-definite, upper-diagonal (with zero diagonal) matrix with distances between atoms in the system. The elements of the matrix are
 $$
-d_{pq} = 
+d_{pq} =
 \begin{cases}
 \text{distance between sites }p\text{ and }q \qquad &p\text{ and }q\text{ are connected} \\
 0 \qquad &p\text{ and }q\text{ are not connected}
