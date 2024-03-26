@@ -250,6 +250,7 @@ class HamHub(HamPPP):
             atom_dictionary=None,
             bond_dictionary=None,
             Bz=None,
+            gamma=None,
     ):
         r"""
         Hubbard Hamiltonian.
