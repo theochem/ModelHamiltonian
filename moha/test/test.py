@@ -151,7 +151,7 @@ def test_ppp_api():
 
     assert h.shape[0] == 6
     assert v.shape[0] == 6
-    
+
 def test_xxz_heisenberg():
     """
     """
@@ -176,11 +176,8 @@ def test_xxz_heisenberg():
     one_body_integral = xxz.generate_one_body_integral(dense=True, basis='spatial basis')
     two_body_integral = xxz.generate_two_body_integral(sym=1, dense=True, basis='spatial basis')
 
-    L = len(connectivity) + 1  
-    J_abs = np.abs(J_eq).max()  
+    L = len(connectivity) + 1
+    J_abs = np.abs(J_eq).max()
     expected_energy = L * J_abs * -0.44
 
     assert np.isclose(energy, expected_energy)
-    # return energy, expected_energy, one_body_integral, two_body_integral
-
-print(test_xxz_heisenberg())

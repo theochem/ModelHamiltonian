@@ -1,34 +1,42 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MoHa: Model Hamiltonians &mdash; MoHa  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="#" class="icon icon-home"> MoHa
+
+
+
+          <a href="#" class="icon icon-home">
+            MoHa
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -37,8 +45,34 @@
               <!-- Local TOC -->
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">MoHa: Model Hamiltonians</a></li>
-<li><a class="reference internal" href="#hamiltonian-api">Hamiltonian API</a></li>
-<li><a class="reference internal" href="#model-hamiltonians">Model Hamiltonians</a></li>
+<li><a class="reference internal" href="#hamiltonian-api">Hamiltonian API</a><ul>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI</span></code></a><ul>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.generate_connectivity_matrix"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.generate_connectivity_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.generate_one_body_integral()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.generate_two_body_integral()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.generate_zero_body_integral()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.save"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.save()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.save_fcidump"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.save_fcidump()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.save_triqs"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.save_triqs()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.to_dense"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.to_dense()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.to_sparse"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.to_sparse()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.to_spatial"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.to_spatial()</span></code></a></li>
+<li><a class="reference internal" href="#moha.api.HamiltonianAPI.to_spinorbital"><code class="docutils literal notranslate"><span class="pre">HamiltonianAPI.to_spinorbital()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#model-hamiltonians">Model Hamiltonians</a><ul>
+<li><a class="reference internal" href="#moha.HamPPP"><code class="docutils literal notranslate"><span class="pre">HamPPP</span></code></a><ul>
+<li><a class="reference internal" href="#moha.HamPPP.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_one_body_integral()</span></code></a></li>
+<li><a class="reference internal" href="#moha.HamPPP.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_two_body_integral()</span></code></a></li>
+<li><a class="reference internal" href="#moha.HamPPP.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_zero_body_integral()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#moha.HamHub"><code class="docutils literal notranslate"><span class="pre">HamHub</span></code></a></li>
+<li><a class="reference internal" href="#moha.HamHuck"><code class="docutils literal notranslate"><span class="pre">HamHuck</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -55,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>MoHa: Model Hamiltonians</li>
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MoHa: Model Hamiltonians</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -65,31 +99,44 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
-  <div class="section" id="moha-model-hamiltonians">
-<h1>MoHa: Model Hamiltonians<a class="headerlink" href="#moha-model-hamiltonians" title="Permalink to this headline"></a></h1>
+
+  <section id="moha-model-hamiltonians">
+<h1>MoHa: Model Hamiltonians<a class="headerlink" href="#moha-model-hamiltonians" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
-</div>
-<div class="section" id="hamiltonian-api">
-<h1>Hamiltonian API<a class="headerlink" href="#hamiltonian-api" title="Permalink to this headline"></a></h1>
+</section>
+<section id="hamiltonian-api">
+<h1>Hamiltonian API<a class="headerlink" href="#hamiltonian-api" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.api.</span></span><span class="sig-name descname"><span class="pre">HamiltonianAPI</span></span><a class="headerlink" href="#moha.api.HamiltonianAPI" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.api.</span></span><span class="sig-name descname"><span class="pre">HamiltonianAPI</span></span><a class="headerlink" href="#moha.api.HamiltonianAPI" title="Link to this definition"></a></dt>
 <dd><p>Hamiltonian abstract base class.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="moha.api.HamiltonianAPI.generate_connectivity_matrix">
+<span class="sig-name descname"><span class="pre">generate_connectivity_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_connectivity_matrix" title="Link to this definition"></a></dt>
+<dd><p>Generate connectivity matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(dictionary, np.ndarray)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.generate_one_body_integral">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_one_body_integral" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_one_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate one body integral in spatial or spin orbital basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sym</strong> (<em>int</em>) – symmetry – [1, 2] default is 1</p></li>
 <li><p><strong>basis</strong> (<em>str</em>) – [‘spatial’, ‘spin orbital’]</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>scipy.sparse.csr_matrix or np.ndarray</p>
 </dd>
 </dl>
@@ -97,17 +144,17 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.generate_two_body_integral">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_two_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_two_body_integral" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_two_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_two_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate two body integral in spatial or spinorbital basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sym</strong> (<em>int</em>) – symmetry – [2, 4, 8] default is 1</p></li>
 <li><p><strong>basis</strong> (<em>str</em>) – [‘spatial’, ‘spin orbital’]</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>scipy.sparse.csr_matrix or np.ndarray</p>
 </dd>
 </dl>
@@ -115,22 +162,22 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.generate_zero_body_integral">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_zero_body_integral</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_zero_body_integral" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_zero_body_integral</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.generate_zero_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate zero body integral.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save" title="Link to this definition"></a></dt>
 <dd><p>Save file as regular numpy array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.save_fcidump">
-<span class="sig-name descname"><span class="pre">save_fcidump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinpol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_fcidump" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_fcidump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinpol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_fcidump" title="Link to this definition"></a></dt>
 <dd><p>Save all parts of hamiltonian in fcidump format.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> (<em>TextIO file</em>) – </p></li>
 <li><p><strong>nelec</strong> (<em>int</em>) – The number of electrons in the system</p></li>
@@ -141,7 +188,7 @@ When no molecular orbitals are present,
 this attribute can be set.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -149,16 +196,16 @@ this attribute can be set.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.save_triqs">
-<span class="sig-name descname"><span class="pre">save_triqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_triqs" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_triqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">integral</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_triqs" title="Link to this definition"></a></dt>
 <dd><p>Save matrix in triqc format.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fname</strong> (<em>str</em>) – name of the file</p></li>
 <li><p><strong>integral</strong> (<em>int</em>) – type of integral, one of 1 (one-body) or 2 (two-body)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -166,18 +213,18 @@ this attribute can be set.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.to_dense">
-<span class="sig-name descname"><span class="pre">to_dense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_dense" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_dense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_dense" title="Link to this definition"></a></dt>
 <dd><p>Convert to dense matrix.</p>
 <p>Convert sparse array of integrals
 in scipy csr format to dense numpy array.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Ms</strong> (<em>scipy.sparse.csr_matrix</em>) – </p></li>
 <li><p><strong>dim</strong> (<em>int</em>) – target dimension of output array (either 2 or 4)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
@@ -185,13 +232,13 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.to_sparse">
-<span class="sig-name descname"><span class="pre">to_sparse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_sparse" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_sparse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Md</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_sparse" title="Link to this definition"></a></dt>
 <dd><p>Convert dense array of integrals to sparse array in scipy csr format.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Md</strong> (<em>np.ndarray</em>) – input matrix of the shape 2d or 4d</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>scipy.sparse.csr_matrix</p>
 </dd>
 </dl>
@@ -199,20 +246,20 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.to_spatial">
-<span class="sig-name descname"><span class="pre">to_spatial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbody</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_spatial" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_spatial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbody</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_spatial" title="Link to this definition"></a></dt>
 <dd><p>Convert one-/two- integral matrix from spin-orbital to spatial basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sym</strong> (<em>int</em>) – symmetry – [2, 4, 8] default is 1</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 <li><p><strong>nbody</strong> (<em>int</em>) – type of integral, one of 1 (one-body) or 2 (two-body)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>spatial_int</strong> – one-/two-body integrals in spatial basis</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>scipy.sparce.csr_matrix or np.ndarray</p>
 </dd>
 </dl>
@@ -220,17 +267,17 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.to_spinorbital">
-<span class="sig-name descname"><span class="pre">to_spinorbital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integral</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_spinorbital" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_spinorbital</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integral</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.to_spinorbital" title="Link to this definition"></a></dt>
 <dd><p>Convert one-/two- integral matrix from spatial to spin-orbital basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>integral</strong> (<em>scipy.sparse.csr_matrix</em>) – type of integral, one of 1 (one-body) or 2 (two-body)</p></li>
 <li><p><strong>sym</strong> (<em>int</em>) – symmetry – [2, 4, 8] default is 1</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -238,39 +285,25 @@ in scipy csr format to dense numpy array.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="model-hamiltonians">
-<h1>Model Hamiltonians<a class="headerlink" href="#model-hamiltonians" title="Permalink to this headline"></a></h1>
+</section>
+<section id="model-hamiltonians">
+<h1>Model Hamiltonians<a class="headerlink" href="#model-hamiltonians" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamPPP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamPPP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamPPP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_pair</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP" title="Link to this definition"></a></dt>
 <dd><p>Pariser-Parr-Pople Hamiltonian.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="moha.HamPPP.generate_connectivity_matrix">
-<span class="sig-name descname"><span class="pre">generate_connectivity_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_connectivity_matrix" title="Permalink to this definition"></a></dt>
-<dd><p>Generate connectivity matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>(dictionary, np.ndarray)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamPPP.generate_one_body_integral">
-<span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_one_body_integral" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_one_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate one body integral in spatial or spin orbital basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>basis</strong> (<em>str</em>) – [‘spatial’, ‘spin orbital’]</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>scipy.sparse.csr_matrix or np.ndarray</p>
 </dd>
 </dl>
@@ -278,17 +311,17 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.HamPPP.generate_two_body_integral">
-<span class="sig-name descname"><span class="pre">generate_two_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_two_body_integral" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate_two_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_two_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate two body integral in spatial or spinorbital basis.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>basis</strong> (<em>str</em>) – [‘spatial’, ‘spin orbital’]</p></li>
 <li><p><strong>dense</strong> (<em>bool</em>) – dense or sparse matrix; default False</p></li>
 <li><p><strong>sym</strong> (<em>int</em>) – symmetry – [2, 4, 8] default is 1</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>scipy.sparse.csr_matrix or np.ndarray</p>
 </dd>
 </dl>
@@ -296,10 +329,10 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.HamPPP.generate_zero_body_integral">
-<span class="sig-name descname"><span class="pre">generate_zero_body_integral</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_zero_body_integral" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate_zero_body_integral</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_zero_body_integral" title="Link to this definition"></a></dt>
 <dd><p>Generate zero body integral.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -309,7 +342,7 @@ in scipy csr format to dense numpy array.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamHub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamHub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHub" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamHub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHub" title="Link to this definition"></a></dt>
 <dd><p>Hubbard Hamiltonian.</p>
 <p>The Hubbard model corresponds to choosing $gamma_{pq} = 0$
 It can be invoked by choosing gamma = 0 from PPP hamiltonian.</p>
@@ -317,20 +350,20 @@ It can be invoked by choosing gamma = 0 from PPP hamiltonian.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamHuck">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamHuck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHuck" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moha.</span></span><span class="sig-name descname"><span class="pre">HamHuck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHuck" title="Link to this definition"></a></dt>
 <dd><p>Huckle Hamiltonian.</p>
 <p>It can be invoked by choosing u_onsite = 0 from Hubbard hamiltonian.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
            </div>
@@ -346,7 +379,7 @@ It can be invoked by choosing gamma = 0 from PPP hamiltonian.</p>
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+
 
 </footer>
         </div>
@@ -357,7 +390,7 @@ It can be invoked by choosing gamma = 0 from PPP hamiltonian.</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
 
 </body>
 </html>
