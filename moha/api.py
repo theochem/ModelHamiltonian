@@ -415,6 +415,8 @@ def expand_sym(sym, integral, nbody):
     else:
         # getting nonzero elements from the 2d _sparse_ array
         pq_array, rs_array = integral.nonzero()
+        # getting the size of the corresponding 4d array
+        n = int(np.sqrt(integral.shape[0]))
 
         for pq, rs in zip(pq_array, rs_array):
             p, q, r, s = convert_indices(n, pq, rs)
