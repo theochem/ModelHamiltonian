@@ -366,7 +366,8 @@ class HamHeisenberg(HamiltonianAPI):
                  connectivity: list,
                  mu: list,
                  J_eq: np.ndarray,
-                 J_ax: np.ndarray
+                 J_ax: np.ndarray,
+                 n_sites: int = None,
                  ):
         r"""
         Initialize XXZ Heisenberg Hamiltonian.
@@ -378,22 +379,28 @@ class HamHeisenberg(HamiltonianAPI):
 
         Parameters
         ----------
-        connectivity
-        mu
-        J_eq
-        J_ax
+        connectivity: list
+            list of tuples that specifies sites and bonds between them
+        mu: np.ndarray
+            Zeeman term
+        J_eq: np.ndarray
+            J equatorial term            
+        J_ax: np.ndarray
+            J axial term
+        n_sites: int
+            number of sites
         """
         self.connectivity = connectivity
         self.mu = np.array(mu)
         self.J_eq = J_eq
         self.J_ax = J_ax
-        self.n_sites = None
+        self.n_sites = n_sites
         self.atom_types = None
-        # I live this commented till we decide whether we need
+        # I leave this commented till we decide whether we need
         # to provide connectivity
 
-        self.atoms_num, self.connectivity_matrix = \
-            self.generate_connectivity_matrix()
+        # self.atoms_num, self.connectivity_matrix = \
+        #     self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
@@ -407,7 +414,7 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-            + 0.25 * np.sum(self.J_ax)
+                     + 0.25 * np.sum(self.J_ax)/2 # divide by 2 to avoid double counting
         return zero_energy
 
     def generate_one_body_integral(self,
@@ -441,7 +448,7 @@ class HamHeisenberg(HamiltonianAPI):
                 raise TypeError("J_eq matrix has wrong basis")
 
         one_body_term = 0.5 * diags(self.mu - np.diag(J_eq) -
-                                    np.sum(J_ax, axis=1),
+                                    (np.sum(J_ax, axis=1)-np.diag(J_ax))/2,
                                     format="csr")
 
         self.one_body = one_body_term
@@ -472,42 +479,33 @@ class HamHeisenberg(HamiltonianAPI):
         v = lil_matrix((Nv * Nv, Nv * Nv))
 
         if self.J_eq is not None:
-            if basis == "spinorbital basis":
-                if self.J_eq.shape != (2 * n_sp, 2 * n_sp):
-                    raise TypeError("J_eq matrix has wrong basis")
-                J_eq = self.J_eq
-
-            if basis == "spatial basis" and \
-                    self.J_eq.shape == (n_sp, n_sp):
-                zeros_block = np.zeros((n_sp, n_sp))
-                J_eq = np.vstack(
-                    [np.hstack([self.J_eq, zeros_block]),
-                     np.hstack([zeros_block, self.J_eq])]
-                )
-
+            J_eq = self.J_eq
             for p in range(n_sp):
-                for q in range(n_sp):
+                for q in range(p+1, n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
                     v[i, j] = 0.25 * J_eq[p, q]
 
                     i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p, q + n_sp]
+                    v[i, j] = 0.25 * J_eq[p, q]
 
                     i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                    v[i, j] = 0.25 * J_eq[p + n_sp, q]
+                    v[i, j] = 0.25 * J_eq[p, q]
 
                     i, j = convert_indices(Nv,
                                            p + n_sp,
                                            q + n_sp,
                                            p + n_sp,
                                            q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p + n_sp, q + n_sp]
+                    v[i, j] = 0.25 * J_eq[p, q]
 
-                    i, j = convert_indices(Nv, p, p + n_sp, q + n_sp, q)
+                    i, j = convert_indices(Nv, p, p + n_sp, q, q + n_sp)
                     v[i, j] = J_eq[p, q]
 
         v = v.tocsr()
-        self.two_body = expand_sym(sym, v, 2)
+        print(v[i, j])
+
+        # expanding symmetry
+        v = expand_sym(sym, v, 2)
         self.two_body = v
         if basis == "spatial basis":
             v = self.to_spatial(sym=sym, dense=False, nbody=2)
