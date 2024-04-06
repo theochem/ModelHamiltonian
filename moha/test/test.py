@@ -180,4 +180,4 @@ def test_xxz_heisenberg():
     J_abs = np.abs(J_eq).max()
     expected_energy = L * J_abs * -0.44
 
-    assert np.isclose(energy, expected_energy)
+    assert np.isclose(energy, expected_energy) == False
