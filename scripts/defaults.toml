@@ -1,0 +1,18 @@
+[control]
+outdir = "."
+save_intergrals = false
+integral_format = "fcidump"
+
+[system]
+moltype = "1d"
+bc = "open"
+norb = 0
+nelec = 0
+
+[model]
+hamiltonian = "hubbard"
+basis = "spatial basis"
+alpha = 0.0
+beta = 0.0
+gamma0 = 0.0
+u_onsite = 0.0

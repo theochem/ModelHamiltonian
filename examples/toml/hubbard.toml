@@ -13,5 +13,5 @@ nelec = 6
 [model]
 hamiltonian = "hubbard"
 basis = "spatial basis"
-beta   = -1.0
+beta = -1.0
 u_onsite = 1.0
