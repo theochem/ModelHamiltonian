@@ -153,10 +153,13 @@ def test_ppp_api():
     assert h.shape[0] == 6
     assert v.shape[0] == 6
 
+
 def test_xxz_heisenberg():
-    """
-    """
-    connectivity = [('C1', 'C2', 1), ('C2', 'C3', 1), ('C3', 'C4', 1), ('C4', 'C5', 1)]
+    """Test on XXZ model."""
+    connectivity = [('C1', 'C2', 1),
+                    ('C2', 'C3', 1),
+                    ('C3', 'C4', 1),
+                    ('C4', 'C5', 1)]
 
     mu = [0.5, 0.5, 0.5, 0.5, 0.5]
     J_eq = np.array([[1.0, 0.5, 0.0, 0.0, 0.0],
@@ -173,11 +176,19 @@ def test_xxz_heisenberg():
     xxz = hamiltonians.HamHeisenberg(connectivity, mu, J_eq, J_ax)
 
     energy = xxz.generate_zero_body_integral()
-    one_body_integral = xxz.generate_one_body_integral(dense=True, basis='spatial basis')
-    two_body_integral = xxz.generate_two_body_integral(sym=1, dense=True, basis='spatial basis')
+    one_body_integral = xxz.generate_one_body_integral(
+        dense=True,
+        basis='spatial basis'
+    )
+    two_body_integral = xxz.generate_two_body_integral(
+        sym=1,
+        dense=True,
+        basis='spatial basis'
+    )
 
     L = len(connectivity) + 1
     J_abs = np.abs(J_eq).max()
     expected_energy = L * J_abs * -0.44
 
-    assert np.isclose(energy, expected_energy) == False
+    assert energy == 1.25
+    assert expected_energy == -2.2
