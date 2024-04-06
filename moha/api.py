@@ -6,7 +6,7 @@ from typing import TextIO
 
 import numpy as np
 
-from scipy.sparse import csr_matrix, lil_matrix
+from scipy.sparse import csr_matrix, lil_matrix, diags
 
 from .utils import convert_indices, get_atom_type
 
@@ -174,8 +174,7 @@ class HamiltonianAPI(ABC):
 
         # Return if target dim is not 2 or 4.
         else:
-            print("Target output dimension must be either 2 or 4.")
-            return
+            raise ValueError("Target output dimension must be either 2 or 4.")
 
     def to_spatial(self, sym: int, dense: bool, nbody: int):
         r"""
@@ -233,19 +232,8 @@ class HamiltonianAPI(ABC):
         spatial_int = spatial_int.tocsr()
 
         if dense:
-            if isinstance(
-                    spatial_int, csr_matrix
-            ):  # FixMe make sure that this works for every system
-                spatial_int = spatial_int.toarray()
-                spatial_int = np.reshape(
-                    spatial_int, (self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites)
-                )
-            else:
-                spatial_int = self.to_dense(spatial_int,
-                                            dim=4 if nbody == 2 else 1)
+            spatial_int = self.to_dense(spatial_int,
+                                        dim=4 if nbody == 2 else 2)
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
