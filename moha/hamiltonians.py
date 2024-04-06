@@ -440,14 +440,31 @@ class HamHeisenberg(HamiltonianAPI):
 
             J_ax = self.J_ax
             J_eq = self.J_eq
+            mu = self.mu
 
         elif basis == "spinorbital basis":
-            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites):
+            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites) and \
+                    self.J_ax.shape == (self.n_sites, self.n_sites):
+                
+                J_ax = np.hstack([np.vstack([self.J_ax, np.zeros((self.n_sites, self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites, self.n_sites)), self.J_ax])])
+            else:
                 raise TypeError("J_ax matrix has wrong basis")
-            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites):
+            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites) and \
+                    self.J_eq.shape == (self.n_sites, self.n_sites):
+                
+                J_eq = np.hstack([np.vstack([self.J_eq, np.zeros((self.n_sites, self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites, self.n_sites)), self.J_eq])])
+            else:
                 raise TypeError("J_eq matrix has wrong basis")
+            
+            if self.mu.shape != (2 * self.n_sites,) and self.mu.shape == (self.n_sites,):
+                mu = np.hstack([self.mu, self.mu])
+            else:
+                raise TypeError("mu array has wrong basis")
 
-        one_body_term = 0.5 * diags(self.mu - np.diag(J_eq) -
+
+        one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
                                     (np.sum(J_ax, axis=1)-np.diag(J_ax))/2,
                                     format="csr")
 
