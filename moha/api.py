@@ -193,6 +193,23 @@ class HamiltonianAPI(ABC):
         -------
         spatial_int: scipy.sparce.csr_matrix or np.ndarray
             one-/two-body integrals in spatial basis
+
+        
+        Notes
+        -----
+        Given the one- or two-body Hamiltonian matrix terms,
+        :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
+        we populate the spatial integrals by calcualting __average__ over the spin-orbitals
+
+        Specifically, for the one-body integrals, we have:
+        :math:`h_{pq} = 0.25*(h_{pq}^{aa} + h_{pq}^{bb} + h_{pq}^{ab} + h_{pq}^{ba}) = h_{pq}^{aa} = h_{pq}^{bb}`
+        Therefore, the one-body integrals in the spatial basis are the same as the aa part of 
+        one-body integrals in the spin-orbital basis.
+
+        For the two-body integrals, we have:
+        :math:`v_{pqrs} = 0.25*(v_{pqrs}^{aaaa} + v_{pqrs}^{bbbb} + v_{pqrs}^{abab} + v_{pqrs}^{baba})`
+        Assuming that :math:`v_{pqrs}^{abab} = v_{pqrs}^{baba}` and :math:`v_{pqrs}^{aaaa} = v_{pqrs}^{bbbb}`
+        :math:`v_{pqrs} = 0.5*(v_{pqrs}^{aaaa} + v_{pqrs}^{abab})`
         """
         # Assumption: spatial components of alpha and beta
         # spin-orbitals are equivalent
@@ -201,6 +218,7 @@ class HamiltonianAPI(ABC):
         if integral.shape[0] == 2 * self.n_sites:
             spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[: self.n_sites, : self.n_sites]
+
         elif integral.shape[0] == 4 * self.n_sites ** 2:
             spatial_int = lil_matrix((self.n_sites ** 2, self.n_sites ** 2))
             for p in range(self.n_sites):
@@ -210,22 +228,23 @@ class HamiltonianAPI(ABC):
                                            p, p + self.n_sites,
                                            p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
-                for q in range(p, self.n_sites):
-                    # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
+                for q in range(p+1, self.n_sites):
+                    # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb 
                     pq, pq = convert_indices(self.n_sites, p, q, p, q)
                     pq_, pq_ = convert_indices(n, p, q, p, q)
-                    spatial_int[pq, pq] = integral[pq_, pq_]
-                    # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
+                    spatial_int[pq, pq] = 0.5 * integral[pq_, pq_]
+                    # v_pqpq += 0.5*Gamma_pqpq_ab 
+                    # assuming that Gamma_pqpq_ab = Gamma_pqpq_ba
                     pq_, pq_ = convert_indices(n,
                                                p, q + self.n_sites,
                                                p, q + self.n_sites)
-                    spatial_int[pq, pq] += integral[pq_, pq_]
+                    spatial_int[pq, pq] += 0.5 * integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
                     pp, qq = convert_indices(self.n_sites, p, p, q, q)
                     pp_, qq_ = convert_indices(n,
                                                p, p + self.n_sites,
                                                q, q + self.n_sites)
-                    spatial_int[pp, qq] = integral[pp_, qq_]
+                    spatial_int[pp, qq] = 0.5 * integral[pp_, qq_]
         else:
             raise ValueError("Wrong integral input.")
         spatial_int = expand_sym(sym, spatial_int, nbody)
