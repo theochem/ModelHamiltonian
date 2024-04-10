@@ -334,9 +334,8 @@ class HamiltonianAPI(ABC):
             i, j, k, l_ = convert_indices(N, int(p), int(q))
             # changing indexing from physical to chemical notation
             j, k = k, j
-            if j > i and l_ > k and\
-                    (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l_:
-                value = two_ints[(i, k, j, l_)]
+            if (i * (i + 1)) / 2 + j >= (k * (k + 1)) / 2 + l_:
+                value = two_ints[p, q]
                 print(f"{value:23.16e} "
                       f"{i + 1:4d} {j + 1:4d} {k + 1:4d} "
                       f"{l_ + 1:4d}", file=f)
