@@ -358,10 +358,9 @@ class HamHeisenberg(HamiltonianAPI):
     r"""XXZ Heisenberg Hamiltonian."""
 
     def __init__(self,
-                 mu: list,
+                 mu: np.ndarray,
                  J_eq: np.ndarray,
                  J_ax: np.ndarray,
-                 n_sites: int = None,
                  connectivity: np.ndarray = None
                  ):
         r"""
@@ -380,26 +379,26 @@ class HamHeisenberg(HamiltonianAPI):
             J equatorial term
         J_ax: np.ndarray
             J axial term
-        n_sites: int
-            number of sites
         connectivity: np.ndarray
             symmetric numpy array that specifies the connectivity between sites
         """
-        if connectivity:
+        if connectivity is not None:
             self.n_sites = connectivity.shape[0]
             # if J_eq and J_ax are floats then convert them to numpy arrays
             # by multiplying with connectivity matrix
             if isinstance(J_eq, (int, float)):
                 self.J_eq = J_eq * connectivity
                 self.J_ax = J_ax * connectivity
+                self.mu = mu * np.ones(self.n_sites)
             else:
                 raise TypeError("Connectivity matrix is provided, "
-                                "J_eq and J_ax should be floats")
+                                "J_eq, J_ax, and mu should be floats")
         else:
             if isinstance(J_eq, np.ndarray) and \
                isinstance(J_ax, np.ndarray) and \
-               J_eq.shape == J_ax.shape:
-
+               isinstance(mu, np.ndarray) and \
+               J_eq.shape == J_ax.shape and \
+               mu.shape[0] == J_eq.shape[0]:
                 self.n_sites = J_eq.shape[0]
                 self.J_eq = J_eq
                 self.J_ax = J_ax
@@ -407,7 +406,6 @@ class HamHeisenberg(HamiltonianAPI):
                 raise TypeError("J_eq and J_ax should be numpy arrays of the same shape")  # noqa: E501
 
         self.mu = np.array(mu)
-        self.n_sites = n_sites
         self.atom_types = None
         self.zero_energy = None
         self.one_body = None
@@ -511,31 +509,31 @@ class HamHeisenberg(HamiltonianAPI):
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
 
-        if self.J_eq is not None:
+        if self.J_eq is not None and self.J_ax is not None:
             J_eq = self.J_eq
+            J_ax = self.J_ax    
             for p in range(n_sp):
                 for q in range(p+1, n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
-                    v[i, j] = 0.25 * J_eq[p, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                    v[i, j] = 0.25 * J_eq[p, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv,
                                            p + n_sp,
                                            q + n_sp,
                                            p + n_sp,
                                            q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv, p, p + n_sp, q, q + n_sp)
                     v[i, j] = J_eq[p, q]
 
         v = v.tocsr()
-        print(v[i, j])
 
         # expanding symmetry
         v = expand_sym(sym, v, 2)
