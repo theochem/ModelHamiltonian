@@ -29,6 +29,17 @@ class HamiltonianAPI(ABC):
         """
         max_site = 0
         atoms_sites_lst = []
+
+        # check if self.connectivity is a matrix
+        # if so, put assign it to self.connectivity_matrix
+        # and set the atom_types to None
+        if isinstance(self.connectivity, np.ndarray):
+            self.connectivity_matrix = csr_matrix(self.connectivity)
+            self.atom_types = None
+            self.n_sites = self.connectivity_matrix.shape[0]
+
+            return None, self.connectivity_matrix
+        
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
