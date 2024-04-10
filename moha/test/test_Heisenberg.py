@@ -3,7 +3,6 @@ from numpy.testing import assert_allclose, assert_equal
 from moha import *
 
 
-
 def test_heisenberg_0():
     r"""Test the Heisenberg model 0 electron integral."""
     n_sites = 8
@@ -17,7 +16,7 @@ def test_heisenberg_0():
         connectivity[i, j] = 1
         connectivity[j, i] = 1
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu = 0, connectivity=connectivity)
+    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
     e0 = ham.generate_zero_body_integral()
     assert_allclose(e0, J_z/4*n_sites)
 
@@ -44,7 +43,7 @@ def test_heisenberg_1():
 
         h_exact[i, i] = -J_z/2
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu = 0, connectivity=connectivity)
+    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
     h = ham.generate_one_body_integral(basis='spatial basis', dense=True)
     assert_allclose(h, h_exact)
 
@@ -70,15 +69,18 @@ def test_heisenberg_2():
 
         v_exact[j, j, i, i] = J_z/4
         v_exact[i, i, j, j] = J_z/4
-        
+
         v_exact[j, i, j, i] = J_xy/2
         v_exact[i, j, i, j] = J_xy/2
 
     ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
-    v = ham.generate_two_body_integral(basis='spatial basis', dense=True, sym=4)
+    v = ham.generate_two_body_integral(basis='spatial basis',
+                                       dense=True,
+                                       sym=4)
     # convert to chemists notation
     v = np.transpose(v, (0, 2, 1, 3))
     assert_allclose(v, v_exact)
+
 
 def test_heisenberg_2_spin():
     r"""Test the Heisenberg model 2 electron integral."""
@@ -115,12 +117,17 @@ def test_heisenberg_2_spin():
         v_exact[i, j, i+n_sites, j+n_sites] = J_xy
         v_exact[j+n_sites, i+n_sites, j, i] = J_xy
         v_exact[i+n_sites, j+n_sites, i, j] = J_xy
-    
+
     # converting to physics notation
     v_exact = np.transpose(v_exact, (0, 2, 1, 3))
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
-    v = ham.generate_two_body_integral(basis='spinorbital basis', dense=True, sym=4)
+    ham = HamHeisenberg(J_eq=J_xy,
+                        J_ax=J_z,
+                        mu=0,
+                        connectivity=connectivity)
+    v = ham.generate_two_body_integral(basis='spinorbital basis',
+                                       dense=True,
+                                       sym=4)
 
     inds = np.nonzero(v)
     for i, j, k, l in zip(*inds):
