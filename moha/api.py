@@ -39,7 +39,7 @@ class HamiltonianAPI(ABC):
             self.n_sites = self.connectivity_matrix.shape[0]
 
             return None, self.connectivity_matrix
-        
+
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
@@ -205,21 +205,27 @@ class HamiltonianAPI(ABC):
         spatial_int: scipy.sparce.csr_matrix or np.ndarray
             one-/two-body integrals in spatial basis
 
-        
+
         Notes
         -----
         Given the one- or two-body Hamiltonian matrix terms,
         :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
-        we populate the spatial integrals by calcualting __average__ over the spin-orbitals
+        we populate the spatial integrals by calcualting __average__ over the
+        spin-orbitals
 
-        Specifically, for the one-body integrals, we have:
-        :math:`h_{pq} = 0.25*(h_{pq}^{aa} + h_{pq}^{bb} + h_{pq}^{ab} + h_{pq}^{ba}) = h_{pq}^{aa} = h_{pq}^{bb}`
-        Therefore, the one-body integrals in the spatial basis are the same as the aa part of 
+        Specifically, for the one-body integrals,
+        we have:
+        :math:`h_{pq} = 0.25*(h_{pq}^{aa} + h_{pq}^{bb} + h_{pq}^{ab}
+        + h_{pq}^{ba}) = h_{pq}^{aa} = h_{pq}^{bb}`
+        Therefore, the one-body integrals in the spatial basis
+        are the same as the aa part of
         one-body integrals in the spin-orbital basis.
 
         For the two-body integrals, we have:
-        :math:`v_{pqrs} = 0.25*(v_{pqrs}^{aaaa} + v_{pqrs}^{bbbb} + v_{pqrs}^{abab} + v_{pqrs}^{baba})`
-        Assuming that :math:`v_{pqrs}^{abab} = v_{pqrs}^{baba}` and :math:`v_{pqrs}^{aaaa} = v_{pqrs}^{bbbb}`
+        :math:`v_{pqrs} = 0.25*(v_{pqrs}^{aaaa} + v_{pqrs}^{bbbb} +
+        v_{pqrs}^{abab} + v_{pqrs}^{baba})`
+        Assuming that :math:`v_{pqrs}^{abab} = v_{pqrs}^{baba}` and
+        :math:`v_{pqrs}^{aaaa} = v_{pqrs}^{bbbb}`
         :math:`v_{pqrs} = 0.5*(v_{pqrs}^{aaaa} + v_{pqrs}^{abab})`
         """
         # Assumption: spatial components of alpha and beta
@@ -240,11 +246,11 @@ class HamiltonianAPI(ABC):
                                            p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
                 for q in range(p+1, self.n_sites):
-                    # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb 
+                    # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb
                     pq, pq = convert_indices(self.n_sites, p, q, p, q)
                     pq_, pq_ = convert_indices(n, p, q, p, q)
                     spatial_int[pq, pq] = 0.5 * integral[pq_, pq_]
-                    # v_pqpq += 0.5*Gamma_pqpq_ab 
+                    # v_pqpq += 0.5*Gamma_pqpq_ab
                     # assuming that Gamma_pqpq_ab = Gamma_pqpq_ba
                     pq_, pq_ = convert_indices(n,
                                                p, q + self.n_sites,

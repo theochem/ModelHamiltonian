@@ -158,6 +158,7 @@ def expand_sym(sym, integral, nbody):
                 integral[qr, sp] = integral[sr, qp]
     return integral
 
+
 def fill_o2(o2):
     """
     Fill the 2-body matrix with the missing elements.
