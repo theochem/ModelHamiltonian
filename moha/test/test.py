@@ -152,6 +152,7 @@ def test_ppp_api():
     assert h.shape[0] == 6
     assert v.shape[0] == 6
 
+
 def test_api_input():
     r"""Test the input of the API."""
     norb = 6
@@ -171,9 +172,10 @@ def test_api_input():
     v = ham.generate_two_body_integral(sym=1,
                                        basis='spinorbital basis',
                                        dense=True)
-    
+
     assert h.shape[0] == 12
     assert v.shape[0] == 12
+
 
 def test_spin_spatial_conversion():
     r"""Test the conversion between spin and spatial basis."""
@@ -193,7 +195,7 @@ def test_spin_spatial_conversion():
     v = ham.generate_two_body_integral(sym=4,
                                        basis='spinorbital basis',
                                        dense=True)
-    
+
     h = ham.to_spatial(sym=1, dense=True, nbody=1)
     v = ham.to_spatial(sym=4, dense=True, nbody=2)
 
@@ -206,5 +208,3 @@ def test_spin_spatial_conversion():
         h2[i, i, i, i] = 1
     np.testing.assert_allclose(h, h1)
     np.testing.assert_allclose(v, h2)
-
-    

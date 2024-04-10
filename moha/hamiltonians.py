@@ -377,7 +377,7 @@ class HamHeisenberg(HamiltonianAPI):
         mu: np.ndarray
             Zeeman term
         J_eq: np.ndarray
-            J equatorial term            
+            J equatorial term
         J_ax: np.ndarray
             J axial term
         n_sites: int
@@ -399,12 +399,12 @@ class HamHeisenberg(HamiltonianAPI):
             if isinstance(J_eq, np.ndarray) and \
                isinstance(J_ax, np.ndarray) and \
                J_eq.shape == J_ax.shape:
-                
+
                 self.n_sites = J_eq.shape[0]
                 self.J_eq = J_eq
                 self.J_ax = J_ax
             else:
-                raise TypeError("J_eq and J_ax should be numpy arrays of the same shape")
+                raise TypeError("J_eq and J_ax should be numpy arrays of the same shape")  # noqa: E501
 
         self.mu = np.array(mu)
         self.n_sites = n_sites
@@ -422,7 +422,7 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-                     + 0.25 * np.sum(self.J_ax)/2 # divide by 2 to avoid double counting
+            + 0.25 * np.sum(self.J_ax)/2  # divide by 2 to avoid double counting # noqa: E501
         return zero_energy
 
     def generate_one_body_integral(self,
@@ -453,24 +453,32 @@ class HamHeisenberg(HamiltonianAPI):
         elif basis == "spinorbital basis":
             if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites) and \
                     self.J_ax.shape == (self.n_sites, self.n_sites):
-                
-                J_ax = np.hstack([np.vstack([self.J_ax, np.zeros((self.n_sites, self.n_sites))]),
-                                  np.vstack([np.zeros((self.n_sites, self.n_sites)), self.J_ax])])
+
+                J_ax = np.hstack([np.vstack([self.J_ax,
+                                             np.zeros((self.n_sites,
+                                                       self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites,
+                                                       self.n_sites)),
+                                             self.J_ax])])
             else:
                 raise TypeError("J_ax matrix has wrong basis")
             if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites) and \
                     self.J_eq.shape == (self.n_sites, self.n_sites):
-                
-                J_eq = np.hstack([np.vstack([self.J_eq, np.zeros((self.n_sites, self.n_sites))]),
-                                  np.vstack([np.zeros((self.n_sites, self.n_sites)), self.J_eq])])
+
+                J_eq = np.hstack([np.vstack([self.J_eq,
+                                             np.zeros((self.n_sites,
+                                                       self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites,
+                                                       self.n_sites)),
+                                             self.J_eq])])
             else:
                 raise TypeError("J_eq matrix has wrong basis")
-            
-            if self.mu.shape != (2 * self.n_sites,) and self.mu.shape == (self.n_sites,):
+
+            if self.mu.shape != (2 * self.n_sites,) and\
+               self.mu.shape == (self.n_sites,):
                 mu = np.hstack([self.mu, self.mu])
             else:
                 raise TypeError("mu array has wrong basis")
-
 
         one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
                                     (np.sum(J_ax, axis=1)-np.diag(J_ax))/2,
