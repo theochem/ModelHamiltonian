@@ -187,16 +187,9 @@ class HamPPP(HamiltonianAPI):
 
         if self.gamma is not None:
             if basis == "spinorbital basis" and \
-                    self.gamma.shape != (2 * n_sp, 2 * n_sp):
-                raise TypeError("Gamma matrix has wrong basis")
+                    self.gamma.shape != (n_sp, n_sp):
+                raise TypeError("Gamma matrix has wrong shape")
 
-            if basis == "spatial basis" and \
-                    self.gamma.shape == (n_sp, n_sp):
-                zeros_block = np.zeros((n_sp, n_sp))
-                self.gamma = np.vstack(
-                    [np.hstack([self.gamma, zeros_block]),
-                     np.hstack([zeros_block, self.gamma])]
-                )
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
@@ -204,17 +197,17 @@ class HamPPP(HamiltonianAPI):
                         v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.5 * self.gamma[p, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.5 * self.gamma[p + n_sp, q]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = 0.5 * self.gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
@@ -257,8 +250,10 @@ class HamHub(HamPPP):
 
         Parameters
         ----------
-        connectivity: list
+        connectivity: [list, np.ndarray]
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -363,11 +358,11 @@ class HamHeisenberg(HamiltonianAPI):
     r"""XXZ Heisenberg Hamiltonian."""
 
     def __init__(self,
-                 connectivity: list,
                  mu: list,
                  J_eq: np.ndarray,
                  J_ax: np.ndarray,
                  n_sites: int = None,
+                 connectivity: np.ndarray = None
                  ):
         r"""
         Initialize XXZ Heisenberg Hamiltonian.
@@ -379,8 +374,6 @@ class HamHeisenberg(HamiltonianAPI):
 
         Parameters
         ----------
-        connectivity: list
-            list of tuples that specifies sites and bonds between them
         mu: np.ndarray
             Zeeman term
         J_eq: np.ndarray
@@ -389,18 +382,32 @@ class HamHeisenberg(HamiltonianAPI):
             J axial term
         n_sites: int
             number of sites
+        connectivity: np.ndarray
+            symmetric numpy array that specifies the connectivity between sites
         """
-        self.connectivity = connectivity
+        if connectivity:
+            self.n_sites = connectivity.shape[0]
+            # if J_eq and J_ax are floats then convert them to numpy arrays
+            if isinstance(J_eq, (int, float)):
+                self.J_eq = J_eq * connectivity
+                self.J_ax = J_ax * connectivity
+            else:
+                raise TypeError("Connectivity matrix is provided, "
+                                "J_eq and J_ax should be floats")
+        else:
+            if isinstance(J_eq, np.ndarray) and \
+               isinstance(J_ax, np.ndarray) and \
+               J_eq.shape == J_ax.shape:
+                
+                self.n_sites = J_eq.shape[0]
+                self.J_eq = J_eq
+                self.J_ax = J_ax
+            else:
+                raise TypeError("J_eq and J_ax should be numpy arrays of the same shape")
+
         self.mu = np.array(mu)
-        self.J_eq = J_eq
-        self.J_ax = J_ax
         self.n_sites = n_sites
         self.atom_types = None
-        # I leave this commented till we decide whether we need
-        # to provide connectivity
-
-        # self.atoms_num, self.connectivity_matrix = \
-        #     self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
