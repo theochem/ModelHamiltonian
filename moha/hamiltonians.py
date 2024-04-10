@@ -511,7 +511,7 @@ class HamHeisenberg(HamiltonianAPI):
 
         if self.J_eq is not None and self.J_ax is not None:
             J_eq = self.J_eq
-            J_ax = self.J_ax    
+            J_ax = self.J_ax
             for p in range(n_sp):
                 for q in range(p+1, n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
