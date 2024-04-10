@@ -388,6 +388,7 @@ class HamHeisenberg(HamiltonianAPI):
         if connectivity:
             self.n_sites = connectivity.shape[0]
             # if J_eq and J_ax are floats then convert them to numpy arrays
+            # by multiplying with connectivity matrix
             if isinstance(J_eq, (int, float)):
                 self.J_eq = J_eq * connectivity
                 self.J_ax = J_ax * connectivity
