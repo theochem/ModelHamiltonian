@@ -6,7 +6,7 @@ from typing import TextIO
 
 import numpy as np
 
-from scipy.sparse import csr_matrix, lil_matrix
+from scipy.sparse import csr_matrix, lil_matrix, diags
 
 from .utils import convert_indices, get_atom_type
 
@@ -29,6 +29,17 @@ class HamiltonianAPI(ABC):
         """
         max_site = 0
         atoms_sites_lst = []
+
+        # check if self.connectivity is a matrix
+        # if so, put assign it to self.connectivity_matrix
+        # and set the atom_types to None
+        if isinstance(self.connectivity, np.ndarray):
+            self.connectivity_matrix = csr_matrix(self.connectivity)
+            self.atom_types = None
+            self.n_sites = self.connectivity_matrix.shape[0]
+
+            return None, self.connectivity_matrix
+
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
@@ -174,8 +185,7 @@ class HamiltonianAPI(ABC):
 
         # Return if target dim is not 2 or 4.
         else:
-            print("Target output dimension must be either 2 or 4.")
-            return
+            raise ValueError("Target output dimension must be either 2 or 4.")
 
     def to_spatial(self, sym: int, dense: bool, nbody: int):
         r"""
@@ -194,6 +204,29 @@ class HamiltonianAPI(ABC):
         -------
         spatial_int: scipy.sparce.csr_matrix or np.ndarray
             one-/two-body integrals in spatial basis
+
+
+        Notes
+        -----
+        Given the one- or two-body Hamiltonian matrix terms,
+        :math:`h_{i,j}` and :math:`g_{ij,kl}` respectively,
+        we populate the spatial integrals by calcualting __average__ over the
+        spin-orbitals
+
+        Specifically, for the one-body integrals,
+        we have:
+        :math:`h_{pq} = 0.25*(h_{pq}^{aa} + h_{pq}^{bb} + h_{pq}^{ab}
+        + h_{pq}^{ba}) = h_{pq}^{aa} = h_{pq}^{bb}`
+        Therefore, the one-body integrals in the spatial basis
+        are the same as the aa part of
+        one-body integrals in the spin-orbital basis.
+
+        For the two-body integrals, we have:
+        :math:`v_{pqrs} = 0.25*(v_{pqrs}^{aaaa} + v_{pqrs}^{bbbb} +
+        v_{pqrs}^{abab} + v_{pqrs}^{baba})`
+        Assuming that :math:`v_{pqrs}^{abab} = v_{pqrs}^{baba}` and
+        :math:`v_{pqrs}^{aaaa} = v_{pqrs}^{bbbb}`
+        :math:`v_{pqrs} = 0.5*(v_{pqrs}^{aaaa} + v_{pqrs}^{abab})`
         """
         # Assumption: spatial components of alpha and beta
         # spin-orbitals are equivalent
@@ -202,6 +235,7 @@ class HamiltonianAPI(ABC):
         if integral.shape[0] == 2 * self.n_sites:
             spatial_int = lil_matrix((self.n_sites, self.n_sites))
             spatial_int = integral[: self.n_sites, : self.n_sites]
+
         elif integral.shape[0] == 4 * self.n_sites ** 2:
             spatial_int = lil_matrix((self.n_sites ** 2, self.n_sites ** 2))
             for p in range(self.n_sites):
@@ -211,41 +245,31 @@ class HamiltonianAPI(ABC):
                                            p, p + self.n_sites,
                                            p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
-                for q in range(p, self.n_sites):
-                    # v_pqpq = 0.5 * (Gamma_pqpq_aa + Gamma_pqpq_bb)
+                for q in range(p+1, self.n_sites):
+                    # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb
                     pq, pq = convert_indices(self.n_sites, p, q, p, q)
                     pq_, pq_ = convert_indices(n, p, q, p, q)
-                    spatial_int[pq, pq] = integral[pq_, pq_]
-                    # v_pqpq += 0.5 * (Gamma_pqpq_ab + Gamma_pqpq_ba)
+                    spatial_int[pq, pq] = 0.5 * integral[pq_, pq_]
+                    # v_pqpq += 0.5*Gamma_pqpq_ab
+                    # assuming that Gamma_pqpq_ab = Gamma_pqpq_ba
                     pq_, pq_ = convert_indices(n,
                                                p, q + self.n_sites,
                                                p, q + self.n_sites)
-                    spatial_int[pq, pq] += integral[pq_, pq_]
+                    spatial_int[pq, pq] += 0.5 * integral[pq_, pq_]
                     #  v_ppqq = Pairing_ppqq_ab
                     pp, qq = convert_indices(self.n_sites, p, p, q, q)
                     pp_, qq_ = convert_indices(n,
                                                p, p + self.n_sites,
                                                q, q + self.n_sites)
-                    spatial_int[pp, qq] = integral[pp_, qq_]
+                    spatial_int[pp, qq] = 0.5 * integral[pp_, qq_]
         else:
             raise ValueError("Wrong integral input.")
         spatial_int = expand_sym(sym, spatial_int, nbody)
         spatial_int = spatial_int.tocsr()
 
         if dense:
-            if isinstance(
-                    spatial_int, csr_matrix
-            ):  # FixMe make sure that this works for every system
-                spatial_int = spatial_int.toarray()
-                spatial_int = np.reshape(
-                    spatial_int, (self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites,
-                                  self.n_sites)
-                )
-            else:
-                spatial_int = self.to_dense(spatial_int,
-                                            dim=4 if nbody == 2 else 1)
+            spatial_int = self.to_dense(spatial_int,
+                                        dim=4 if nbody == 2 else 2)
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
@@ -415,6 +439,8 @@ def expand_sym(sym, integral, nbody):
     else:
         # getting nonzero elements from the 2d _sparse_ array
         pq_array, rs_array = integral.nonzero()
+        # getting the size of the corresponding 4d array
+        n = int(np.sqrt(integral.shape[0]))
 
         for pq, rs in zip(pq_array, rs_array):
             p, q, r, s = convert_indices(n, pq, rs)
