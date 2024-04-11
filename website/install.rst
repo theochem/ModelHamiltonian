@@ -54,7 +54,6 @@ Run the following to install ModelHamiltonian:
 
 .. code:: shell
 
-    make
     python3 -m pip install .
 
 Run the following to test ModelHamiltonian:
