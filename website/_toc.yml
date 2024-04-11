@@ -13,3 +13,5 @@ parts:
     - caption: API
       chapters:
       - file: api/api.rst
+      - file: api/occupation.rst
+      - file: api/spin.rst
