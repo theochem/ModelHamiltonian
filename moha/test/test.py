@@ -151,3 +151,60 @@ def test_ppp_api():
 
     assert h.shape[0] == 6
     assert v.shape[0] == 6
+
+
+def test_api_input():
+    r"""Test the input of the API."""
+    norb = 6
+    connectivity = np.zeros((norb, norb))
+    for i in range(norb - 1):
+        connectivity[i, i + 1] = 1
+        connectivity[i + 1, i] = 1
+    connectivity[-1, 0] = 1
+
+    u_matrix = np.ones(norb)
+    g_matrix = np.arange(36).reshape((norb, norb))
+    charges = np.ones(norb)
+
+    ham = HamPPP(connectivity, alpha=0., beta=-2.5, u_onsite=u_matrix,
+                 gamma=g_matrix, charges=charges)
+    h = ham.generate_one_body_integral(basis='spinorbital basis', dense=True)
+    v = ham.generate_two_body_integral(sym=1,
+                                       basis='spinorbital basis',
+                                       dense=True)
+
+    assert h.shape[0] == 12
+    assert v.shape[0] == 12
+
+
+def test_spin_spatial_conversion():
+    r"""Test the conversion between spin and spatial basis."""
+    norb = 4
+    connectivity = np.zeros((norb, norb))
+    for i in range(norb - 1):
+        connectivity[i, i + 1] = 1
+        connectivity[i + 1, i] = 1
+    connectivity[-1, 0] = 1
+    connectivity[0, -1] = 1
+
+    u_matrix = np.ones(norb)
+
+    beta = -2.5
+    ham = HamHub(connectivity, alpha=0., beta=beta, u_onsite=u_matrix)
+    h = ham.generate_one_body_integral(basis='spinorbital basis', dense=True)
+    v = ham.generate_two_body_integral(sym=4,
+                                       basis='spinorbital basis',
+                                       dense=True)
+
+    h = ham.to_spatial(sym=1, dense=True, nbody=1)
+    v = ham.to_spatial(sym=4, dense=True, nbody=2)
+
+    h1 = np.array([[0., beta, 0., beta],
+                   [beta, 0., beta, 0.],
+                   [0., beta, 0., beta],
+                   [beta, 0., beta, 0.]])
+    h2 = np.zeros((4, 4, 4, 4))
+    for i in range(4):
+        h2[i, i, i, i] = 1
+    np.testing.assert_allclose(h, h1)
+    np.testing.assert_allclose(v, h2)
