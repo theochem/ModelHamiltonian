@@ -7,7 +7,7 @@
 Valerii Chuiko, Addison Richards, Gabriela Sanchez-Diaz, Marco Martínez González,Michelle Richer, Farnaz Heidar-Zadeh, and Paul W. Ayers
 
 
-The ModelHamiltonian source code is hosted on [GitHub](hhttps://github.com/theochem/ModelHamiltonian.git) and is released under the [GNU LESSER GPLv3](https://github.com/theochem/ModelHamiltonian/blob/main/LICENSE.md). We welcome any contributions to the ModelHamiltonian library in accordance with our [Code of Conduct](https://qcdevs.org/guidelines/qcdevs_code_of_conduct/). Please report any issues you encounter while using ModelHamiltonian library on [GitHub Issues](https://github.com/theochem/ModelHamiltonian/issues). For further information and inquiries please contact us at qcdevs@gmail.com.
+The ModelHamiltonian source code is hosted on [GitHub](https://github.com/theochem/ModelHamiltonian.git) and is released under the [GNU LESSER GPLv3](https://github.com/theochem/ModelHamiltonian/blob/main/LICENSE.md). We welcome any contributions to the ModelHamiltonian library in accordance with our [Code of Conduct](https://qcdevs.org/guidelines/qcdevs_code_of_conduct/). Please report any issues you encounter while using ModelHamiltonian library on [GitHub Issues](https://github.com/theochem/ModelHamiltonian/issues). For further information and inquiries please contact us at qcdevs@gmail.com.
 
 ## Why ModelHamiltonian?
 The Model Hamiltonian Package is designed to facilitate research in quantum chemistry, condensed matter physics, and materials science. It provides functionalities to generate 0, 1, and 2 electron integrals for a wide range of quantum models, including but not limited to:
