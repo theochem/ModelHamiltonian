@@ -39,7 +39,7 @@ E.g., for Debian- or Ubuntu- based Linux systems:
     sudo apt-get install git python3 python3-devel python3-pip
 
 Download ModelHamiltonian
-=============
+=========================
 
 Run the following in your shell to download ModelHamiltonian via git:
 
@@ -48,7 +48,7 @@ Run the following in your shell to download ModelHamiltonian via git:
     git clone https://github.com/theochem/ModelHamiltonian.git && cd ModelHamiltonian
 
 Install ModelHamiltonian
-============
+========================
 
 Run the following to install ModelHamiltonian:
 
