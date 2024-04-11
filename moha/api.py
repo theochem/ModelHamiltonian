@@ -367,9 +367,35 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    def save(self, fname: str, integral, basis):
-        r"""Save file as regular numpy array."""
-        pass
+    def savez(self, fname: str):
+        r"""Save file as regular npz file.
+        
+        Parameters
+        ----------
+        fname: str
+            name of the file
+            
+        Returns
+        -------
+        None
+        """
+        if self.zero_energy is not None:
+            e0 = self.zero_energy
+        else:
+            raise ValueError("Zero energy was not calculated.")
+
+        if self.one_body is not None:
+            h = self.to_dense(self.one_body, dim=2)
+        else:
+            raise ValueError("One body integrals were not calculated.")
+
+        if self.two_body is not None:
+            v = self.to_dense(self.two_body, dim=4)
+        else:
+            raise ValueError("Two body integrals were not calculated.")
+
+        np.savez(fname, e0=e0, h1=h, h2=v)
+
 
 
 def expand_sym(sym, integral, nbody):
