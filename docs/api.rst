@@ -29,6 +29,9 @@ Model Hamiltonians
 .. autoclass:: moha.HamHuck
     :members:
 
+.. autoclass:: moha.HamHeisenberg
+    :members:
+
 Indices and tables
 ==================
 

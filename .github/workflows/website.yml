@@ -1,0 +1,59 @@
+name: deploy-book
+
+# Only run this when the master branch changes
+on:
+  push:
+    branches:
+      - main
+      - website
+
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+# This job installs dependencies, builds the book, and pushes it to `gh-pages`
+jobs:
+  deploy-book:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      # https://github.com/JamesIves/github-pages-deploy-action/issues/1110
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install -r website/requirements.txt
+
+
+      # Add soft links to the notebooks
+      - name: Add soft links to the notebooks
+        run: |
+          cd website
+          ln -s ../examples ./examples
+          ln -s ../docs/ ./api
+          cd ../
+
+      # Build the book
+      - name: Build the website
+        run: |
+          jupyter-book build ./website/
+
+      # Push the book's HTML to github-pages
+      # inspired by https://github.com/orgs/community/discussions/26724
+      # only push to gh-pages if the master branch has been updated
+      - name: GitHub Pages Action
+        # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/_build/html
+          publish_branch: gh-pages
+          cname: moha.qcdevs.org
