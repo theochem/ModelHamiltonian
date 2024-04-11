@@ -21,7 +21,7 @@ class HamPPP(HamiltonianAPI):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: list | np.ndarray,
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
@@ -39,8 +39,12 @@ class HamPPP(HamiltonianAPI):
 
         Parameters
         ----------
-        connectivity: list
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -255,10 +259,12 @@ class HamHub(HamPPP):
 
         Parameters
         ----------
-        connectivity: [list, np.ndarray]
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
             or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
-            the connectivity between sites
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -321,8 +327,12 @@ class HamHuck(HamHub):
 
         Parameters
         ----------
-        connectivity: list
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
