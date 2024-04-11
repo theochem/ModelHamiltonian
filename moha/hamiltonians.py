@@ -105,6 +105,7 @@ class HamPPP(HamiltonianAPI):
         float
         """
         if self.charges is None or self.gamma is None:
+            self.zero_energy = 0
             return 0
         else:
             self.zero_energy = 0.5 * self.charges @ self.gamma @ self.charges
@@ -410,6 +411,7 @@ class HamHeisenberg(HamiltonianAPI):
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
+        self._sym = 1
 
     def generate_zero_body_integral(self):
         """
@@ -421,6 +423,7 @@ class HamHeisenberg(HamiltonianAPI):
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
             + 0.25 * np.sum(self.J_ax)/2  # divide by 2 to avoid double counting # noqa: E501
+        self.zero_energy = zero_energy
         return zero_energy
 
     def generate_one_body_integral(self,
