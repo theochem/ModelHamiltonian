@@ -37,15 +37,6 @@ class HamPPP(HamiltonianAPI):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
 
-        The form:
-        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
-        h_{p q} a_{p}^{\dagger}
-        a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
-        \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
-        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q
-        \beta}-Q_{q}\right)+
-        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
-        a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
         Parameters
         ----------
         connectivity: list
@@ -78,6 +69,18 @@ class HamPPP(HamiltonianAPI):
             Contains information about beta values for each bond type
         Bz: np.ndarray
             external magnetic field
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
+        h_{p q} a_{p}^{\dagger}
+        a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
+        \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
+        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q
+        \beta}-Q_{q}\right)+
+        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
+        a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
         """
         self._sym = sym
         self.n_sites = None
@@ -236,7 +239,7 @@ class HamHub(HamPPP):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: list | np.ndarray,
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
@@ -304,7 +307,7 @@ class HamHuck(HamHub):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: list | np.ndarray,
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
@@ -365,13 +368,7 @@ class HamHeisenberg(HamiltonianAPI):
                  J_ax: np.ndarray,
                  connectivity: np.ndarray = None
                  ):
-        r"""
-        Initialize XXZ Heisenberg Hamiltonian.
-
-        The form:
-        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
-        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
-        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
+        r"""Initialize XXZ Heisenberg Hamiltonian.
 
         Parameters
         ----------
@@ -383,6 +380,13 @@ class HamHeisenberg(HamiltonianAPI):
             J axial term
         connectivity: np.ndarray
             symmetric numpy array that specifies the connectivity between sites
+
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
         """
         if connectivity is not None:
             self.n_sites = connectivity.shape[0]
@@ -430,8 +434,7 @@ class HamHeisenberg(HamiltonianAPI):
     def generate_one_body_integral(self,
                                    dense: bool,
                                    basis='spinorbital basis'):
-        r"""
-        Generate one body integral.
+        r"""Generate one body integral.
 
         Parameters
         ----------
@@ -493,13 +496,12 @@ class HamHeisenberg(HamiltonianAPI):
                                    sym: int,
                                    dense: bool,
                                    basis='spinorbital basis'):
-        r"""
-        Generate two body integral in spatial or spinorbital basis.
+        r"""Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
         basis: str
-            ['spin orbital']
+            ['spinorbital basis', 'spatial basis']
         dense: bool
             dense or sparse matrix; default False
         sym: int
