@@ -369,12 +369,12 @@ class HamiltonianAPI(ABC):
 
     def savez(self, fname: str):
         r"""Save file as regular npz file.
-        
+
         Parameters
         ----------
         fname: str
             name of the file
-            
+
         Returns
         -------
         None
@@ -395,7 +395,6 @@ class HamiltonianAPI(ABC):
             raise ValueError("Two body integrals were not calculated.")
 
         np.savez(fname, e0=e0, h1=h, h2=v)
-
 
 
 def expand_sym(sym, integral, nbody):
