@@ -77,14 +77,15 @@ class HamPPP(HamiltonianAPI):
         Notes
         -----
         The Hamiltonian is given by:
-        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
-        h_{p q} a_{p}^{\dagger}
-        a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
-        \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
-        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q
-        \beta}-Q_{q}\right)+
-        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
-        a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
+        .. math::
+            hat{H}_{\mathrm{PPP}+\mathrm{P}} & = \sum_{p q}
+            h_{p q} a_{p}^{\dagger}a_{q} \\\\
+            & + \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta} \\\\
+            & + \frac{1}{2}\sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha} \\\\
+            & + \hat{n}_{p \beta}-Q_{p}\right)
+            \left(\hat{n}_{q \alpha}+\hat{n}_{q\beta}-Q_{q}\right) \\\\
+            & + \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
+            a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
         """
         self._sym = sym
         self.n_sites = None
