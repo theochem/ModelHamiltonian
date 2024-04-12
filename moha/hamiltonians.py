@@ -61,15 +61,18 @@ class HamPPP(HamiltonianAPI):
         Notes
         -----
         The Hamiltonian is given by:
+
         .. math::
-            hat{H}_{\mathrm{PPP}+\mathrm{P}} & = \sum_{p q}
-            h_{p q} a_{p}^{\dagger}a_{q} \\\\
-            & + \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta} \\\\
-            & + \frac{1}{2}\sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha} \\\\
-            & + \hat{n}_{p \beta}-Q_{p}\right)
-            \left(\hat{n}_{q \alpha}+\hat{n}_{q\beta}-Q_{q}\right) \\\\
-            & + \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
-            a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
+            \begin{align}
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} &=
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q} \\
+            &+ \sum_{p} U_{p} \hat{n}_{p \alpha}
+            \hat{n}_{p\beta} \\
+            &+ \frac{1}{2}\sum_{p\neq q}\gamma_{pq}\left(\hat{n}_{p\alpha}
+             + \hat{n}_{p \beta}-Q_{p}\right)
+            \left(\hat{n}_{q \alpha}+\hat{n}_{q\beta}-Q_{q}\right)
+            \end{align}
+
         """
         self._sym = sym
         self.n_sites = None
@@ -258,6 +261,16 @@ class HamHub(HamPPP):
             on-site Coulomb interaction; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} =
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q}
+            + \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}_{p\beta}
+
         """
         super().__init__(
             connectivity=connectivity,
@@ -305,6 +318,15 @@ class HamHuck(HamHub):
             The default value is appropriate for a pi-bond between Carbon atoms
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} =
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q}
+
         """
         super().__init__(
             connectivity=connectivity,
@@ -342,9 +364,12 @@ class HamHeisenberg(HamiltonianAPI):
         Notes
         -----
         The form of the Hamiltonian is given by:
-        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
-        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
-        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+            J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
         """
         if connectivity is not None:
             self.n_sites = connectivity.shape[0]
