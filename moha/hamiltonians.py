@@ -8,6 +8,8 @@ from .api import HamiltonianAPI
 
 from .utils import convert_indices, expand_sym
 
+from typing import Union
+
 __all__ = [
     "HamPPP",
     "HamHuck",
@@ -21,18 +23,13 @@ class HamPPP(HamiltonianAPI):
 
     def __init__(
             self,
-            connectivity: list | np.ndarray,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
             gamma=None,
             charges=None,
-            sym=1,
-            g_pair=None,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
+            sym=1
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -60,19 +57,6 @@ class HamPPP(HamiltonianAPI):
             Charges on sites; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        g_pair: float
-            g_pq term that captures interaction between electron pairs
-        atom_types: list
-            A list of dimension equal to the number of sites,
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
 
         Notes
         -----
@@ -95,10 +79,7 @@ class HamPPP(HamiltonianAPI):
         self.u_onsite = u_onsite
         self.gamma = gamma
         self.charges = charges
-        self.g_pair = g_pair
-        self.atom_types = atom_types
-        self.atom_dictionary = atom_dictionary
-        self.bond_dictionary = bond_dictionary
+        self.atom_types = None
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
         self.zero_energy = None
@@ -244,7 +225,7 @@ class HamHub(HamPPP):
 
     def __init__(
             self,
-            connectivity: list | np.ndarray,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
@@ -277,17 +258,6 @@ class HamHub(HamPPP):
             on-site Coulomb interaction; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        atom_types: list
-            A list of dimension equal to the number of sites
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
         """
         super().__init__(
             connectivity=connectivity,
@@ -296,11 +266,7 @@ class HamHub(HamPPP):
             u_onsite=u_onsite,
             gamma=None,
             charges=np.array(0),
-            sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
-            Bz=Bz,
+            sym=sym
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -314,14 +280,10 @@ class HamHuck(HamHub):
 
     def __init__(
             self,
-            connectivity: list | np.ndarray,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
     ):
         r"""
         Huckle hamiltonian.
@@ -343,17 +305,6 @@ class HamHuck(HamHub):
             The default value is appropriate for a pi-bond between Carbon atoms
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        atom_types: list
-            A list of dimension equal to the number of sites
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
         """
         super().__init__(
             connectivity=connectivity,
@@ -361,11 +312,7 @@ class HamHuck(HamHub):
             beta=beta,
             u_onsite=0,
             gamma=None,
-            sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
-            Bz=Bz,
+            sym=sym
         )
         self.charges = np.zeros(self.n_sites)
 
