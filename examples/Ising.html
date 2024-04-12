@@ -1,0 +1,981 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Spin-based Hamiltonians &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/Ising';</script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hamiltonian API" href="../api/api.html" />
+    <link rel="prev" title="Tutorial: Occupation-based Hamiltionians" href="Demonstration.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to ModelHamiltonian documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Demonstration.html">Tutorial: Occupation-based Hamiltionians</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Spin-based Hamiltonians</a></li>
+
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">Hamiltonian API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/occupation.html">Occupation-based Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/spin.html">Spin-based Hamiltonians</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/theochem/ModelHamiltonian/blob/main/website/examples/Ising.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian/issues/new?title=Issue%20on%20page%20%2Fexamples/Ising.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/Ising.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial: Spin-based Hamiltonians</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial: Spin-based Hamiltonians</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xxz-heisenberg-model">XXZ Heisenberg Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-heisenberg-model">Defining Heisenberg Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-integrals">Generating Integrals</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-xxz-heisenberg-model">Testing XXZ Heisenberg model</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-xxx-heisenberg-model">Testing XXX Heisenberg model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-the-output-of-the-modelhamiltonian-package">Saving the output of the ModelHamiltonian Package</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-spin-based-hamiltonians">
+<h1>Tutorial: Spin-based Hamiltonians<a class="headerlink" href="#tutorial-spin-based-hamiltonians" title="Link to this heading">#</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p>The Model Hamiltonian Package is a software tool designed to generate 0, 1, and 2 electron integrals for various quantum models. In this tutorial, we’ll focus on generating integrals for the Heisenberg model, specifically the XXZ Heisenberg model.</p>
+</section>
+<section id="xxz-heisenberg-model">
+<h2>XXZ Heisenberg Model<a class="headerlink" href="#xxz-heisenberg-model" title="Link to this heading">#</a></h2>
+<p>The XXZ Heisenberg model is a quantum model that describes the interaction between spins on a lattice. The Hamiltonian for the XXZ Heisenberg model is given by:</p>
+<div class="math notranslate nohighlight">
+\[\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+\sum_{p \neq q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p \neq q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
+<p>where <span class="math notranslate nohighlight">\(S_p^Z\)</span> is the <span class="math notranslate nohighlight">\(z\)</span> component of the spin operator at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(S_p^{+}\)</span> and <span class="math notranslate nohighlight">\(S_p^{-}\)</span> are the spin raising and lowering operators at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(\mu_p^Z\)</span> is the magnetic field at site <span class="math notranslate nohighlight">\(p\)</span>, , <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{ax}}\)</span> is the axial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>, and <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{eq}}\)</span> is the equatorial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</section>
+<section id="defining-heisenberg-model">
+<h2>Defining Heisenberg Model<a class="headerlink" href="#defining-heisenberg-model" title="Link to this heading">#</a></h2>
+<p>There are two ways to define the Heisenberg model using the Model Hamiltonian Package:</p>
+<ol class="arabic simple">
+<li><p>Using the connectivity of the lattice and providing the exchange couplingg, <span class="math notranslate nohighlight">\(J^{ax}\)</span> <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> as a float numbers;</p></li>
+<li><p>Providing exchange couplings, <span class="math notranslate nohighlight">\(J^{ax}\)</span> <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> explicitly as numpy arrays;</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">moha</span> <span class="kn">import</span> <span class="n">HamHeisenberg</span>
+
+<span class="c1"># Defining the Hamiltonian using connectivity matrix</span>
+<span class="c1"># For example, consider 6x6 lattice with periodic boundary condition</span>
+
+<span class="c1"># Define the connectivity matrix</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                          <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+
+<span class="c1"># Define the Hamiltonian parameters</span>
+<span class="n">J_eq</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">J_ax</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Define the Hamiltonian</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="n">J_eq</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="n">J_ax</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Second choice: Define the Hamiltonian </span>
+<span class="c1"># by providing exchange couplings, $J^{ax}$ $J^{eq}$ , and $\mu$ as numpy arrays</span>
+
+<span class="c1"># For example, consider 4x4 lattice with periodic boundary condition</span>
+<span class="n">J_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">J_ax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+                <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Define the Hamiltonian</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">J_eq</span><span class="o">=</span><span class="n">J_eq</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="n">J_ax</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="generating-integrals">
+<h2>Generating Integrals<a class="headerlink" href="#generating-integrals" title="Link to this heading">#</a></h2>
+<p>The Model Hamiltonian Package can generate 0, 1, and 2 electron integrals for the XXZ Heisenberg model. The integrals are stored in a sparse matrix format, and can be used to solve the Schrödinger equation for the model.
+Specifically, the integrals support the following operations:</p>
+<ol class="arabic">
+<li><p>Get the 0, 1, and 2 electron integrals for the XXZ Heisenberg model;</p></li>
+<li><p>Return intergrals in the form of a sparse or dense matrix;</p></li>
+<li><p>Return integrals in a spin orbital or spatial basis;</p>
+<p><strong>Note</strong> : Assumption is alpha and beta spinorbitals are the same;</p>
+</li>
+<li><p>Support 1-, 2-, and 4 - fold symmetry such as:</p>
+<p>a. 1-fold symmetry: no symmetry;</p>
+<p>b. 2-fold symmetry:</p>
+<div class="math notranslate nohighlight">
+\[g_{ij,kl} = g_{kl,ij}\]</div>
+<p>c. 4-fold symmetry:</p>
+<div class="math notranslate nohighlight">
+\[g_{ij,kl} = g_{kl,ij} = g_{ji,lk} = g_{lk,ji} \]</div>
+</li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: generating XXZ Heisenberg model </span>
+<span class="c1"># Returning electron integrals in a spatial orbital basis</span>
+<span class="c1"># Assuming 4-fold symmetry</span>
+<span class="c1"># Returning output as dense matrix</span>
+
+<span class="n">e0</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+<span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span> 
+<span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Zero energy: &quot;</span><span class="p">,</span> <span class="n">e0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One body integrals in spatial basis: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">h1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of two body integral in spatial basis: &quot;</span><span class="p">,</span> <span class="n">h2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="c1"># Example: generating XXZ Heisenberg model in spin orbital basis</span>
+<span class="c1"># Assuming 4-fold symmetry</span>
+<span class="c1"># Returning output as dense matrix</span>
+
+<span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spinorbital basis&#39;</span><span class="p">)</span>
+<span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spinorbital basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One body integrals in spin basis: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">h1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of two body integral in spinorbital basis: &quot;</span><span class="p">,</span> <span class="n">h2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Zero energy:  0.5
+One body integrals in spatial basis: 
+ [[-0.25  0.    0.    0.  ]
+ [ 0.   -0.25  0.    0.  ]
+ [ 0.    0.   -0.25  0.  ]
+ [ 0.    0.    0.   -0.25]]
+Shape of two body integral in spatial basis:  (4, 4, 4, 4)
+------------------------------------------------------------
+One body integrals in spin basis: 
+ [[-0.25  0.    0.    0.    0.    0.    0.    0.  ]
+ [ 0.   -0.25  0.    0.    0.    0.    0.    0.  ]
+ [ 0.    0.   -0.25  0.    0.    0.    0.    0.  ]
+ [ 0.    0.    0.   -0.25  0.    0.    0.    0.  ]
+ [ 0.    0.    0.    0.   -0.25  0.    0.    0.  ]
+ [ 0.    0.    0.    0.    0.   -0.25  0.    0.  ]
+ [ 0.    0.    0.    0.    0.    0.   -0.25  0.  ]
+ [ 0.    0.    0.    0.    0.    0.    0.   -0.25]]
+Shape of two body integral in spinorbital basis:  (8, 8, 8, 8)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+  self._set_intXint(row, col, x.flat[0])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="testing-xxz-heisenberg-model">
+<h1>Testing XXZ Heisenberg model<a class="headerlink" href="#testing-xxz-heisenberg-model" title="Link to this heading">#</a></h1>
+<p>To test the ouput of the ModelHamiltoian package, we can solve the Schrödinger equation using Full CI algorithm for the XXZ Heisenberg model using the generated integrals.</p>
+<p>To do this, we will use <code class="docutils literal notranslate"><span class="pre">pyscf</span></code> package.</p>
+<p>We can compare results with the explicit constraction of the hamiltonian matrix using pauli matrices.
+The explicit construction of the hamiltonian matrix is given by:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{H}_{X X Z}=\sum_{m=0}^{L-1}\left\{J^{eq}\left(S_x^{(m)} S_x^{(m+1)}+S_y^{(m)} S_y^{(m+1)}\right)+ J^{ax} S_z^{(m)} S_z^{(m+1)}\right\}\]</div>
+<p>To construct spin operators on the site <span class="math notranslate nohighlight">\(m\)</span>, we can use the following relation:</p>
+<div class="math notranslate nohighlight">
+\[S_i^{(m)} \equiv \frac{1}{2} \overbrace{\mathbb{1}_{2 \times 2} \otimes \ldots \otimes \mathbb{1}_{2 \times 2}}^m \otimes \sigma_i \otimes \overbrace{\mathbb{1}_{2 \times 2} \otimes \ldots \otimes \mathbb{1}_{2 \times 2}}^{L-m-1} .\]</div>
+<p>Where <span class="math notranslate nohighlight">\(\sigma_i\)</span> is the Pauli matrix <span class="math notranslate nohighlight">\(\forall i \epsilon \{x, y, z\}\)</span>.
+To find the spectrum of the constructed hamiltonian matrix, we can use <code class="docutils literal notranslate"><span class="pre">numpy</span></code> package.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Constructing the XXZ Hamiltonian explicitly</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
+
+<span class="c1"># Define Pauli spin matrices</span>
+<span class="n">sigma_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">sigma_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">sigma_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+
+<span class="c1"># Define function for Kronecker product with identity</span>
+<span class="k">def</span> <span class="nf">kron_id</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Creates Kronecker product of matrix with identity matrices.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">      matrix: The matrix for Kronecker product.</span>
+<span class="sd">      N: Number of identity matrices before the matrix.</span>
+<span class="sd">      L: Number of sites.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">      A Kronecker product of the matrix with identity matrices.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="n">matrix</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+  <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">result</span>
+
+<span class="c1"># Define function to create spin operators on Nth site</span>
+<span class="k">def</span> <span class="nf">spin_operator</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Creates a spin operator (Sx, Sy, Sz) on the Nth site.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">      operator: The Pauli spin matrix (sigma_x, sigma_y, sigma_z).</span>
+<span class="sd">      N: The site index for the spin operator.</span>
+<span class="sd">      L: Total number of sites.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">      A Kronecker product representing the spin operator on Nth site.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">return</span> <span class="n">kron_id</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+
+<span class="c1"># Define system size (number of sites)</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">6</span> <span class="c1"># Change this for different system size</span>
+
+<span class="c1"># Create spin operators on each site</span>
+<span class="n">Sx</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin_operator</span><span class="p">(</span><span class="n">sigma_x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">)]</span>
+<span class="n">Sy</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin_operator</span><span class="p">(</span><span class="n">sigma_y</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">)]</span>
+<span class="n">Sz</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin_operator</span><span class="p">(</span><span class="n">sigma_z</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">)]</span>
+
+<span class="c1"># Define Hamiltonian (only nearest-neighbor interaction for simplicity)</span>
+<span class="n">J_eq</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Coupling constant</span>
+<span class="n">J_ax</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">H</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">L</span><span class="p">:</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">H</span> <span class="o">+=</span> <span class="n">J_eq</span> <span class="o">*</span> <span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">Sx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">Sy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">Sy</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">+</span> <span class="n">J_ax</span><span class="o">*</span><span class="p">(</span><span class="n">Sz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">Sz</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+<span class="c1"># Convert explicit Hamiltonian to numpy array</span>
+<span class="n">H_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+<span class="c1"># Calculate eigenvalues and ground state</span>
+<span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="n">H_array</span><span class="p">)</span>
+
+<span class="c1"># Print ground state energy (lowest eigenvalue)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ground state energy per electron: </span><span class="si">{</span><span class="n">eigenvalues</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ground state energy per electron: -0.35649726389842357
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">fci</span>
+
+<span class="c1"># Constructing the XXZ Hamiltonian using the HamHeisenberg class</span>
+
+<span class="c1"># Define the Hamiltonian parameters</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span>
+<span class="n">connectivity</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">connectivity</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">connectivity</span> <span class="o">+=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Define the Hamiltonian</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">e0</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+<span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+<span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># convert h2 to chemists notation</span>
+<span class="n">h2_ch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">h2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># Calculate eigenvalues and ground state</span>
+<span class="n">e</span><span class="p">,</span> <span class="n">ci</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin0</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2_ch</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ground state energy per electron: </span><span class="si">{</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">e0</span><span class="p">)</span><span class="o">/</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ground state energy per electron: -0.35649726389842346
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+  self._set_intXint(row, col, x.flat[0])
+</pre></div>
+</div>
+</div>
+</div>
+<section id="testing-xxx-heisenberg-model">
+<h2>Testing XXX Heisenberg model<a class="headerlink" href="#testing-xxx-heisenberg-model" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://studenttheses.uu.nl/bitstream/handle/20.500.12932/36243/thesis%20Kuijper.pdf?sequence=1&amp;amp;isAllowed=y">It can be shown</a> that for one dimensional XXX Heisenberg model (when <span class="math notranslate nohighlight">\(J^{eq} = J^{ax} = J\)</span>), the energy of the ground state per site in the thermodynamic limit is equal to</p>
+<div class="math notranslate nohighlight">
+\[E_0 = -|J|\left(0.25 - \ln2\right)\]</div>
+<p>In this part we will constuct 4, 6, and 8 site XXX Heisenberg model for <span class="math notranslate nohighlight">\(J = 1\)</span> and compare the energy of the ground state per site with the theoretical value.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="n">e_inf</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># create figure with 2 plots side by side</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># Define the connectivity matrix</span>
+    <span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span>
+    <span class="n">connectivity</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">connectivity</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">connectivity</span> <span class="o">+=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="c1"># Define the Hamiltonian</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">e0</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># convert h2 to chemists notation</span>
+    <span class="n">h2_ch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">h2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="c1"># Calculate eigenvalues and ground state</span>
+    <span class="n">e</span><span class="p">,</span> <span class="n">ci</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin0</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2_ch</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">max_memory</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">pspace_size</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+    <span class="n">e_per_e</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="n">e0</span><span class="p">)</span><span class="o">/</span><span class="n">L</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">e_inf</span> <span class="o">-</span> <span class="n">e_per_e</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">e_per_e</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">)</span>
+
+<span class="c1"># plot the thermodynamic limit</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">e_inf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Thermodynamic limit&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;System size&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Ground state energy per electron&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Ground state energy per electron vs system size&#39;</span><span class="p">)</span>
+<span class="c1"># show legend</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;System size&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Error&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Error vs system size&#39;</span><span class="p">)</span>
+
+<span class="c1"># set log scale for y axis on the second plot</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+  self._set_intXint(row, col, x.flat[0])
+</pre></div>
+</div>
+<img alt="../_images/d255158e26243767a9a3699fdec56cd03ae91e0553e1294be5780c34592ae4e0.png" src="../_images/d255158e26243767a9a3699fdec56cd03ae91e0553e1294be5780c34592ae4e0.png" />
+</div>
+</div>
+</section>
+<section id="saving-the-output-of-the-modelhamiltonian-package">
+<h2>Saving the output of the ModelHamiltonian Package<a class="headerlink" href="#saving-the-output-of-the-modelhamiltonian-package" title="Link to this heading">#</a></h2>
+<p>Once we have generated the integrals using Model Hamiltonian, we can save the output in a file. This will allow us to use the integrals later without regenerating them.</p>
+<p>There are two supported file formats:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">.fcidump</span></code></p>
+<p>In this case the integrals are saved in the FCIDUMP format. User needs to provide a TextIO file, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'w')</span></code>, number of electron and spinpolarization. The lates is set to 0 by default.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.npz</span> <span class="pre">file</span></code></p>
+<p>In this case the integrals are saved in .npz file format. User needs to provide a filename. Energy shift, one-, and two-electron integrals are saved under the keys <code class="docutils literal notranslate"><span class="pre">e0</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code> and <code class="docutils literal notranslate"><span class="pre">h2</span></code> respectively.</p>
+</li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Constructing the XXZ Hamiltonian using the HamHeisenberg class</span>
+
+<span class="c1"># Define the Hamiltonian parameters</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">))</span>
+<span class="n">connectivity</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">connectivity</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">connectivity</span> <span class="o">+=</span> <span class="n">connectivity</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1"># Define the Hamiltonian</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">e0</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+<span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+<span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># save the Hamiltonian to npz file</span>
+<span class="n">ham</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="s1">&#39;Heisenberg_4_site.npz&#39;</span><span class="p">)</span>
+<span class="c1"># save the Hamiltonian to fcidump file</span>
+<span class="n">ham</span><span class="o">.</span><span class="n">save_fcidump</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;Heisenberg_4_site.fcidump&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="n">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/ModelHamiltonian",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Demonstration.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: Occupation-based Hamiltionians</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Hamiltonian API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial: Spin-based Hamiltonians</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xxz-heisenberg-model">XXZ Heisenberg Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-heisenberg-model">Defining Heisenberg Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-integrals">Generating Integrals</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-xxz-heisenberg-model">Testing XXZ Heisenberg model</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-xxx-heisenberg-model">Testing XXX Heisenberg model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-the-output-of-the-modelhamiltonian-package">Saving the output of the ModelHamiltonian Package</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
