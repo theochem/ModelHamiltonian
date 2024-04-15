@@ -133,3 +133,69 @@ def test_heisenberg_2_spin():
     for i, j, k, l in zip(*inds):
         print(i, j, k, l, v[i, j, k, l], v_exact[i, j, k, l])
     assert_allclose(v, v_exact)
+
+
+def test_Ising():
+    n_sites = 8
+    J_xy = 0
+    J_z = np.random.rand()
+    connectivity = np.zeros((n_sites, n_sites))
+    for i in range(n_sites):
+        j = i+1
+        if j == n_sites:
+            j = 0
+        connectivity[i, j] = 1
+        connectivity[j, i] = 1
+
+    v_exact = np.zeros((n_sites, n_sites, n_sites, n_sites))
+    for i in range(n_sites):
+        j = i+1
+        if j == n_sites:
+            j = 0
+
+        v_exact[j, j, i, i] = J_z/4
+        v_exact[i, i, j, j] = J_z/4
+
+        v_exact[j, i, j, i] = J_xy/2
+        v_exact[i, j, i, j] = J_xy/2
+
+    ham = HamIsing(J_ax=J_z, mu=0, connectivity=connectivity)
+    v = ham.generate_two_body_integral(basis='spatial basis',
+                                       dense=True,
+                                       sym=4)
+    # convert to chemists notation
+    v = np.transpose(v, (0, 2, 1, 3))
+    assert_allclose(v, v_exact)
+
+
+def test_RG():
+    n_sites = 8
+    J_xy = np.random.rand()
+    J_z = 0
+    connectivity = np.zeros((n_sites, n_sites))
+    for i in range(n_sites):
+        j = i+1
+        if j == n_sites:
+            j = 0
+        connectivity[i, j] = 1
+        connectivity[j, i] = 1
+
+    v_exact = np.zeros((n_sites, n_sites, n_sites, n_sites))
+    for i in range(n_sites):
+        j = i+1
+        if j == n_sites:
+            j = 0
+
+        v_exact[j, j, i, i] = J_z/4
+        v_exact[i, i, j, j] = J_z/4
+
+        v_exact[j, i, j, i] = J_xy/2
+        v_exact[i, j, i, j] = J_xy/2
+
+    ham = HamRG(J_eq=J_xy, mu=0, connectivity=connectivity)
+    v = ham.generate_two_body_integral(basis='spatial basis',
+                                       dense=True,
+                                       sym=4)
+    # convert to chemists notation
+    v = np.transpose(v, (0, 2, 1, 3))
+    assert_allclose(v, v_exact)
