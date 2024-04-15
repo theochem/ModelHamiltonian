@@ -393,6 +393,14 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -485,6 +493,63 @@ J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="moha.HamIsing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamIsing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamIsing" title="Link to this definition">#</a></dt>
+<dd><p>Ising Hamiltonian.</p>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="moha.HamIsing.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamIsing.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize XXZ Heisenberg Hamiltonian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> (<em>np.ndarray</em>) – Zeeman term</p></li>
+<li><p><strong>J_ax</strong> (<em>np.ndarray</em>) – J axial term</p></li>
+<li><p><strong>connectivity</strong> (<em>np.ndarray</em>) – symmetric numpy array that specifies the connectivity between sites</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The form of the Hamiltonian is given by:</p>
+<div class="math notranslate nohighlight">
+\[\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="moha.HamRG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamRG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamRG" title="Link to this definition">#</a></dt>
+<dd><p>Richardson-Gaudin Hamiltonian.</p>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="moha.HamRG.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamRG.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize XXZ Heisenberg Hamiltonian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> (<em>np.ndarray</em>) – Zeeman term</p></li>
+<li><p><strong>J_eq</strong> (<em>np.ndarray</em>) – J equatorial term</p></li>
+<li><p><strong>connectivity</strong> (<em>np.ndarray</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The form of the Hamiltonian is given by:</p>
+<div class="math notranslate nohighlight">
+\[\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </section>
 
     <script type="text/x-thebe-config">
@@ -547,6 +612,14 @@ J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_one_body_integral()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_two_body_integral()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
