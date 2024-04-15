@@ -41,11 +41,19 @@ def set_defaults(input_data):
         for param in default_data[param_type].keys():
             if not param in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
+            # make all strings lowercase for case-insensitive comparisons
+            data_value = input_data[param_type][param]
+            if type(data_value) == str:
+                input_data[param_type][param] = data_value.lower()
+
+
 
 def build_moha_moltype_1d(data):
     '''
     Function that builds and returns hamiltonian object 
     specific to the "1d" moltype.
+
+    Supported hamiltonians are: PPP, Huckel, and Hubbard.
 
     Parameters
         ----------
@@ -68,7 +76,17 @@ def build_moha_moltype_1d(data):
         connectivity += [(f"C{norb}", f"C{1}", 1)]
 
     # create and return hamiltonian object ham
-    if data["model"]["hamiltonian"] == "hubbard":
+    # PPP
+    if data["model"]["hamiltonian"] == "ppp":
+        gamma = gamma0 * np.eye(norb)
+        ham = moha.HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=gamma)
+        return ham
+    # Huckel
+    elif data["model"]["hamiltonian"] == "huckel":
+        ham = moha.HamHuck(connectivity=connectivity, alpha=alpha, beta=beta)
+        return ham
+    # Hubbard
+    elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite = np.array([0.5*gamma0 for i in range(norb)])
         ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite)
         return ham

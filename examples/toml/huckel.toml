@@ -1,5 +1,5 @@
 [control]
-prefix = "hubbard"
+prefix = "huckel"
 outdir = "./fcidump"
 save_intergrals = true
 integral_format = "fcidump"
@@ -11,7 +11,7 @@ norb = 6
 nelec = 6
 
 [model]
-hamiltonian = "Hubbard"
+hamiltonian = "Huckel"
 basis = "spatial basis"
+alpha = 0.5
 beta = -1.0
-u_onsite = 1.0
