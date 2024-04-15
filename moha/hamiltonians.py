@@ -563,7 +563,8 @@ class HamIsing(HamHeisenberg):
         The form of the Hamiltonian is given by:
 
         .. math::
-            \hat{H}_{X X Z}=\sum_p \mu_p^Z S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z
+            \hat{H}_{X X Z}=\sum_p \mu_p^Z S_p^Z+
+            \sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z
 
         """
         if isinstance(J_ax, float):
