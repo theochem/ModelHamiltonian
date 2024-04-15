@@ -300,9 +300,9 @@ class HamHub(HamPPP):
 
 class HamHuck(HamHub):
     r"""
-    Huckle Hamiltonian.
+    Huckel Hamiltonian.
 
-    It can be invoked by choosing u_onsite = 0 from Hubbard hamiltonian.
+    It can be invoked by choosing u_onsite = None from Hubbard hamiltonian.
     """
 
     def __init__(
@@ -317,7 +317,7 @@ class HamHuck(HamHub):
             Bz=None,
     ):
         r"""
-        Huckle hamiltonian.
+        Huckel hamiltonian.
 
         Parameters
         ----------
@@ -348,8 +348,7 @@ class HamHuck(HamHub):
             connectivity=connectivity,
             alpha=alpha,
             beta=beta,
-            u_onsite=0,
-            gamma=None,
+            u_onsite=None,
             sym=sym,
             atom_types=atom_types,
             atom_dictionary=atom_dictionary,
