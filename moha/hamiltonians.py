@@ -537,3 +537,90 @@ class HamHeisenberg(HamiltonianAPI):
         self.two_body = v
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
+
+
+class HamIsing(HamHeisenberg):
+    r"""Ising Hamiltonian."""
+
+    def __init__(self,
+                 mu: np.ndarray,
+                 J_ax: np.ndarray,
+                 connectivity: np.ndarray = None
+                 ):
+        r"""Initialize XXZ Heisenberg Hamiltonian.
+
+        Parameters
+        ----------
+        mu: np.ndarray
+            Zeeman term
+        J_ax: np.ndarray
+            J axial term
+        connectivity: np.ndarray
+            symmetric numpy array that specifies the connectivity between sites
+
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+            J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
+        """
+        if isinstance(J_ax, float):
+            J_eq = 0
+        elif isinstance(J_ax, np.ndarray):
+            J_eq = np.zeros(J_ax.shape)
+        else:
+            raise TypeError("J_ax should be a float or a numpy array")
+
+        super().__init__(
+            mu=mu,
+            J_eq=J_eq,
+            J_ax=J_ax,
+            connectivity=connectivity
+        )
+
+
+class HamRG(HamHeisenberg):
+    r"""Richardson-Gaudin Hamiltonian."""
+
+    def __init__(self,
+                 mu: np.ndarray,
+                 J_eq: np.ndarray,
+                 connectivity: np.ndarray = None
+                 ):
+        r"""Initialize XXZ Heisenberg Hamiltonian.
+
+        Parameters
+        ----------
+        mu: np.ndarray
+            Zeeman term
+        J_eq: np.ndarray
+            J equatorial term
+        connectivity: np.ndarray
+
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
+        """
+        # if J_eq is a float or numpy float
+        if isinstance(J_eq, float):
+            J_ax = 0
+        elif isinstance(J_eq, np.ndarray):
+            J_ax = np.zeros(J_eq.shape)
+        else:
+            raise TypeError("J_ax should be a float or a numpy array")
+
+        super().__init__(
+            mu=mu,
+            J_eq=J_eq,
+            J_ax=J_ax,
+            connectivity=connectivity
+        )
