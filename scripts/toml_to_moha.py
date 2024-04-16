@@ -69,9 +69,9 @@ def build_moha_moltype_1d(data):
     alpha  = data["model"]["alpha"]
     beta   = data["model"]["beta"]
     gamma0 = data["model"]["gamma0"]
-    mu    = data["model"]["mu"]
-    J_eq  = data["model"]["J_eq"]
-    J_ax  = data["model"]["J_ax"]
+    mu     = data["model"]["mu"]
+    J_eq   = data["model"]["J_eq"]
+    J_ax   = data["model"]["J_ax"]
 
     # build connectivity
     connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
@@ -103,6 +103,14 @@ def build_moha_moltype_1d(data):
     # Heisenberg
     elif data["model"]["hamiltonian"] == "heisenberg":
         ham = moha.HamHeisenberg(connectivity=spin_connectivity, mu=mu, J_eq=J_eq, J_ax=J_ax)
+        return ham
+    # Ising
+    elif data["model"]["hamiltonian"] == "ising":
+        ham = moha.HamIsing(connectivity=spin_connectivity, mu=mu, J_ax=J_ax)
+        return ham
+    # Richardson-Gaudin
+    elif data["model"]["hamiltonian"] == "rg":
+        ham = moha.HamRG(connectivity=spin_connectivity, mu=mu, J_eq=J_eq)
         return ham
     else:
         raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] + 

@@ -1,0 +1,16 @@
+[control]
+prefix = "rg"
+outdir = "./fcidump"
+save_intergrals = true
+integral_format = "fcidump"
+
+[system]
+moltype = "1d"
+bc = "periodic"
+norb = 6
+nelec = 6
+
+[model]
+hamiltonian = "RG"
+mu = 0.2
+J_eq = 1.0
