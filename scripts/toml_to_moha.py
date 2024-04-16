@@ -53,7 +53,7 @@ def build_moha_moltype_1d(data):
     Function that builds and returns hamiltonian object 
     specific to the "1d" moltype.
 
-    Supported hamiltonians are: PPP, Huckel, and Hubbard.
+    Supported hamiltonians are: PPP, Huckel, Hubbard, and Heisenberg.
 
     Parameters
         ----------
@@ -69,13 +69,22 @@ def build_moha_moltype_1d(data):
     alpha  = data["model"]["alpha"]
     beta   = data["model"]["beta"]
     gamma0 = data["model"]["gamma0"]
+    mu    = data["model"]["mu"]
+    J_eq  = data["model"]["J_eq"]
+    J_ax  = data["model"]["J_ax"]
 
     # build connectivity
     connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
     if data["system"]["bc"] == "periodic":
         connectivity += [(f"C{norb}", f"C{1}", 1)]
 
+    # build connectivity for spin models
+    spin_connectivity = np.array(np.eye(norb, k=1) + np.eye(norb, k=-1))
+    if data["system"]["bc"] == "periodic":
+        spin_connectivity[(0,-1)] = spin_connectivity[(-1,0)] = 1
+
     # create and return hamiltonian object ham
+    #-- Fermion models --#
     # PPP
     if data["model"]["hamiltonian"] == "ppp":
         gamma = gamma0 * np.eye(norb)
@@ -89,6 +98,11 @@ def build_moha_moltype_1d(data):
     elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite = np.array([0.5*gamma0 for i in range(norb)])
         ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite)
+        return ham
+    #-- Spin models --#
+    # Heisenberg
+    elif data["model"]["hamiltonian"] == "heisenberg":
+        ham = moha.HamHeisenberg(connectivity=spin_connectivity, mu=mu, J_eq=J_eq, J_ax=J_ax)
         return ham
     else:
         raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] + 
