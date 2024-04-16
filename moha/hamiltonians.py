@@ -332,7 +332,7 @@ class HamHuck(HamHub):
             connectivity=connectivity,
             alpha=alpha,
             beta=beta,
-            u_onsite=0,
+            u_onsite=None,
             gamma=None,
             sym=sym
         )
