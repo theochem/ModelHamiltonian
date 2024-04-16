@@ -476,8 +476,8 @@ class HamHeisenberg(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
-                                   sym: int,
-                                   dense: bool,
+                                   sym=1,
+                                   dense=False,
                                    basis='spinorbital basis'):
         r"""Generate two body integral in spatial or spinorbital basis.
 
