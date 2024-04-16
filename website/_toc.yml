@@ -1,0 +1,17 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro.md
+parts:
+    - caption: User Documentation
+      chapters:
+      - file: install.rst
+      - file: examples/Demonstration.ipynb
+      - file: examples/Ising.ipynb
+
+    - caption: API
+      chapters:
+      - file: api/api.rst
+      - file: api/occupation.rst
+      - file: api/spin.rst
