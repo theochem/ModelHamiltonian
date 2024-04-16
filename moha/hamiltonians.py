@@ -8,6 +8,8 @@ from .api import HamiltonianAPI
 
 from .utils import convert_indices, expand_sym
 
+from typing import Union
+
 __all__ = [
     "HamPPP",
     "HamHuck",
@@ -21,35 +23,25 @@ class HamPPP(HamiltonianAPI):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
             gamma=None,
             charges=None,
-            sym=1,
-            g_pair=None,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
+            sym=1
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
 
-        The form:
-        :math:`\hat{H}_{\mathrm{PPP}+\mathrm{P}}=\sum_{p q}
-        h_{p q} a_{p}^{\dagger}
-        a_{q}+\sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}{p\beta}+\frac{1}{2}
-        \sum{p\neq q}\gamma{pq}\left(\hat{n}_{p\alpha}+
-        hat{n}_{p \beta}-Q_{p}\right)\left(\hat{n}_{q \alpha}+\hat{n}_{q
-        \beta}-Q_{q}\right)+
-        \sum_{p \neq q} g_{p q} a_{p \alpha}^{\dagger}
-        a_{p \beta}^{\dagger} a_{q \beta} a_{q \alpha}`
         Parameters
         ----------
-        connectivity: list
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -65,19 +57,22 @@ class HamPPP(HamiltonianAPI):
             Charges on sites; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        g_pair: float
-            g_pq term that captures interaction between electron pairs
-        atom_types: list
-            A list of dimension equal to the number of sites,
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+
+        .. math::
+            \begin{align}
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} &=
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q} \\
+            &+ \sum_{p} U_{p} \hat{n}_{p \alpha}
+            \hat{n}_{p\beta} \\
+            &+ \frac{1}{2}\sum_{p\neq q}\gamma_{pq}\left(\hat{n}_{p\alpha}
+             + \hat{n}_{p \beta}-Q_{p}\right)
+            \left(\hat{n}_{q \alpha}+\hat{n}_{q\beta}-Q_{q}\right)
+            \end{align}
+
         """
         self._sym = sym
         self.n_sites = None
@@ -87,10 +82,7 @@ class HamPPP(HamiltonianAPI):
         self.u_onsite = u_onsite
         self.gamma = gamma
         self.charges = charges
-        self.g_pair = g_pair
-        self.atom_types = atom_types
-        self.atom_dictionary = atom_dictionary
-        self.bond_dictionary = bond_dictionary
+        self.atom_types = None
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
         self.zero_energy = None
@@ -105,6 +97,7 @@ class HamPPP(HamiltonianAPI):
         float
         """
         if self.charges is None or self.gamma is None:
+            self.zero_energy = 0
             return 0
         else:
             self.zero_energy = 0.5 * self.charges @ self.gamma @ self.charges
@@ -187,34 +180,27 @@ class HamPPP(HamiltonianAPI):
 
         if self.gamma is not None:
             if basis == "spinorbital basis" and \
-                    self.gamma.shape != (2 * n_sp, 2 * n_sp):
-                raise TypeError("Gamma matrix has wrong basis")
+                    self.gamma.shape != (n_sp, n_sp):
+                raise TypeError("Gamma matrix has wrong shape")
 
-            if basis == "spatial basis" and \
-                    self.gamma.shape == (n_sp, n_sp):
-                zeros_block = np.zeros((n_sp, n_sp))
-                gamma = np.vstack(
-                    [np.hstack([self.gamma, zeros_block]),
-                     np.hstack([zeros_block, self.gamma])]
-                )
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
                         i, j = convert_indices(Nv, p, q, p, q)
-                        v[i, j] = 0.5 * gamma[p, q]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = 0.5 * gamma[p, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = 0.5 * gamma[p + n_sp, q]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
                         i, j = convert_indices(Nv,
                                                p + n_sp,
                                                q + n_sp,
                                                p + n_sp,
                                                q + n_sp)
-                        v[i, j] = 0.5 * gamma[p + n_sp, q + n_sp]
+                        v[i, j] = 0.5 * self.gamma[p, q]
 
         v = v.tocsr()
         self.two_body = expand_sym(sym, v, 2)
@@ -242,7 +228,7 @@ class HamHub(HamPPP):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             u_onsite=None,
@@ -251,14 +237,19 @@ class HamHub(HamPPP):
             atom_dictionary=None,
             bond_dictionary=None,
             Bz=None,
+            gamma=None,
     ):
         r"""
         Hubbard Hamiltonian.
 
         Parameters
         ----------
-        connectivity: list
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -270,17 +261,16 @@ class HamHub(HamPPP):
             on-site Coulomb interaction; 1d np.ndarray
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        atom_types: list
-            A list of dimension equal to the number of sites
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} =
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q}
+            + \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}_{p\beta}
+
         """
         super().__init__(
             connectivity=connectivity,
@@ -289,11 +279,7 @@ class HamHub(HamPPP):
             u_onsite=u_onsite,
             gamma=None,
             charges=np.array(0),
-            sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
-            Bz=Bz,
+            sym=sym
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -307,22 +293,22 @@ class HamHuck(HamHub):
 
     def __init__(
             self,
-            connectivity: list,
+            connectivity: Union[list, np.ndarray],
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
-            atom_types=None,
-            atom_dictionary=None,
-            bond_dictionary=None,
-            Bz=None,
     ):
         r"""
         Huckel hamiltonian.
 
         Parameters
         ----------
-        connectivity: list
+        connectivity: list, np.ndarray
             list of tuples that specifies sites and bonds between them
+            or symmetric np.ndarray of shape (n_sites, n_sites) that specifies
+            the connectivity between sites.
+            For example, for a linear chain of 4 sites, the connectivity
+            can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
         alpha: float
             specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon
@@ -332,28 +318,23 @@ class HamHuck(HamHub):
             The default value is appropriate for a pi-bond between Carbon atoms
         sym: int
              symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1
-        atom_types: list
-            A list of dimension equal to the number of sites
-            specifying the atom type of each site
-            If a list of atom types is specified,
-            the values of alpha and beta are ignored.
-        atom_dictionary: dict
-            Contains information about alpha and U values for each atom type
-        bond_dictionary: dict
-            Contains information about beta values for each bond type
-        Bz: np.ndarray
-            external magnetic field
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{\mathrm{PPP}\mathrm{P}} =
+            \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q}
+
         """
         super().__init__(
             connectivity=connectivity,
             alpha=alpha,
             beta=beta,
-            u_onsite=None,
-            sym=sym,
-            atom_types=atom_types,
-            atom_dictionary=atom_dictionary,
-            bond_dictionary=bond_dictionary,
-            Bz=Bz,
+            u_onsite=0,
+            gamma=None,
+            sym=sym
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -362,40 +343,63 @@ class HamHeisenberg(HamiltonianAPI):
     r"""XXZ Heisenberg Hamiltonian."""
 
     def __init__(self,
-                 connectivity: list,
-                 mu: list,
+                 mu: np.ndarray,
                  J_eq: np.ndarray,
-                 J_ax: np.ndarray
+                 J_ax: np.ndarray,
+                 connectivity: np.ndarray = None
                  ):
-        r"""
-        Initialize XXZ Heisenberg Hamiltonian.
-
-        The form:
-        :math:'\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
-        S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
-        J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}'
+        r"""Initialize XXZ Heisenberg Hamiltonian.
 
         Parameters
         ----------
-        connectivity
-        mu
-        J_eq
-        J_ax
-        """
-        self.connectivity = connectivity
-        self.mu = np.array(mu)
-        self.J_eq = J_eq
-        self.J_ax = J_ax
-        self.n_sites = None
-        self.atom_types = None
-        # I live this commented till we decide whether we need
-        # to provide connectivity
+        mu: np.ndarray
+            Zeeman term
+        J_eq: np.ndarray
+            J equatorial term
+        J_ax: np.ndarray
+            J axial term
+        connectivity: np.ndarray
+            symmetric numpy array that specifies the connectivity between sites
 
-        self.atoms_num, self.connectivity_matrix = \
-            self.generate_connectivity_matrix()
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+            J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
+        """
+        if connectivity is not None:
+            self.n_sites = connectivity.shape[0]
+            # if J_eq and J_ax are floats then convert them to numpy arrays
+            # by multiplying with connectivity matrix
+            if isinstance(J_eq, (int, float)):
+                self.J_eq = J_eq * connectivity
+                self.J_ax = J_ax * connectivity
+                self.mu = mu * np.ones(self.n_sites)
+            else:
+                raise TypeError("Connectivity matrix is provided, "
+                                "J_eq, J_ax, and mu should be floats")
+        else:
+            if isinstance(J_eq, np.ndarray) and \
+               isinstance(J_ax, np.ndarray) and \
+               isinstance(mu, np.ndarray) and \
+               J_eq.shape == J_ax.shape and \
+               mu.shape[0] == J_eq.shape[0]:
+                self.n_sites = J_eq.shape[0]
+                self.J_eq = J_eq
+                self.J_ax = J_ax
+            else:
+                raise TypeError("J_eq and J_ax should be numpy arrays of the same shape")  # noqa: E501
+
+        self.mu = np.array(mu)
+        self.atom_types = None
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
+        self._sym = 1
 
     def generate_zero_body_integral(self):
         """
@@ -406,14 +410,14 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-            + 0.25 * np.sum(self.J_ax)
+            + 0.25 * np.sum(self.J_ax)/2  # divide by 2 to avoid double counting # noqa: E501
+        self.zero_energy = zero_energy
         return zero_energy
 
     def generate_one_body_integral(self,
                                    dense: bool,
                                    basis='spinorbital basis'):
-        r"""
-        Generate one body integral.
+        r"""Generate one body integral.
 
         Parameters
         ----------
@@ -432,15 +436,40 @@ class HamHeisenberg(HamiltonianAPI):
 
             J_ax = self.J_ax
             J_eq = self.J_eq
+            mu = self.mu
 
         elif basis == "spinorbital basis":
-            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites):
+            if self.J_ax.shape != (2 * self.n_sites, 2 * self.n_sites) and \
+                    self.J_ax.shape == (self.n_sites, self.n_sites):
+
+                J_ax = np.hstack([np.vstack([self.J_ax,
+                                             np.zeros((self.n_sites,
+                                                       self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites,
+                                                       self.n_sites)),
+                                             self.J_ax])])
+            else:
                 raise TypeError("J_ax matrix has wrong basis")
-            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites):
+            if self.J_eq.shape != (2 * self.n_sites, 2 * self.n_sites) and \
+                    self.J_eq.shape == (self.n_sites, self.n_sites):
+
+                J_eq = np.hstack([np.vstack([self.J_eq,
+                                             np.zeros((self.n_sites,
+                                                       self.n_sites))]),
+                                  np.vstack([np.zeros((self.n_sites,
+                                                       self.n_sites)),
+                                             self.J_eq])])
+            else:
                 raise TypeError("J_eq matrix has wrong basis")
 
-        one_body_term = 0.5 * diags(self.mu - np.diag(J_eq) -
-                                    np.sum(J_ax, axis=1),
+            if self.mu.shape != (2 * self.n_sites,) and\
+               self.mu.shape == (self.n_sites,):
+                mu = np.hstack([self.mu, self.mu])
+            else:
+                raise TypeError("mu array has wrong basis")
+
+        one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
+                                    (np.sum(J_ax, axis=1)-np.diag(J_ax))/2,
                                     format="csr")
 
         self.one_body = one_body_term
@@ -450,13 +479,12 @@ class HamHeisenberg(HamiltonianAPI):
                                    sym: int,
                                    dense: bool,
                                    basis='spinorbital basis'):
-        r"""
-        Generate two body integral in spatial or spinorbital basis.
+        r"""Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
         basis: str
-            ['spin orbital']
+            ['spinorbital basis', 'spatial basis']
         dense: bool
             dense or sparse matrix; default False
         sym: int
@@ -470,43 +498,34 @@ class HamHeisenberg(HamiltonianAPI):
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
 
-        if self.J_eq is not None:
-            if basis == "spinorbital basis":
-                if self.J_eq.shape != (2 * n_sp, 2 * n_sp):
-                    raise TypeError("J_eq matrix has wrong basis")
-                J_eq = self.J_eq
-
-            if basis == "spatial basis" and \
-                    self.J_eq.shape == (n_sp, n_sp):
-                zeros_block = np.zeros((n_sp, n_sp))
-                J_eq = np.vstack(
-                    [np.hstack([self.J_eq, zeros_block]),
-                     np.hstack([zeros_block, self.J_eq])]
-                )
-
+        if self.J_eq is not None and self.J_ax is not None:
+            J_eq = self.J_eq
+            J_ax = self.J_ax
             for p in range(n_sp):
-                for q in range(n_sp):
+                for q in range(p+1, n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
-                    v[i, j] = 0.25 * J_eq[p, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p, q + n_sp]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                    v[i, j] = 0.25 * J_eq[p + n_sp, q]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
                     i, j = convert_indices(Nv,
                                            p + n_sp,
                                            q + n_sp,
                                            p + n_sp,
                                            q + n_sp)
-                    v[i, j] = 0.25 * J_eq[p + n_sp, q + n_sp]
+                    v[i, j] = 0.25 * J_ax[p, q]
 
-                    i, j = convert_indices(Nv, p, p + n_sp, q + n_sp, q)
+                    i, j = convert_indices(Nv, p, p + n_sp, q, q + n_sp)
                     v[i, j] = J_eq[p, q]
 
         v = v.tocsr()
-        self.two_body = expand_sym(sym, v, 2)
+
+        # expanding symmetry
+        v = expand_sym(sym, v, 2)
         self.two_body = v
         if basis == "spatial basis":
             v = self.to_spatial(sym=sym, dense=False, nbody=2)
@@ -518,3 +537,90 @@ class HamHeisenberg(HamiltonianAPI):
         self.two_body = v
         # return either sparse csr array (default) or dense N^2*N^2 array
         return self.to_dense(v, dim=4) if dense else v
+
+
+class HamIsing(HamHeisenberg):
+    r"""Ising Hamiltonian."""
+
+    def __init__(self,
+                 mu: np.ndarray,
+                 J_ax: np.ndarray,
+                 connectivity: np.ndarray = None
+                 ):
+        r"""Initialize XXZ Heisenberg Hamiltonian.
+
+        Parameters
+        ----------
+        mu: np.ndarray
+            Zeeman term
+        J_ax: np.ndarray
+            J axial term
+        connectivity: np.ndarray
+            symmetric numpy array that specifies the connectivity between sites
+
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
+            J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
+        """
+        if isinstance(J_ax, float):
+            J_eq = 0
+        elif isinstance(J_ax, np.ndarray):
+            J_eq = np.zeros(J_ax.shape)
+        else:
+            raise TypeError("J_ax should be a float or a numpy array")
+
+        super().__init__(
+            mu=mu,
+            J_eq=J_eq,
+            J_ax=J_ax,
+            connectivity=connectivity
+        )
+
+
+class HamRG(HamHeisenberg):
+    r"""Richardson-Gaudin Hamiltonian."""
+
+    def __init__(self,
+                 mu: np.ndarray,
+                 J_eq: np.ndarray,
+                 connectivity: np.ndarray = None
+                 ):
+        r"""Initialize XXZ Heisenberg Hamiltonian.
+
+        Parameters
+        ----------
+        mu: np.ndarray
+            Zeeman term
+        J_eq: np.ndarray
+            J equatorial term
+        connectivity: np.ndarray
+
+        Notes
+        -----
+        The form of the Hamiltonian is given by:
+
+        .. math::
+            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+
+        """
+        # if J_eq is a float or numpy float
+        if isinstance(J_eq, float):
+            J_ax = 0
+        elif isinstance(J_eq, np.ndarray):
+            J_ax = np.zeros(J_eq.shape)
+        else:
+            raise TypeError("J_ax should be a float or a numpy array")
+
+        super().__init__(
+            mu=mu,
+            J_eq=J_eq,
+            J_ax=J_ax,
+            connectivity=connectivity
+        )
