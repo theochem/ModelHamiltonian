@@ -16,3 +16,6 @@ alpha = 0.0
 beta = 0.0
 gamma0 = 0.0
 u_onsite = 0.0
+mu = 0.0
+J_eq = 0.0
+J_ax = 0.0
