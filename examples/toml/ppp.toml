@@ -13,6 +13,7 @@ nelec = 6
 [model]
 hamiltonian = "PPP"
 basis = "spatial basis"
+charge = 0.0
 alpha = 0.5
 beta = -1.0
-gamma0 = 1.0
+u_onsite = 1.0
