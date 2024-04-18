@@ -1,6 +1,6 @@
 [control]
 outdir = "."
-save_intergrals = false
+save_integrals = false
 integral_format = "fcidump"
 
 [system]
