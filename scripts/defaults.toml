@@ -8,13 +8,14 @@ moltype = "1d"
 bc = "open"
 norb = 0
 nelec = 0
+symmetry = 4
 
 [model]
 hamiltonian = "hubbard"
 basis = "spatial basis"
+charge = 0.0
 alpha = 0.0
 beta = 0.0
-gamma0 = 0.0
 u_onsite = 0.0
 mu = 0.0
 J_eq = 0.0
