@@ -155,13 +155,15 @@ def toml_to_ham(toml_file):
         # save integrals to outdir if specified in toml_file
         if not exists(data["control"]["outdir"]):
             makedirs(data["control"]["outdir"], exist_ok=True)
-        out_file = join(data["control"]["outdir"], data["control"]["prefix"] + ".out")
+        out_file = join(data["control"]["outdir"], data["control"]["prefix"])
 
         # save output
         if data["control"]["integral_format"] == "fcidump":
-            fout = open(out_file, "w")
-            ham.save_fcidump(f=fout, nelec=data["system"]["nelec"])
-            fout.close()
+            out_file += ".fcidump"
+            with open(out_file, "w") as fout:
+                ham.save_fcidump(f=fout, nelec=data["system"]["nelec"])
+        elif data["control"]["integral_format"] == "npz":
+            ham.savez(out_file)
         else:
             raise ValueError("Integral output format " + data["control"]["integral_format"] + " not supported.")
 
