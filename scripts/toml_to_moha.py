@@ -1,6 +1,7 @@
 import tomllib
 import numpy as np
 from os.path import exists
+from os.path import join
 from os import makedirs
 import sys
 sys.path.insert(0, '../')
@@ -150,11 +151,11 @@ def toml_to_ham(toml_file):
     ham.generate_two_body_integral(dense=False, basis='spatial basis')
 
     # save integrals if specified in toml_file
-    if data["control"]["save_intergrals"]:
+    if data["control"]["save_integrals"]:
         # save integrals to outdir if specified in toml_file
         if not exists(data["control"]["outdir"]):
             makedirs(data["control"]["outdir"], exist_ok=True)
-        out_file = data["control"]["outdir"] + "/" + data["control"]["prefix"] + ".out"
+        out_file = join(data["control"]["outdir"], data["control"]["prefix"] + ".out")
 
         # save output
         if data["control"]["integral_format"] == "fcidump":
