@@ -47,6 +47,11 @@ def set_defaults(input_data):
             if type(data_value) == str:
                 input_data[param_type][param] = data_value.lower()
 
+            # set Carbon params as default in Huckel
+            if param_type == "model" and param_type == "huckel":
+                pass
+            #alpha=-0.414, beta=-0.0533,
+
 
 
 def build_moha_moltype_1d(data):
@@ -68,13 +73,14 @@ def build_moha_moltype_1d(data):
         moha.Ham
     '''
     # define parameters for 1d model
-    norb   = data["system"]["norb"]
-    alpha  = data["model"]["alpha"]
-    beta   = data["model"]["beta"]
-    gamma0 = data["model"]["gamma0"]
-    mu     = data["model"]["mu"]
-    J_eq   = data["model"]["J_eq"]
-    J_ax   = data["model"]["J_ax"]
+    norb      = data["system"]["norb"]
+    charge    = data["model"]["charge"]
+    alpha     = data["model"]["alpha"]
+    beta      = data["model"]["beta"]
+    u_onsite  = data["model"]["u_onsite"]
+    mu        = data["model"]["mu"]
+    J_eq      = data["model"]["J_eq"]
+    J_ax      = data["model"]["J_ax"]
 
     # build connectivity
     connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
@@ -90,8 +96,10 @@ def build_moha_moltype_1d(data):
     #-- Fermion models --#
     # PPP
     if data["model"]["hamiltonian"] == "ppp":
-        gamma = gamma0 * np.eye(norb)
-        ham = moha.HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=gamma)
+        charge_arr = charge * np.ones(norb)
+        u_onsite_arr = u_onsite * np.ones(norb)
+        ham = moha.HamPPP(connectivity=connectivity, alpha=alpha, beta=beta,
+                          u_onsite=u_onsite_arr, charges=charge_arr)
         return ham
     # Huckel
     elif data["model"]["hamiltonian"] == "huckel":
@@ -99,8 +107,8 @@ def build_moha_moltype_1d(data):
         return ham
     # Hubbard
     elif data["model"]["hamiltonian"] == "hubbard":
-        u_onsite = np.array([0.5*gamma0 for i in range(norb)])
-        ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite)
+        u_onsite_arr = u_onsite * np.ones(norb)
+        ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite_arr)
         return ham
     #-- Spin models --#
     # Heisenberg
@@ -145,10 +153,13 @@ def toml_to_ham(toml_file):
     else:
         raise ValueError("moltype " + data["system"]["moltype"] + " not supported.")
 
+    # get symmetry of two-electron integrals
+    sym = data["system"]["symmetry"]
+
     # generate integrals from ham
     ham.generate_zero_body_integral()
     ham.generate_one_body_integral(dense=True, basis='spatial basis')
-    ham.generate_two_body_integral(dense=False, basis='spatial basis')
+    ham.generate_two_body_integral(dense=False, basis='spatial basis', sym=sym)
 
     # save integrals if specified in toml_file
     if data["control"]["save_integrals"]:
