@@ -60,7 +60,7 @@ def build_moha_moltype_1d(data):
         data: dict
             dict containing toml input data.
 
-        Returns
+    Returns
         -------
         moha.Ham
     '''
@@ -126,7 +126,7 @@ def toml_to_ham(toml_file):
         toml_file: str
             filename of toml input file
 
-        Returns
+    Returns
         -------
         moha.Ham
     '''
