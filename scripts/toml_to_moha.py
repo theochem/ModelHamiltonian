@@ -35,22 +35,22 @@ def set_defaults(input_data):
     # set defaults in input_data
     for param_type in default_data.keys():
         # set required param type keys if not specified in input_data
-        if not param_type in input_data.keys():
+        if param_type not in input_data.keys():
             input_data[param_type] = {}
 
         # set required default param values if not specified in input_data
         for param in default_data[param_type].keys():
-            if not param in input_data[param_type]:
+            if param not in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
+                # set Carbon params as default in Huckel model
+                if input_data["model"]["hamiltonian"].lower() == "huckel" and param == "alpha":
+                    input_data["model"]["alpha"] = -0.414
+                if input_data["model"]["hamiltonian"].lower() == "huckel" and param == "beta":
+                    input_data["model"]["beta"] = -0.0533
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
             if type(data_value) == str:
                 input_data[param_type][param] = data_value.lower()
-
-            # set Carbon params as default in Huckel
-            if param_type == "model" and param_type == "huckel":
-                pass
-            #alpha=-0.414, beta=-0.0533,
 
 
 
