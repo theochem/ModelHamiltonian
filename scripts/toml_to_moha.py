@@ -53,7 +53,9 @@ def build_moha_moltype_1d(data):
     Function that builds and returns hamiltonian object 
     specific to the "1d" moltype.
 
-    Supported hamiltonians are: PPP, Huckel, Hubbard, and Heisenberg.
+    Supported hamiltonians are: PPP, Huckel, Hubbard, Heisenberg, Ising, and RG.
+    Only diagonal form of gamma matrix for PPP model is supported: 
+    gamma_pq = gamma0 * delta_pq.
 
     Parameters
         ----------
