@@ -16,7 +16,7 @@ def set_defaults(input_data):
         input_data: dict
             dict loaded from toml input file.
 
-        Returns
+    Returns
         -------
         None
     '''
@@ -27,9 +27,9 @@ def set_defaults(input_data):
         raise Exception("Default input file 'defaults.toml' is required.")
     
     # load defaults.toml data into default_data
-    with open(required_default_paramfile, "rb") as f:
-        default_data = tomllib.load(f)
-    f.close()
+    default_data = tomllib.load(
+                       open(required_default_paramfile, "rb")
+            )
 
     # set defaults in input_data
     for param_type in default_data.keys():
@@ -131,9 +131,7 @@ def toml_to_ham(toml_file):
         moha.Ham
     '''
     # load data from toml file 
-    with open(toml_file, "rb") as f:
-        data = tomllib.load(f)
-    f.close()
+    data = tomllib.load(open(toml_file, "rb"))
 
     # set any missing required values as defaults
     set_defaults(data)
