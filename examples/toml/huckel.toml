@@ -1,7 +1,7 @@
 [control]
 prefix = "huckel"
 outdir = "./fcidump"
-save_intergrals = true
+save_integrals = true
 integral_format = "fcidump"
 
 [system]
