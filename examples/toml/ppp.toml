@@ -1,0 +1,19 @@
+[control]
+prefix = "ppp"
+outdir = "./fcidump"
+save_integrals = true
+integral_format = "fcidump"
+
+[system]
+moltype = "1d"
+bc = "periodic"
+norb = 6
+nelec = 6
+
+[model]
+hamiltonian = "PPP"
+basis = "spatial basis"
+charge = 0.0
+alpha = 0.5
+beta = -1.0
+u_onsite = 1.0
