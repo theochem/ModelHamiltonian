@@ -1,3 +1,5 @@
+"""File containing functions for generating hamiltonian from toml file."""
+
 import tomllib
 import numpy as np
 from os.path import exists
@@ -10,7 +12,7 @@ from pathlib import Path
 
 def set_defaults(input_data):
     """
-    Function for setting defaults in the parameter dictionary
+    Set defaults in the parameter dictionary\
     loaded from toml input file.
 
     Parameters
@@ -22,12 +24,11 @@ def set_defaults(input_data):
     -------
     None
     """
-
     # require that defaults.toml exists
     required_default_paramfile = Path(__file__).parent / "defaults.toml"
     if not exists(required_default_paramfile):
         raise Exception("Default input file 'defaults.toml' is required.")
-    
+
     # load defaults.toml data into default_data
     default_data = tomllib.load(
                        open(required_default_paramfile, "rb")
@@ -44,22 +45,28 @@ def set_defaults(input_data):
             if param not in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
                 # set Carbon params as default in Huckel model
-                if param_type == "model" and input_data["model"]["hamiltonian"].lower() == "huckel" and param == "alpha":
+                if param_type == "model" \
+                    and input_data["model"]["hamiltonian"].lower() == "huckel"\
+                        and param == "alpha":
                     input_data["model"]["alpha"] = -0.414
-                if param_type == "model" and input_data["model"]["hamiltonian"].lower() == "huckel" and param == "beta":
+                if param_type == "model" \
+                    and input_data["model"]["hamiltonian"].lower() == "huckel"\
+                        and param == "beta":
                     input_data["model"]["beta"] = -0.0533
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
             if type(data_value) == str:
                 input_data[param_type][param] = data_value.lower()
 
+
 def build_moha_moltype_1d(data):
     """
-    Function that builds and returns hamiltonian object 
+    Build and return hamiltonian object\
     specific to the "1d" moltype.
 
-    Supported hamiltonians are: PPP, Huckel, Hubbard, Heisenberg, Ising, and RG.
-    Only diagonal form of gamma matrix for PPP model is supported: 
+    Supported hamiltonians are: PPP, Huckel, \
+        Hubbard, Heisenberg, Ising, and RG.
+    Only diagonal form of gamma matrix for PPP model is supported:
     gamma_pq = gamma0 * delta_pq.
 
     Parameters
@@ -73,14 +80,14 @@ def build_moha_moltype_1d(data):
         model hamiltonian object.
     """
     # define parameters for 1d model
-    norb      = data["system"]["norb"]
-    charge    = float(data["model"]["charge"])
-    alpha     = float(data["model"]["alpha"])
-    beta      = float(data["model"]["beta"])
-    u_onsite  = float(data["model"]["u_onsite"])
-    mu        = float(data["model"]["mu"])
-    J_eq      = float(data["model"]["J_eq"])
-    J_ax      = float(data["model"]["J_ax"])
+    norb = data["system"]["norb"]
+    charge = float(data["model"]["charge"])
+    alpha = float(data["model"]["alpha"])
+    beta = float(data["model"]["beta"])
+    u_onsite = float(data["model"]["u_onsite"])
+    mu = float(data["model"]["mu"])
+    J_eq = float(data["model"]["J_eq"])
+    J_ax = float(data["model"]["J_ax"])
 
     # build connectivity
     connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
@@ -90,10 +97,10 @@ def build_moha_moltype_1d(data):
     # build connectivity for spin models
     spin_connectivity = np.array(np.eye(norb, k=1) + np.eye(norb, k=-1))
     if data["system"]["bc"] == "periodic":
-        spin_connectivity[(0,-1)] = spin_connectivity[(-1,0)] = 1
+        spin_connectivity[(0, -1)] = spin_connectivity[(-1, 0)] = 1
 
     # create and return hamiltonian object ham
-    #-- Fermion models --#
+    # -- Fermion models --#
     # PPP
     if data["model"]["hamiltonian"] == "ppp":
         charge_arr = charge * np.ones(norb)
@@ -108,12 +115,15 @@ def build_moha_moltype_1d(data):
     # Hubbard
     elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite_arr)
+        ham = moha.HamHub(connectivity=connectivity,
+                          alpha=alpha, beta=beta,
+                          u_onsite=u_onsite_arr)
         return ham
-    #-- Spin models --#
+    # -- Spin models --#
     # Heisenberg
     elif data["model"]["hamiltonian"] == "heisenberg":
-        ham = moha.HamHeisenberg(connectivity=spin_connectivity, mu=mu, J_eq=J_eq, J_ax=J_ax)
+        ham = moha.HamHeisenberg(connectivity=spin_connectivity,
+                                 mu=mu, J_eq=J_eq, J_ax=J_ax)
         return ham
     # Ising
     elif data["model"]["hamiltonian"] == "ising":
@@ -124,13 +134,14 @@ def build_moha_moltype_1d(data):
         ham = moha.HamRG(connectivity=spin_connectivity, mu=mu, J_eq=J_eq)
         return ham
     else:
-        raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] + 
-                         " not supported for moltype " + data["system"]["moltype"] + ".")
+        raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] +
+                         " not supported for moltype " +
+                         data["system"]["moltype"] + ".")
+
 
 def dict_to_ham(data):
     """
-    Function for generating hamiltonian from dictionary of model data.
-    Prints integrals to output file if specified in data.
+    Generate hamiltonian from dictionary of model data.
 
     Parameters
     ----------
@@ -143,7 +154,6 @@ def dict_to_ham(data):
     hamiltonian: moha.Ham
         model hamiltonian object.
     """
-
     # set any missing required values as defaults
     set_defaults(data)
 
@@ -151,7 +161,8 @@ def dict_to_ham(data):
     if data["system"]["moltype"] == "1d":
         ham = build_moha_moltype_1d(data)
     else:
-        raise ValueError("moltype " + data["system"]["moltype"] + " not supported.")
+        raise ValueError("moltype " + data["system"]["moltype"] +
+                         " not supported.")
 
     # get symmetry of two-electron integrals
     sym = data["system"]["symmetry"]
@@ -176,13 +187,16 @@ def dict_to_ham(data):
         elif data["control"]["integral_format"] == "npz":
             ham.savez(out_file)
         else:
-            raise ValueError("Integral output format " + data["control"]["integral_format"] + " not supported.")
+            raise ValueError("Integral output format " +
+                             data["control"]["integral_format"] +
+                             " not supported.")
 
     return ham
 
+
 def from_toml(toml_file):
     """
-    Function for generating hamiltonian from toml file.
+    Generate hamiltonian from toml file.
 
     Parameters
     ----------
@@ -196,6 +210,7 @@ def from_toml(toml_file):
     data = tomllib.load(open(toml_file, "rb"))
     ham = dict_to_ham(data)
     return ham
+
 
 if __name__ == '__main__':
     toml_file = sys.argv[1]
