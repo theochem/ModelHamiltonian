@@ -286,9 +286,9 @@ class HamHub(HamPPP):
 
 class HamHuck(HamHub):
     r"""
-    Huckle Hamiltonian.
+    Huckel Hamiltonian.
 
-    It can be invoked by choosing u_onsite = 0 from Hubbard hamiltonian.
+    It can be invoked by choosing u_onsite = None from Hubbard hamiltonian.
     """
 
     def __init__(
@@ -299,7 +299,7 @@ class HamHuck(HamHub):
             sym=1,
     ):
         r"""
-        Huckle hamiltonian.
+        Huckel hamiltonian.
 
         Parameters
         ----------
@@ -332,7 +332,7 @@ class HamHuck(HamHub):
             connectivity=connectivity,
             alpha=alpha,
             beta=beta,
-            u_onsite=0,
+            u_onsite=None,
             gamma=None,
             sym=sym
         )
@@ -476,8 +476,8 @@ class HamHeisenberg(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
-                                   sym: int,
-                                   dense: bool,
+                                   sym=1,
+                                   dense=False,
                                    basis='spinorbital basis'):
         r"""Generate two body integral in spatial or spinorbital basis.
 
