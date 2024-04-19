@@ -1,0 +1,17 @@
+[control]
+prefix = "hubbard"
+outdir = "./fcidump"
+save_integrals = true
+integral_format = "fcidump"
+
+[system]
+moltype = "1d"
+bc = "periodic"
+norb = 6
+nelec = 6
+
+[model]
+hamiltonian = "Hubbard"
+basis = "spatial basis"
+beta = -1.0
+u_onsite = 1.0

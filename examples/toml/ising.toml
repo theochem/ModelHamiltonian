@@ -1,0 +1,16 @@
+[control]
+prefix = "ising"
+outdir = "./fcidump"
+save_integrals = true
+integral_format = "fcidump"
+
+[system]
+moltype = "1d"
+bc = "periodic"
+norb = 6
+nelec = 6
+
+[model]
+hamiltonian = "ising"
+mu = 0.2
+J_ax = 1.0
