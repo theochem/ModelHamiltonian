@@ -1,0 +1,103 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_keywords",
+            "description": "Use this function to generate keywords that corresponds to model hamiltonian. This function is also explaining the physics of parameters of constructed hamiltonian.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "save_integrals": {
+                        "type": "string",
+                        "description": "A boolean value that determines whether to save the integrals",
+                        "enum": ["true", "false"]
+                    },
+                    "integral_format":{
+                        "type": "string",
+                        "description": "The output format of the integrals.", 
+                        "enum": ["fcidump", "npz"]
+                    },
+                    "bc":{
+                        "type": "string",
+                        "description": "The boundary conditions of the integrals. Boundary conditions are periodic for ring-like systems and open for chain-like systems.",
+                        "enum": ["periodic", "open"]
+                    },
+                    "hamiltonian":{
+                        "type": "string",
+                        "description": "The type of hamiltonian to generate. Supported hamiltonians are Richardson-Gaudin (RG), Hubbard, Heisenberg, Huckel, Pariser-Parr-Pople (PPP), Ising.",
+                        "enum": ["RG", "Hubbard", "Heisenberg", "Huckel", "PPP", "Ising"]
+                    },
+                    "basis":{
+                        "type": "string",
+                        "description": "Spatial or spin-orbital basis set to use.",
+                        "enum": ["spatial basis", "spinorbital basis"]
+                    },
+                    "norb":{
+                        "type": "integer",
+                        "description": "Number of spatial orbitals. Should equal to the number of electrons if there is no information about the number of spatial orbitals."
+                    },
+                    "nelec":{
+                        "type": "integer",
+                        "description": "Number of electrons. Should equal to the number of spatial orbitals if there is no information about the number of electrons."
+                    },
+                    "symmetry":{
+                        "type": "integer",
+                        "description": "The symmetry of the system.",
+                        "enum": [1, 2, 4, 8]
+                    },
+                    "alpha":{
+                        "type": "number",
+                        "description": "Energy of the orbital. Don't use for spin-based hamiltonians."
+                    },
+                    "beta":{
+                        "type": "number",
+                        "description": "Energy of interaction between adjacent orbitals. Also called hopping parameter. Sometimes is denoted as t. Don't use for spin-based hamiltonians."
+                    },
+                    "u_onsite":{
+                        "type": "number",
+                        "description": "Coulomb interaction between electrons on the same site. Don't use for spin-based hamiltonians."
+                    },
+                    "charges":{
+                        "type": "number",
+                        "description": "Charge at each site of the system."
+                    },
+                    "mu":{
+                        "type": "number",
+                        "description": "Zeemam term, also called strenght of the magnetic field."
+                    },
+                    "J_eq":{
+                        "type": "number",
+                        "description": "Coupling energy along x,y axes between spins. If hamiltonian is Richardson-Gauding, use just this parameter. For XXX model, this parameter is equal to J_ax."
+                    },
+                    "J_ax":{
+                        "type": "number",
+                        "description": "Coupling energy along z axis between spins. If hamiltonian is Ising, use just this parameter. For XXX model, this parameter is equal to J_eq."
+                    },
+                    "outdir":{
+                        "type": "string",
+                        "description": "The directory to save the integrals."
+                    },
+                    "prefix":{
+                        "type": "string",
+                        "description": "The prefix of the integrals file."
+                    },
+                    "explanation":{
+                        "type": "string",
+                        "description": "Explantion of the generated hamiltoninan. Explain the physical meaning of the provided parameters."
+                    },
+                    "connectivity":{
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "description": "Connectivity of the system. Should be a list of lists which have to be a adjacency matrix. For example, for a chain-like system with 4 sites, connectivity=[[0, 1],[1, 2],[2, 3]]. Should be returned if connectivity is mentioned."
+                    }
+                },
+                "required": ["save_integrals", "integral_format", "hamiltonian", "basis", "nelec", "norb", "explanation"]
+            }
+        }
+    }
+]
