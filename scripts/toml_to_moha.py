@@ -43,9 +43,9 @@ def set_defaults(input_data):
             if param not in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
                 # set Carbon params as default in Huckel model
-                if input_data["model"]["hamiltonian"].lower() == "huckel" and param == "alpha":
+                if param_type == "model" and input_data["model"]["hamiltonian"].lower() == "huckel" and param == "alpha":
                     input_data["model"]["alpha"] = -0.414
-                if input_data["model"]["hamiltonian"].lower() == "huckel" and param == "beta":
+                if param_type == "model" and input_data["model"]["hamiltonian"].lower() == "huckel" and param == "beta":
                     input_data["model"]["beta"] = -0.0533
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
@@ -127,22 +127,21 @@ def build_moha_moltype_1d(data):
         raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] + 
                          " not supported for moltype " + data["system"]["moltype"] + ".")
 
-def toml_to_ham(toml_file):
+def dict_to_ham(data):
     '''
-    Function for generating hamiltonian from toml file.
-    Prints integrals to output file if specified in toml_file.
+    Function for generating hamiltonian from dictionary of model data.
+    Prints integrals to output file if specified in data.
 
     Parameters
         ----------
-        toml_file: str
-            filename of toml input file
+        data: dict
+            dictionary containing model data.
+            supported keys are specified in defaults.toml
 
     Returns
         -------
         moha.Ham
     '''
-    # load data from toml file 
-    data = tomllib.load(open(toml_file, "rb"))
 
     # set any missing required values as defaults
     set_defaults(data)
@@ -180,5 +179,7 @@ def toml_to_ham(toml_file):
 
     return ham
 
-toml_file = sys.argv[1]
-ham = toml_to_ham(toml_file)
+if __name__ == '__main__':
+    toml_file = sys.argv[1]
+    data = tomllib.load(open(toml_file, "rb"))
+    ham = dict_to_ham(data)
