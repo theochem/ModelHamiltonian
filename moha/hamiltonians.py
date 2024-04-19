@@ -400,6 +400,7 @@ class HamHeisenberg(HamiltonianAPI):
         self.one_body = None
         self.two_body = None
         self._sym = 1
+        self.connectivity = connectivity
 
     def generate_zero_body_integral(self):
         """
