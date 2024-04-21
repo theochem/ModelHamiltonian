@@ -44,7 +44,8 @@ def set_defaults(input_data):
         for param in default_data[param_type].keys():
             if param not in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
-                # set Carbon params as default in Huckel model
+                
+                # set carbon params as default in Huckel model
                 if param_type == "model" \
                     and input_data["model"]["hamiltonian"].lower() == "huckel"\
                         and param == "alpha":
@@ -53,13 +54,103 @@ def set_defaults(input_data):
                     and input_data["model"]["hamiltonian"].lower() == "huckel"\
                         and param == "beta":
                     input_data["model"]["beta"] = -0.0533
+
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
             if type(data_value) == str:
                 input_data[param_type][param] = data_value.lower()
 
 
-def build_moha_moltype_1d(data):
+def build_connectivity_1d(data):
+    """
+    Builds connectivity and adjacency matrix for 1d moltype.
+
+    Parameters
+    ----------
+    data: dict
+        dict containing toml input data.
+
+    Returns
+    -------
+    connectivity: list
+        list of connected atoms of the form [("C1","C2",1),...].
+    adjacency: numpy array
+        adjacency matrix
+    """
+    norb = data["system"]["norb"]
+    connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
+    if data["system"]["bc"] == "periodic":
+        connectivity += [(f"C{norb}", f"C{1}", 1)]
+
+    adjacency = np.eye(norb, k=1)
+    if data["system"]["bc"] == "periodic":
+        adjacency[(0, -1)]
+
+    adjacency += adjacency.T
+
+    return connectivity, adjacency
+
+
+def build_connectivity_2d(data):
+    """
+    Builds connectivity and adjacency matrix for 2d moltype.
+
+    Parameters
+    ----------
+    data: dict
+        dict containing toml input data.
+
+    Returns
+    -------
+    connectivity: list
+        list of connected atoms of the form [("C1","C2",1),...].
+    adjacency: numpy array
+        adjacency matrix
+    """
+    # set Lx and Ly
+    if "Lx" not in data["system"].keys():
+        raise ValueError("2d moltype was specified but Lx was not specified")
+    Lx = data["system"]["Lx"]
+    
+    if "Ly" not in data["system"].keys():
+        raise ValueError("2d moltype was specified but Ly was not specified")
+    Ly = data["system"]["Ly"]
+
+    nsites = Lx * Ly
+    connectivity = []
+    adjacency = np.zeros((nsites, nsites))
+    for n in range(nsites):
+        nx = n %  Lx # x index
+        ny = n // Lx # y index
+        ndx = (nx + 1) % Lx # x shift
+        ndy = (ny + 1) % Ly # y shift
+        if data["system"]["bc"] != "periodic":
+            # add x neighbours to connectivity
+            if ndx != 0: # skip edge bonds on open bc
+                dn = ndx + Lx * ny
+                connectivity.append((f"C{n + 1}", f"C{dn  + 1}", 1))
+                adjacency[(n, dn)] = 1
+            # add y neighbours to connectivity
+            if ndy != 0: # skip edge bonds on open bc
+                dn = nx  + Lx * ndy
+                connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
+                adjacency[(n, dn)] = 1
+        else:
+            # add x neighbours to connectivity
+            dn = ndx + Lx * ny
+            connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
+            adjacency[(n, dn)] = 1
+            # add y neighbours to connectivity
+            dn = nx  + Lx * ndy
+            connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
+            adjacency[(n, dn)] = 1
+
+    adjacency += adjacency.T
+
+    return connectivity, adjacency
+
+
+def build_moha(data):
     """
     Build and return hamiltonian object\
     specific to the "1d" moltype.
@@ -89,15 +180,14 @@ def build_moha_moltype_1d(data):
     J_eq = float(data["model"]["J_eq"])
     J_ax = float(data["model"]["J_ax"])
 
-    # build connectivity
-    connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
-    if data["system"]["bc"] == "periodic":
-        connectivity += [(f"C{norb}", f"C{1}", 1)]
-
-    # build connectivity for spin models
-    spin_connectivity = np.array(np.eye(norb, k=1) + np.eye(norb, k=-1))
-    if data["system"]["bc"] == "periodic":
-        spin_connectivity[(0, -1)] = spin_connectivity[(-1, 0)] = 1
+    # build connectivity for moltype
+    if data["system"]["moltype"] == "1d":
+        connectivity, adjacency = build_connectivity_1d(data)
+    elif data["system"]["moltype"] == "2d":
+        connectivity, adjacency = build_connectivity_2d(data)
+    else:
+        raise ValueError("Moltype " + data["system"]["moltype"] + 
+                         " not supported.")
 
     # create and return hamiltonian object ham
     # -- Fermion models --#
@@ -122,16 +212,16 @@ def build_moha_moltype_1d(data):
     # -- Spin models --#
     # Heisenberg
     elif data["model"]["hamiltonian"] == "heisenberg":
-        ham = moha.HamHeisenberg(connectivity=spin_connectivity,
+        ham = moha.HamHeisenberg(connectivity=adjacency,
                                  mu=mu, J_eq=J_eq, J_ax=J_ax)
         return ham
     # Ising
     elif data["model"]["hamiltonian"] == "ising":
-        ham = moha.HamIsing(connectivity=spin_connectivity, mu=mu, J_ax=J_ax)
+        ham = moha.HamIsing(connectivity=adjacency, mu=mu, J_ax=J_ax)
         return ham
     # Richardson-Gaudin
     elif data["model"]["hamiltonian"] == "rg":
-        ham = moha.HamRG(connectivity=spin_connectivity, mu=mu, J_eq=J_eq)
+        ham = moha.HamRG(connectivity=adjacency, mu=mu, J_eq=J_eq)
         return ham
     else:
         raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] +
@@ -157,12 +247,8 @@ def dict_to_ham(data):
     # set any missing required values as defaults
     set_defaults(data)
 
-    # setup model hamiltonian for specified moltype
-    if data["system"]["moltype"] == "1d":
-        ham = build_moha_moltype_1d(data)
-    else:
-        raise ValueError("moltype " + data["system"]["moltype"] +
-                         " not supported.")
+    # setup model hamiltonian
+    ham = build_moha(data)
 
     # get symmetry of two-electron integrals
     sym = data["system"]["symmetry"]
@@ -173,7 +259,7 @@ def dict_to_ham(data):
     ham.generate_two_body_integral(dense=False, basis='spatial basis', sym=sym)
 
     # save integrals if specified in toml_file
-    if data["control"]["save_integrals"] == 'true':
+    if data["control"]["save_integrals"]:
         # save integrals to outdir if specified in toml_file
         if not exists(data["control"]["outdir"]):
             makedirs(data["control"]["outdir"], exist_ok=True)
@@ -214,5 +300,5 @@ def from_toml(toml_file):
 
 if __name__ == '__main__':
     toml_file = sys.argv[1]
-    data = from_toml(toml_file)
+    data = tomllib.load(open(toml_file, "rb"))
     ham = dict_to_ham(data)
