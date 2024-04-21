@@ -150,6 +150,56 @@ def build_connectivity_2d(data):
     return connectivity, adjacency
 
 
+def build_connectivity_molfile(mol_file):
+    """
+    Builds connectivity and adjacency matrix for molfile moltype.
+
+    Parameters
+    ----------
+    mol_file: string
+        name of .mol file
+
+    Returns
+    -------
+    connectivity: list
+        list of connected atoms of the form [("C1","C2",1),...].
+    adjacency: numpy array
+        adjacency matrix
+    """
+
+    atoms_list = []
+    connectivity = []
+
+    with open(mol_file, "r") as f:
+        for line_num, line in enumerate(f, start=1):
+            # skip first 3 header lines
+            if line_num <= 3:
+                continue
+            arr = line.split()
+            # get number of atoms and bonds from line 4
+            if line_num == 4:
+                natoms = int(arr[0])
+                nbonds = int(arr[1])
+                adjacency = np.zeros((natoms,natoms))
+            # get list of atoms
+            elif line_num <= 4 + natoms:
+                atoms_list.append(arr[3])
+            # build connectivity from bonds
+            elif line_num <= 4 + natoms + nbonds:
+                atom1_idx = int(arr[0])
+                atom2_idx = int(arr[1])
+                bondtype  = int(arr[2])
+                connectivity.append((atoms_list[atom1_idx-1] + f"{atom1_idx}", 
+                                     atoms_list[atom2_idx-1] + f"{atom2_idx}", bondtype))
+                adjacency[atom1_idx-1, atom2_idx-1] = 1
+            else:
+                break
+
+    adjacency += adjacency.T
+    
+    return connectivity, adjacency
+
+
 def build_moha(data):
     """
     Build and return hamiltonian object\
@@ -185,6 +235,8 @@ def build_moha(data):
         connectivity, adjacency = build_connectivity_1d(data)
     elif data["system"]["moltype"] == "2d":
         connectivity, adjacency = build_connectivity_2d(data)
+    elif data["system"]["moltype"] == "molfile":
+        connectivity, adjacency = build_connectivity_molfile(data)
     else:
         raise ValueError("Moltype " + data["system"]["moltype"] + 
                          " not supported.")
@@ -300,5 +352,4 @@ def from_toml(toml_file):
 
 if __name__ == '__main__':
     toml_file = sys.argv[1]
-    data = tomllib.load(open(toml_file, "rb"))
-    ham = dict_to_ham(data)
+    ham = from_toml(toml_file)
