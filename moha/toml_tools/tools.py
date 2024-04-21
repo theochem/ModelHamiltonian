@@ -236,7 +236,8 @@ def build_moha(data):
     elif data["system"]["moltype"] == "2d":
         connectivity, adjacency = build_connectivity_2d(data)
     elif data["system"]["moltype"] == "molfile":
-        connectivity, adjacency = build_connectivity_molfile(data)
+        mol_file = data["system"]["molfile"]
+        connectivity, adjacency = build_connectivity_molfile(mol_file)
     else:
         raise ValueError("Moltype " + data["system"]["moltype"] + 
                          " not supported.")
