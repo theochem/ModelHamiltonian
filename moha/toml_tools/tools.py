@@ -78,7 +78,13 @@ def build_connectivity_1d(data):
         adjacency matrix
     """
     norb = data["system"]["norb"]
-    connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
+    if data["system"]["bc"] in ["open", "periodic"]:
+        connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
+    else:
+        raise ValueError(
+            "System parameter 'bc' must be set to either 'open' or 'periodic'"
+            )
+    
     if data["system"]["bc"] == "periodic":
         connectivity += [(f"C{norb}", f"C{1}", 1)]
 
@@ -124,7 +130,7 @@ def build_connectivity_2d(data):
         ny = n // Lx # y index
         ndx = (nx + 1) % Lx # x shift
         ndy = (ny + 1) % Ly # y shift
-        if data["system"]["bc"] != "periodic":
+        if data["system"]["bc"] == "open":
             # add x neighbours to connectivity
             if ndx != 0: # skip edge bonds on open bc
                 dn = ndx + Lx * ny
@@ -135,7 +141,7 @@ def build_connectivity_2d(data):
                 dn = nx  + Lx * ndy
                 connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
                 adjacency[n, dn] = 1
-        else:
+        elif data["system"]["bc"] == "periodic":
             # add x neighbours to connectivity
             dn = ndx + Lx * ny
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
@@ -144,6 +150,11 @@ def build_connectivity_2d(data):
             dn = nx  + Lx * ndy
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
             adjacency[n, dn] = 1
+        else:
+            raise ValueError(
+                "System parameter 'bc' must be set to either 'open' or 'periodic'"
+                )
+
 
     adjacency += adjacency.T
 
