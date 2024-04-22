@@ -44,7 +44,7 @@ def set_defaults(input_data):
         for param in default_data[param_type].keys():
             if param not in input_data[param_type]:
                 input_data[param_type][param] = default_data[param_type][param]
-                
+
                 # set carbon params as default in Huckel model
                 if param_type == "model" \
                     and input_data["model"]["hamiltonian"].lower() == "huckel"\
@@ -84,7 +84,7 @@ def build_connectivity_1d(data):
         raise ValueError(
             "System parameter 'bc' must be set to either 'open' or 'periodic'"
             )
-    
+
     if data["system"]["bc"] == "periodic":
         connectivity += [(f"C{norb}", f"C{1}", 1)]
 
@@ -117,7 +117,7 @@ def build_connectivity_2d(data):
     if "Lx" not in data["system"].keys():
         raise ValueError("2d moltype was specified but Lx was not specified")
     Lx = data["system"]["Lx"]
-    
+
     if "Ly" not in data["system"].keys():
         raise ValueError("2d moltype was specified but Ly was not specified")
     Ly = data["system"]["Ly"]
@@ -126,19 +126,19 @@ def build_connectivity_2d(data):
     connectivity = []
     adjacency = np.zeros((nsites, nsites))
     for n in range(nsites):
-        nx = n %  Lx # x index
-        ny = n // Lx # y index
-        ndx = (nx + 1) % Lx # x shift
-        ndy = (ny + 1) % Ly # y shift
+        nx = n %  Lx  # x index
+        ny = n // Lx  # y index
+        ndx = (nx + 1) % Lx  # x shift
+        ndy = (ny + 1) % Ly  # y shift
         if data["system"]["bc"] == "open":
             # add x neighbours to connectivity
-            if ndx != 0: # skip edge bonds on open bc
+            if ndx != 0:  # skip edge bonds on open bc
                 dn = ndx + Lx * ny
                 connectivity.append((f"C{n + 1}", f"C{dn  + 1}", 1))
                 adjacency[n, dn] = 1
             # add y neighbours to connectivity
-            if ndy != 0: # skip edge bonds on open bc
-                dn = nx  + Lx * ndy
+            if ndy != 0:  # skip edge bonds on open bc
+                dn = nx + Lx * ndy
                 connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
                 adjacency[n, dn] = 1
         elif data["system"]["bc"] == "periodic":
@@ -147,14 +147,14 @@ def build_connectivity_2d(data):
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
             adjacency[n, dn] = 1
             # add y neighbours to connectivity
-            dn = nx  + Lx * ndy
+            dn = nx + Lx * ndy
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
             adjacency[n, dn] = 1
         else:
             raise ValueError(
-                "System parameter 'bc' must be set to either 'open' or 'periodic'"
+                "System parameter 'bc' must be set to either 'open' "
+                "or 'periodic'"
                 )
-
 
     adjacency += adjacency.T
 
@@ -191,7 +191,7 @@ def build_connectivity_molfile(mol_file):
             if line_num == 4:
                 natoms = int(arr[0])
                 nbonds = int(arr[1])
-                adjacency = np.zeros((natoms,natoms))
+                adjacency = np.zeros((natoms, natoms))
             # get list of atoms
             elif line_num <= 4 + natoms:
                 atoms_list.append(arr[3])
@@ -199,15 +199,16 @@ def build_connectivity_molfile(mol_file):
             elif line_num <= 4 + natoms + nbonds:
                 atom1_idx = int(arr[0])
                 atom2_idx = int(arr[1])
-                bondtype  = int(arr[2])
-                connectivity.append((atoms_list[atom1_idx-1] + f"{atom1_idx}", 
-                                     atoms_list[atom2_idx-1] + f"{atom2_idx}", bondtype))
+                bondtype = int(arr[2])
+                connectivity.append((atoms_list[atom1_idx-1] + f"{atom1_idx}",
+                                     atoms_list[atom2_idx-1] + f"{atom2_idx}", 
+                                     bondtype))
                 adjacency[atom1_idx-1, atom2_idx-1] = 1
             else:
                 break
 
     adjacency += adjacency.T
-    
+
     return connectivity, adjacency
 
 
@@ -250,7 +251,7 @@ def build_moha(data):
         mol_file = data["system"]["molfile"]
         connectivity, adjacency = build_connectivity_molfile(mol_file)
     else:
-        raise ValueError("Moltype " + data["system"]["moltype"] + 
+        raise ValueError("Moltype " + data["system"]["moltype"] +
                          " not supported.")
 
     # create and return hamiltonian object ham
