@@ -6,7 +6,7 @@ integral_format = "fcidump"
 
 [system]
 moltype = "1d"
-bc = "periodic"
+bc = "open"
 norb = 6
 nelec = 6
 
