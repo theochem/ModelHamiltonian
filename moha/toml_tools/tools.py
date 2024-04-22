@@ -93,7 +93,7 @@ def build_connectivity_1d(data):
 
 def build_connectivity_2d(data):
     """
-    Builds connectivity and adjacency matrix for 2d moltype.
+    Builds connectivity and adjacency matrix for 2d square-grid moltype.
 
     Parameters
     ----------
