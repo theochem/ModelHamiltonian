@@ -63,7 +63,7 @@ def set_defaults(input_data):
 
 def build_connectivity_1d(data):
     """
-    Builds connectivity and adjacency matrix for 1d moltype.
+    Build connectivity and adjacency matrix for 1d moltype.
 
     Parameters
     ----------
@@ -99,7 +99,7 @@ def build_connectivity_1d(data):
 
 def build_connectivity_2d(data):
     """
-    Builds connectivity and adjacency matrix for 2d square-grid moltype.
+    Build connectivity and adjacency matrix for 2d square-grid moltype.
 
     Parameters
     ----------
@@ -163,7 +163,7 @@ def build_connectivity_2d(data):
 
 def build_connectivity_molfile(mol_file):
     """
-    Builds connectivity and adjacency matrix for molfile moltype.
+    Build connectivity and adjacency matrix for molfile moltype.
 
     Parameters
     ----------
@@ -177,7 +177,6 @@ def build_connectivity_molfile(mol_file):
     adjacency: numpy array
         adjacency matrix
     """
-
     atoms_list = []
     connectivity = []
 
