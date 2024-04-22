@@ -182,7 +182,6 @@ def generate_ham(prompt):
 
     # convert chat response to Hamiltonian
     toml_dict = map_to_toml(dct)
-    print(toml_dict['control']['save_integrals'])
 
     ham = dict_to_ham(toml_dict)
     return ham
