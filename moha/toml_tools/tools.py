@@ -63,7 +63,7 @@ def set_defaults(input_data):
 
 def build_connectivity_1d(data):
     """
-    Build connectivity and adjacency matrix for 1d moltype.
+    Build adjacency matrix for 1d moltype.
 
     Parameters
     ----------
@@ -72,34 +72,29 @@ def build_connectivity_1d(data):
 
     Returns
     -------
-    connectivity: list
-        list of connected atoms of the form [("C1","C2",1),...].
     adjacency: numpy array
         adjacency matrix
     """
     norb = data["system"]["norb"]
+
     if data["system"]["bc"] in ["open", "periodic"]:
-        connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
+        adjacency = np.eye(norb, k=1)
     else:
         raise ValueError(
             "System parameter 'bc' must be set to either 'open' or 'periodic'"
             )
 
     if data["system"]["bc"] == "periodic":
-        connectivity += [(f"C{norb}", f"C{1}", 1)]
-
-    adjacency = np.eye(norb, k=1)
-    if data["system"]["bc"] == "periodic":
         adjacency[0, -1] = 1
 
     adjacency += adjacency.T
 
-    return connectivity, adjacency
+    return adjacency
 
 
 def build_connectivity_2d(data):
     """
-    Build connectivity and adjacency matrix for 2d square-grid moltype.
+    Build adjacency matrix for 2d square-grid moltype.
 
     Parameters
     ----------
@@ -108,8 +103,6 @@ def build_connectivity_2d(data):
 
     Returns
     -------
-    connectivity: list
-        list of connected atoms of the form [("C1","C2",1),...].
     adjacency: numpy array
         adjacency matrix
     """
@@ -123,7 +116,6 @@ def build_connectivity_2d(data):
     Ly = data["system"]["Ly"]
 
     nsites = Lx * Ly
-    connectivity = []
     adjacency = np.zeros((nsites, nsites))
     for n in range(nsites):
         nx = n % Lx  # x index
@@ -134,21 +126,17 @@ def build_connectivity_2d(data):
             # add x neighbours to connectivity
             if ndx != 0:  # skip edge bonds on open bc
                 dn = ndx + Lx * ny
-                connectivity.append((f"C{n + 1}", f"C{dn  + 1}", 1))
                 adjacency[n, dn] = 1
             # add y neighbours to connectivity
             if ndy != 0:  # skip edge bonds on open bc
                 dn = nx + Lx * ndy
-                connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
                 adjacency[n, dn] = 1
         elif data["system"]["bc"] == "periodic":
             # add x neighbours to connectivity
             dn = ndx + Lx * ny
-            connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
             adjacency[n, dn] = 1
             # add y neighbours to connectivity
             dn = nx + Lx * ndy
-            connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
             adjacency[n, dn] = 1
         else:
             raise ValueError(
@@ -158,28 +146,29 @@ def build_connectivity_2d(data):
 
     adjacency += adjacency.T
 
-    return connectivity, adjacency
+    return adjacency
 
 
-def build_connectivity_molfile(mol_file):
+def build_connectivity_molfile(data):
     """
-    Build connectivity and adjacency matrix for molfile moltype.
+    Build adjacency matrix for molfile moltype.
 
     Parameters
     ----------
-    mol_file: string
-        name of .mol file
+    data: dict
+        dict containing toml input data.
 
     Returns
     -------
-    connectivity: list
-        list of connected atoms of the form [("C1","C2",1),...].
     adjacency: numpy array
         adjacency matrix
     """
-    atoms_list = []
-    connectivity = []
-
+    if "molfile" not in data["system"]:
+        raise ValueError(
+            "System parameter 'molfile' must be specified for"
+            "moltyple 'molfile'.")
+    else:
+        mol_file = data["system"]["molfile"]
     with open(mol_file, "r") as f:
         for line_num, line in enumerate(f, start=1):
             # skip first 3 header lines
@@ -191,24 +180,25 @@ def build_connectivity_molfile(mol_file):
                 natoms = int(arr[0])
                 nbonds = int(arr[1])
                 adjacency = np.zeros((natoms, natoms))
-            # get list of atoms
+            # skip lines containing list of atoms
             elif line_num <= 4 + natoms:
-                atoms_list.append(arr[3])
+                continue
             # build connectivity from bonds
             elif line_num <= 4 + natoms + nbonds:
                 atom1_idx = int(arr[0])
                 atom2_idx = int(arr[1])
-                bondtype = int(arr[2])
-                connectivity.append((atoms_list[atom1_idx-1] + f"{atom1_idx}",
-                                     atoms_list[atom2_idx-1] + f"{atom2_idx}",
-                                     bondtype))
                 adjacency[atom1_idx-1, atom2_idx-1] = 1
             else:
                 break
 
+    data["system"]["norb"] = natoms
+    data["system"]["nelec"] = natoms
+
+    print(data)
+
     adjacency += adjacency.T
 
-    return connectivity, adjacency
+    return adjacency
 
 
 def build_moha(data):
@@ -231,7 +221,18 @@ def build_moha(data):
     ham: moha.Ham
         model hamiltonian object.
     """
-    # define parameters for 1d model
+    # build connectivity for moltype
+    if data["system"]["moltype"] == "1d":
+        adjacency = build_connectivity_1d(data)
+    elif data["system"]["moltype"] == "2d":
+        adjacency = build_connectivity_2d(data)
+    elif data["system"]["moltype"] == "molfile":
+        adjacency = build_connectivity_molfile(data)
+    else:
+        raise ValueError("Moltype " + data["system"]["moltype"] +
+                         " not supported.")
+
+    # define parameters for model
     norb = data["system"]["norb"]
     charge = float(data["model"]["charge"])
     alpha = float(data["model"]["alpha"])
@@ -241,35 +242,23 @@ def build_moha(data):
     J_eq = float(data["model"]["J_eq"])
     J_ax = float(data["model"]["J_ax"])
 
-    # build connectivity for moltype
-    if data["system"]["moltype"] == "1d":
-        connectivity, adjacency = build_connectivity_1d(data)
-    elif data["system"]["moltype"] == "2d":
-        connectivity, adjacency = build_connectivity_2d(data)
-    elif data["system"]["moltype"] == "molfile":
-        mol_file = data["system"]["molfile"]
-        connectivity, adjacency = build_connectivity_molfile(mol_file)
-    else:
-        raise ValueError("Moltype " + data["system"]["moltype"] +
-                         " not supported.")
-
     # create and return hamiltonian object ham
     # -- Fermion models --#
     # PPP
     if data["model"]["hamiltonian"] == "ppp":
         charge_arr = charge * np.ones(norb)
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamPPP(connectivity=connectivity, alpha=alpha, beta=beta,
+        ham = moha.HamPPP(connectivity=adjacency, alpha=alpha, beta=beta,
                           u_onsite=u_onsite_arr, charges=charge_arr)
         return ham
     # Huckel
     elif data["model"]["hamiltonian"] == "huckel":
-        ham = moha.HamHuck(connectivity=connectivity, alpha=alpha, beta=beta)
+        ham = moha.HamHuck(connectivity=adjacency, alpha=alpha, beta=beta)
         return ham
     # Hubbard
     elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamHub(connectivity=connectivity,
+        ham = moha.HamHub(connectivity=adjacency,
                           alpha=alpha, beta=beta,
                           u_onsite=u_onsite_arr)
         return ham
