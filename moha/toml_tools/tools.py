@@ -84,7 +84,7 @@ def build_connectivity_1d(data):
 
     adjacency = np.eye(norb, k=1)
     if data["system"]["bc"] == "periodic":
-        adjacency[(0, -1)] = 1
+        adjacency[0, -1] = 1
 
     adjacency += adjacency.T
 
@@ -129,21 +129,21 @@ def build_connectivity_2d(data):
             if ndx != 0: # skip edge bonds on open bc
                 dn = ndx + Lx * ny
                 connectivity.append((f"C{n + 1}", f"C{dn  + 1}", 1))
-                adjacency[(n, dn)] = 1
+                adjacency[n, dn] = 1
             # add y neighbours to connectivity
             if ndy != 0: # skip edge bonds on open bc
                 dn = nx  + Lx * ndy
                 connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
-                adjacency[(n, dn)] = 1
+                adjacency[n, dn] = 1
         else:
             # add x neighbours to connectivity
             dn = ndx + Lx * ny
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
-            adjacency[(n, dn)] = 1
+            adjacency[n, dn] = 1
             # add y neighbours to connectivity
             dn = nx  + Lx * ndy
             connectivity.append((f"C{n + 1}", f"C{dn + 1}", 1))
-            adjacency[(n, dn)] = 1
+            adjacency[n, dn] = 1
 
     adjacency += adjacency.T
 
