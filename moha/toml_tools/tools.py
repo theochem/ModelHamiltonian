@@ -126,7 +126,7 @@ def build_connectivity_2d(data):
     connectivity = []
     adjacency = np.zeros((nsites, nsites))
     for n in range(nsites):
-        nx = n %  Lx  # x index
+        nx = n % Lx  # x index
         ny = n // Lx  # y index
         ndx = (nx + 1) % Lx  # x shift
         ndy = (ny + 1) % Ly  # y shift
@@ -201,7 +201,7 @@ def build_connectivity_molfile(mol_file):
                 atom2_idx = int(arr[1])
                 bondtype = int(arr[2])
                 connectivity.append((atoms_list[atom1_idx-1] + f"{atom1_idx}",
-                                     atoms_list[atom2_idx-1] + f"{atom2_idx}", 
+                                     atoms_list[atom2_idx-1] + f"{atom2_idx}",
                                      bondtype))
                 adjacency[atom1_idx-1, atom2_idx-1] = 1
             else:
