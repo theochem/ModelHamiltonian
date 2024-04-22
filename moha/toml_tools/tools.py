@@ -84,7 +84,7 @@ def build_connectivity_1d(data):
 
     adjacency = np.eye(norb, k=1)
     if data["system"]["bc"] == "periodic":
-        adjacency[(0, -1)]
+        adjacency[(0, -1)] = 1
 
     adjacency += adjacency.T
 
