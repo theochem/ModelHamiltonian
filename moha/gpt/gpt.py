@@ -41,6 +41,8 @@ def map_to_toml(funcs):
                    "outdir",
                    "prefix"]:
             toml_dict["control"][key] = value
+            if key == "save_integrals":
+                toml_dict["control"][key] = True if value == "true" else False
 
         elif key in ["bc",
                      "norb",
@@ -173,16 +175,18 @@ def generate_ham(prompt):
     dct = json.loads(funcs)
     try:
         print(dct['explanation'])
+    # if explanation is not present, raise KeyError
     except KeyError:
         funcs = chat_response.choices[0].\
             message.to_dict()['tool_calls'][0]['function']['arguments']
         dct = json.loads(funcs)
-        print(dct['explanation'])
-        raise ValueError("Unexpected error occurred. Please try again.")
+        try:
+            print(dct['explanation'])
+        except KeyError:
+            raise ValueError("Unexpected error occurred. Please try again.")
 
     # convert chat response to Hamiltonian
     toml_dict = map_to_toml(dct)
-
     ham = dict_to_ham(toml_dict)
     return ham
 
