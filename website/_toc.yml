@@ -9,6 +9,7 @@ parts:
       - file: install.rst
       - file: examples/Demonstration.ipynb
       - file: examples/Ising.ipynb
+      - file: examples/mohagpt.ipynb
 
     - caption: API
       chapters:

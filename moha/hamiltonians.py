@@ -372,6 +372,7 @@ class HamHeisenberg(HamiltonianAPI):
 
         """
         if connectivity is not None:
+            self.connectivity = connectivity
             self.n_sites = connectivity.shape[0]
             # if J_eq and J_ax are floats then convert them to numpy arrays
             # by multiplying with connectivity matrix
