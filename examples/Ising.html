@@ -63,7 +63,7 @@
     <link rel="icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Hamiltonian API" href="../api/api.html" />
+    <link rel="next" title="Tutorial: Easy Quantum System Setup with ChatGPT" href="mohagpt.html" />
     <link rel="prev" title="Tutorial: Occupation-based Hamiltionians" href="Demonstration.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -186,6 +186,7 @@
 
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Spin-based Hamiltonians</a></li>
 
+<li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -470,15 +471,15 @@ document.write(`
 <h2>XXZ Heisenberg Model<a class="headerlink" href="#xxz-heisenberg-model" title="Link to this heading">#</a></h2>
 <p>The XXZ Heisenberg model is a quantum model that describes the interaction between spins on a lattice. The Hamiltonian for the XXZ Heisenberg model is given by:</p>
 <div class="math notranslate nohighlight">
-\[\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+\sum_{p \neq q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p \neq q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
-<p>where <span class="math notranslate nohighlight">\(S_p^Z\)</span> is the <span class="math notranslate nohighlight">\(z\)</span> component of the spin operator at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(S_p^{+}\)</span> and <span class="math notranslate nohighlight">\(S_p^{-}\)</span> are the spin raising and lowering operators at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(\mu_p^Z\)</span> is the magnetic field at site <span class="math notranslate nohighlight">\(p\)</span>, , <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{ax}}\)</span> is the axial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>, and <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{eq}}\)</span> is the equatorial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
+\[\hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+\sum_{pq} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{pq} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
+<p>where <span class="math notranslate nohighlight">\(S_p^Z\)</span> is the <span class="math notranslate nohighlight">\(z\)</span> component of the spin operator at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(S_p^{+}\)</span> and <span class="math notranslate nohighlight">\(S_p^{-}\)</span> are the spin raising and lowering operators at site <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(\mu_p^Z\)</span> is the magnetic field at site <span class="math notranslate nohighlight">\(p\)</span>,  <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{ax}}\)</span> is the axial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>, and <span class="math notranslate nohighlight">\(J_{p q}^{\mathrm{eq}}\)</span> is the equatorial exchange coupling between spins at site <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(q\)</span>.</p>
 </section>
 <section id="defining-heisenberg-model">
 <h2>Defining Heisenberg Model<a class="headerlink" href="#defining-heisenberg-model" title="Link to this heading">#</a></h2>
 <p>There are two ways to define the Heisenberg model using the Model Hamiltonian Package:</p>
 <ol class="arabic simple">
-<li><p>Using the connectivity of the lattice and providing the exchange couplingg, <span class="math notranslate nohighlight">\(J^{ax}\)</span> <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> as a float numbers;</p></li>
-<li><p>Providing exchange couplings, <span class="math notranslate nohighlight">\(J^{ax}\)</span> <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> explicitly as numpy arrays;</p></li>
+<li><p>Using the connectivity of the lattice and providing the exchange couplings, <span class="math notranslate nohighlight">\(J^{ax}\)</span>, <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> as a float numbers;</p></li>
+<li><p>Providing exchange couplings, <span class="math notranslate nohighlight">\(J^{ax}\)</span>, <span class="math notranslate nohighlight">\(J^{eq}\)</span> , and <span class="math notranslate nohighlight">\(\mu\)</span> explicitly as numpy arrays;</p></li>
 </ol>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -887,11 +888,11 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
       </div>
     </a>
     <a class="right-next"
-       href="../api/api.html"
+       href="mohagpt.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Hamiltonian API</p>
+        <p class="prev-next-title">Tutorial: Easy Quantum System Setup with ChatGPT</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

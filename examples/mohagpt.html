@@ -1,0 +1,819 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Easy Quantum System Setup with ChatGPT &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/mohagpt';</script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hamiltonian API" href="../api/api.html" />
+    <link rel="prev" title="Tutorial: Spin-based Hamiltonians" href="Ising.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to ModelHamiltonian documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Demonstration.html">Tutorial: Occupation-based Hamiltionians</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ising.html">Tutorial: Spin-based Hamiltonians</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">Hamiltonian API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/occupation.html">Occupation-based Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/spin.html">Spin-based Hamiltonians</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/theochem/ModelHamiltonian/blob/main/website/examples/mohagpt.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian/issues/new?title=Issue%20on%20page%20%2Fexamples/mohagpt.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/mohagpt.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial: Easy Quantum System Setup with ChatGPT</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-can-do-with-chatgpt">What You Can Do with ChatGPT</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-your-system">Customize Your System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tailor-your-hamiltonian">Tailor Your Hamiltonian</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-you-start">Before you start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-simple-1d-huckel-model">Example 1: Simple 1D Huckel model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-set-up-the-system">Step 1: Set up the system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-accessing-results">Step 2: Accessing results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-1d-hubbard-model">Example 2: 1D Hubbard model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-spin-based-hamiltonian">Example 3: Spin-based Hamiltonian</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-4-richardson-model">Example 4: Richardson model</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-easy-quantum-system-setup-with-chatgpt">
+<h1>Tutorial: Easy Quantum System Setup with ChatGPT<a class="headerlink" href="#tutorial-easy-quantum-system-setup-with-chatgpt" title="Link to this heading">#</a></h1>
+<p>Welcome to our ChatGPT-powered tutorial on setting up Hamiltonians for quantum systems! Get ready to dive into the quantum world effortlessly. Let’s spice things up with some visual flair!</p>
+<section id="what-you-can-do-with-chatgpt">
+<h2>What You Can Do with ChatGPT<a class="headerlink" href="#what-you-can-do-with-chatgpt" title="Link to this heading">#</a></h2>
+<p>With ChatGPT, you’re in control! Here’s what you can tweak:</p>
+<section id="customize-your-system">
+<h3>Customize Your System<a class="headerlink" href="#customize-your-system" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Electrons</strong>: Adjust the number of electrons buzzing around.</p></li>
+<li><p><strong>Orbitals</strong>: Play with the spatial arrangement by setting the orbital count.</p></li>
+<li><p><strong>Symmetry</strong>: Fine-tune the electron integrals’ symmetry.</p></li>
+<li><p><strong>Connectivity</strong>: Choose between periodic or open boundaries, and explore 1D chains or 2D lattices.</p></li>
+</ul>
+</section>
+<section id="tailor-your-hamiltonian">
+<h3>Tailor Your Hamiltonian<a class="headerlink" href="#tailor-your-hamiltonian" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Occupation-based</strong>: Set energies for each orbital, tweak interactions between neighboring orbitals, and manage Coulomb repulsion between electrons.</p></li>
+<li><p><strong>Spin-based</strong>: Adjust couplings between electrons on the same or adjacent orbitals, and control the strength of the magnetic field.</p></li>
+</ul>
+<p><strong>Note</strong>: Giving full control to ChatGPT can lead to some unexpected results. But don’t worry, we’ve got you covered with a few presets to get you started. Let’s dive in!</p>
+</section>
+</section>
+<section id="before-you-start">
+<h2>Before you start<a class="headerlink" href="#before-you-start" title="Link to this heading">#</a></h2>
+<p>Before you start, make sure you have installed the gpt version of the ModelHamiltonian package. You can find detailed instructions <a class="reference external" href="https://moha.qcdevs.org/install.html">here</a>.
+Once intalled, you need to provide your OpenAI API key to use the model. You can find instructions on how to get your API key at the <a class="reference external" href="https://platform.openai.com/docs/quickstart/step-2-set-up-your-api-key">official OpenAI tutorial</a>.</p>
+<p>Please, make sure to put your API key in the file called <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> that is located in the folder <code class="docutils literal notranslate"><span class="pre">~/moha/gpt</span></code>. Don’t forget to put quotes around your API key.</p>
+</section>
+<section id="example-1-simple-1d-huckel-model">
+<h2>Example 1: Simple 1D Huckel model<a class="headerlink" href="#example-1-simple-1d-huckel-model" title="Link to this heading">#</a></h2>
+<p>In this example we will see how to generate a simple 1D Huckel model. We will set the number of electrons to 4, the number of orbitals to 4, and the hopping parameter to 1.
+We will save ouput to fcidump file that will be called <code class="docutils literal notranslate"><span class="pre">huckel_1d.fcidump</span></code>.</p>
+<section id="step-1-set-up-the-system">
+<h3>Step 1: Set up the system<a class="headerlink" href="#step-1-set-up-the-system" title="Link to this heading">#</a></h3>
+<p>ChatGPT has generated 1D Huckel model with open boundary conditions. The hamiltonian is saved in the file <code class="docutils literal notranslate"><span class="pre">huckel_1d.fcidump</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moha.gpt</span> <span class="kn">import</span> <span class="n">generate_ham</span>
+
+<span class="n">ham</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d Huckel model with open boundary condition and t=-1. Put energy of orbital equal to 0. System has 4 sites and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>
+<span class="s2">                    Save it to the fcidump file called huckel_1d&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1D Huckel model with open boundary condition
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-accessing-results">
+<h3>Step 2: Accessing results<a class="headerlink" href="#step-2-accessing-results" title="Link to this heading">#</a></h3>
+<p>Once generated, electron integrals are stored as <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csr_matrix.html">scipy.sparse.csr_matrix</a>.
+We will convert one-electron integral to dense matrix and print it using the <code class="docutils literal notranslate"><span class="pre">to_dense</span></code> method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">one_body</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">one_body</span>
+<span class="n">one_body_dense</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">one_body</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">one_body_dense</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0. -1.  0.  0.]
+ [-1.  0. -1.  0.]
+ [ 0. -1.  0. -1.]
+ [ 0.  0. -1.  0.]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Great! One-electron integrals are generated correctly. Let’s move on to the next example.</p>
+</section>
+</section>
+<section id="example-2-1d-hubbard-model">
+<h2>Example 2: 1D Hubbard model<a class="headerlink" href="#example-2-1d-hubbard-model" title="Link to this heading">#</a></h2>
+<p>In this example we will see how to generate a 1D Hubbard model with periodic boundary condtions. We will set the number of electrons to 2, the number of orbitals to 4, the hopping parameter to -1, and the Coulomb repulsion on each site to 0.5. The energy of orbital we set to 0. We can save ouput as .npz file that will be called <code class="docutils literal notranslate"><span class="pre">hubbard_1d</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">hub</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple  Hubbard model with periodic boundary condition and t=-1, U=0.5.</span><span class="se">\</span>
+<span class="s2">                    Put energy of orbital equal to 0. System has 2 electrons and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>
+<span class="s2">                    Save it to the npz file and call it hubbard_1d.&quot;</span><span class="p">)</span>
+
+<span class="n">one_body</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">one_body</span>
+<span class="n">one_body_dense</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">one_body</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">one_body_dense</span><span class="p">)</span>
+
+
+<span class="n">two_body</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">two_body</span>
+<span class="c1"># to convert two_body to dense form we need to specify the dimension of the returned tensor</span>
+<span class="c1"># in this case, the dimension is 4</span>
+<span class="n">two_body_dense</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">two_body</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="c1"># get non-zero elements</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">two_body_dense</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="c1"># print non-zero elements</span>
+<span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element </span><span class="si">{</span><span class="n">ind</span><span class="si">}</span><span class="s2"> has value </span><span class="si">{</span><span class="n">two_body_dense</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Hubbard model with t=-1 and U=0.5
+[[ 0. -1.  0. -1.]
+ [-1.  0. -1.  0.]
+ [ 0. -1.  0. -1.]
+ [-1.  0. -1.  0.]]
+Element (0, 0, 0, 0) has value 0.5
+Element (1, 1, 1, 1) has value 0.5
+Element (2, 2, 2, 2) has value 0.5
+Element (3, 3, 3, 3) has value 0.5
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/valeriichuiko/anaconda3/lib/python3.11/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+  self._set_intXint(row, col, x.flat[0])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Example 2 is ready! Let’s move on to the spin-based Hamiltonian.</p>
+</section>
+<section id="example-3-spin-based-hamiltonian">
+<h2>Example 3: Spin-based Hamiltonian<a class="headerlink" href="#example-3-spin-based-hamiltonian" title="Link to this heading">#</a></h2>
+<p>In this example we will see how to generate a Heisenber XXX model. We will set the number of electrons to 4, the number of orbitals to 4. The coupling terms between electrons are <span class="math notranslate nohighlight">\(J_{eq} = J_{ax} = 0.5\)</span>. This time we will not save the output to a file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heisenberg</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d XXX Heisenberg model with periodic boundary condition. Set both coupling terms to 0.5.</span><span class="se">\</span>
+<span class="s2">                           System has 4 sites and 4 orbitals. Return ouput in the spinorbital basis and don&#39;t save the result.&quot;</span><span class="p">)</span>
+
+<span class="c1"># checking if parameters are set correctly</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;J_ax is: </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">heisenberg</span><span class="o">.</span><span class="n">J_ax</span><span class="si">}</span><span class="se">\n</span><span class="s2"> J_eq is:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">heisenberg</span><span class="o">.</span><span class="n">J_eq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;External field = </span><span class="si">{</span><span class="n">heisenberg</span><span class="o">.</span><span class="n">mu</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">one_body</span> <span class="o">=</span> <span class="n">heisenberg</span><span class="o">.</span><span class="n">one_body</span>
+<span class="n">one_body_dense</span> <span class="o">=</span> <span class="n">heisenberg</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">one_body</span><span class="p">)</span>
+
+<span class="n">two_body</span> <span class="o">=</span> <span class="n">heisenberg</span><span class="o">.</span><span class="n">two_body</span>
+<span class="n">two_body_dense</span> <span class="o">=</span> <span class="n">heisenberg</span><span class="o">.</span><span class="n">to_dense</span><span class="p">(</span><span class="n">two_body</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1D Heisenberg model with XXX interactions.
+J_ax is: 
+ [[0.  0.5 0.  0.5]
+ [0.5 0.  0.5 0. ]
+ [0.  0.5 0.  0.5]
+ [0.5 0.  0.5 0. ]]
+ J_eq is:
+ [[0.  0.5 0.  0.5]
+ [0.5 0.  0.5 0. ]
+ [0.  0.5 0.  0.5]
+ [0.5 0.  0.5 0. ]]
+External field = 0.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>Great job! It seems like you’re getting the hang of it. Let’s move on to the next, final example.</p>
+</section>
+<section id="example-4-richardson-model">
+<h2>Example 4: Richardson model<a class="headerlink" href="#example-4-richardson-model" title="Link to this heading">#</a></h2>
+<p>In this example we will see the real power of ChatGPT. We will generate a Richardson model with 6 electrons and 3x2 orbitals.
+We will set a 2 dimensional lattice 3x2 lattice with periodic boundary conditions. The coupling term is set to 0.5. Keep in mind, that in this case chatgpt will need to realize that in richardson model <span class="math notranslate nohighlight">\(J_{ax}\)</span> term does not exist.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rg</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a 2d Richardson-Gaudin model that has 6 electrons. It should have a 3x2 size with periodic boundary condition. Coupling J is 0.5.</span><span class="se">\</span>
+<span class="s2">                   Return ouput in the spatial basis. Assume 4-fold symmetry. Don&#39;t save the result.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Impressive! You’ve successfully set up a Richardson model. Let’s print the adjacency matrix and <span class="math notranslate nohighlight">\(J_{eq}, J_{aq}\)</span> terms to see if everything is correct.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adjacency matrix is:</span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">rg</span><span class="o">.</span><span class="n">connectivity</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;J_ax is:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">rg</span><span class="o">.</span><span class="n">J_ax</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;J_eq is:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">rg</span><span class="o">.</span><span class="n">J_eq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adjacency matrix is:
+ 
+ [[0. 1. 0. 0. 0. 1.]
+ [1. 0. 1. 0. 0. 0.]
+ [0. 1. 0. 1. 0. 0.]
+ [0. 0. 1. 0. 1. 0.]
+ [0. 0. 0. 1. 0. 1.]
+ [1. 0. 0. 0. 1. 0.]] 
+
+J_ax is:
+ [[0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0.]
+ [0. 0. 0. 0. 0. 0.]] 
+
+J_eq is:
+ [[0.  0.5 0.  0.  0.  0.5]
+ [0.5 0.  0.5 0.  0.  0. ]
+ [0.  0.5 0.  0.5 0.  0. ]
+ [0.  0.  0.5 0.  0.5 0. ]
+ [0.  0.  0.  0.5 0.  0.5]
+ [0.5 0.  0.  0.  0.5 0. ]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/ModelHamiltonian",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Ising.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: Spin-based Hamiltonians</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Hamiltonian API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-you-can-do-with-chatgpt">What You Can Do with ChatGPT</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customize-your-system">Customize Your System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tailor-your-hamiltonian">Tailor Your Hamiltonian</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-you-start">Before you start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-simple-1d-huckel-model">Example 1: Simple 1D Huckel model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-set-up-the-system">Step 1: Set up the system</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-accessing-results">Step 2: Accessing results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-1d-hubbard-model">Example 2: 1D Hubbard model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-spin-based-hamiltonian">Example 3: Spin-based Hamiltonian</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-4-richardson-model">Example 4: Richardson model</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

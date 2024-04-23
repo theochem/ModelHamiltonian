@@ -186,6 +186,7 @@
 
 <li class="toctree-l1"><a class="reference internal" href="Ising.html">Tutorial: Spin-based Hamiltonians</a></li>
 
+<li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -440,6 +441,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-defining-hubbard-hamiltonian">Example: Defining Hubbard Hamiltonian</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-integrals">Generating Integrals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-building-integrals-from-smiles">Example: Building Integrals from SMILES</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-hubbard-model">Testing the Hubbard model</a><ul class="visible nav section-nav flex-column">
@@ -600,8 +602,43 @@ One body integrals in spin basis:
 Shape of two body integral in spinorbital basis:  (12, 12, 12, 12)
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/valeriichuiko/anaconda3/lib/python3.11/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
   self._set_intXint(row, col, x.flat[0])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-building-integrals-from-smiles">
+<h2>Example: Building Integrals from SMILES<a class="headerlink" href="#example-building-integrals-from-smiles" title="Link to this heading">#</a></h2>
+<p>In this example, we will generate the integrals for the Hubbard and Huckel models using the Model Hamiltonian Package and RDKit.
+RDKit will be used to generate the connectivity matrix of the molecule, which will be used to generate the integrals for the Hubbard and Huckel models.</p>
+<p>Consider napthalene molecule as an example. We will use SMILE to generate the integrals for the Hubbard and Huckel models for this molecule.
+For the Hubbard model, we will set the on-site repulsion to <span class="math notranslate nohighlight">\(10.84 eV\)</span> according to <a class="reference external" href="https://www.degruyter.com/document/doi/10.1524/zpch.1957.13.3_4.140/html?lang=en">Mataga-Nishimoto</a> prescription and <span class="math notranslate nohighlight">\(\beta = -2.5 eV\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">rdmolops</span>
+
+<span class="c1"># generate a molecule from SMILES</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="n">MolFromSmiles</span><span class="p">(</span><span class="s1">&#39;C1=CC=C2C=CC=CC2=C1&#39;</span><span class="p">)</span>
+<span class="c1"># generate the connectivity matrix</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">rdmolops</span><span class="o">.</span><span class="n">GetAdjacencyMatrix</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
+<span class="c1"># generate the Hamiltonian</span>
+<span class="c1"># generating Huckel model</span>
+<span class="n">huckel</span> <span class="o">=</span> <span class="n">HamHub</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=-</span><span class="mf">0.414</span><span class="p">,</span> <span class="n">beta</span><span class="o">=-</span><span class="mf">0.0533</span><span class="p">)</span>
+<span class="n">e0_huck</span> <span class="o">=</span> <span class="n">huckel</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+<span class="n">h1_huck</span> <span class="o">=</span> <span class="n">huckel</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+<span class="n">h2_huck</span> <span class="o">=</span> <span class="n">huckel</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># generate Hubbard model</span>
+<span class="c1"># setting on-site repulsion to 10.84 eV for each atom. </span>
+<span class="n">U</span> <span class="o">=</span> <span class="mf">10.84</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">connectivity</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">hubbard</span> <span class="o">=</span> <span class="n">HamHub</span><span class="p">(</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">u_onsite</span><span class="o">=</span><span class="n">U</span><span class="p">)</span>
+<span class="n">e0_hub</span> <span class="o">=</span> <span class="n">hubbard</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+<span class="n">h1_hub</span> <span class="o">=</span> <span class="n">hubbard</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+<span class="n">h2_hub</span> <span class="o">=</span> <span class="n">hubbard</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -639,7 +676,7 @@ E_0=-4 N \int_0^{\infty} \frac{J_0(\omega) J_1(\omega)}{\omega\left(1+e^{\omega 
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Energy given by Lieb-Wu formula:  -1.040368653394435
-Error of integration:  8.675915091601108e-11
+Error of integration:  8.67591249968029e-11
 </pre></div>
 </div>
 </div>
@@ -679,7 +716,7 @@ Error of integration:  8.675915091601108e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/valeriichuiko/anaconda3/lib/python3.11/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
   self._set_intXint(row, col, x.flat[0])
 </pre></div>
 </div>
@@ -705,7 +742,7 @@ Error of integration:  8.675915091601108e-11
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/06b37234ea890e4740d1e9f04ae9f49d89974f122a5ca194a815a9d4a4250e79.png" src="../_images/06b37234ea890e4740d1e9f04ae9f49d89974f122a5ca194a815a9d4a4250e79.png" />
+<img alt="../_images/d98fe9b5abaa6ca115bb5286129ba265f9f90b9a319d04bcfc0f46d88c82da78.png" src="../_images/d98fe9b5abaa6ca115bb5286129ba265f9f90b9a319d04bcfc0f46d88c82da78.png" />
 </div>
 </div>
 </section>
@@ -738,12 +775,6 @@ Error of integration:  8.675915091601108e-11
 <span class="n">hubbard</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="s2">&quot;hubbard_6.npz&quot;</span><span class="p">)</span>
 <span class="c1"># saving the integrals as fcidump file</span>
 <span class="n">hubbard</span><span class="o">.</span><span class="n">save_fcidump</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;hubbard_6_site.fcidump&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="n">nelec</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/anaconda3/lib/python3.9/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
-  self._set_intXint(row, col, x.flat[0])
 </pre></div>
 </div>
 </div>
@@ -819,6 +850,7 @@ Error of integration:  8.675915091601108e-11
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-defining-hubbard-hamiltonian">Example: Defining Hubbard Hamiltonian</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-integrals">Generating Integrals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-building-integrals-from-smiles">Example: Building Integrals from SMILES</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-hubbard-model">Testing the Hubbard model</a><ul class="visible nav section-nav flex-column">
