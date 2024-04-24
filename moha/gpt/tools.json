@@ -94,9 +94,22 @@
                             }
                         },
                         "description": "Connectivity of the system. Should be a list of lists which have to be a adjacency matrix. For example, for a chain-like system with 4 sites, connectivity=[[0, 1],[1, 2],[2, 3]]. Should be returned if connectivity is mentioned."
+                    },
+                    "moltype":{
+                        "type": "string",
+                        "description": "The geometry of the molecule. Supported types are 1d and 2d.",
+                        "enum": ["1d", "2d"]
+                    },
+                    "Lx":{
+                        "type": "integer",
+                        "description": "The linear size of the x direction for 2d moltype of size Lx by Ly. Required for 2d moltype."
+                    },
+                    "Ly":{
+                        "type": "integer",
+                        "description": "The linear size of the y direction for 2d moltype of size Lx by Ly. Required for 2d moltype."
                     }
                 },
-                "required": ["save_integrals", "integral_format", "hamiltonian", "basis", "nelec", "norb", "explanation"]
+                "required": ["explanation", "moltype", "save_integrals", "integral_format", "hamiltonian", "basis", "nelec", "norb"]
             }
         }
     }
