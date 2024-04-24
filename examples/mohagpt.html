@@ -503,13 +503,13 @@ We will save ouput to fcidump file that will be called <code class="docutils lit
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moha.gpt</span> <span class="kn">import</span> <span class="n">generate_ham</span>
 
-<span class="n">ham</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d Huckel model with open boundary condition and t=-1. Put energy of orbital equal to 0. System has 4 sites and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>
+<span class="n">ham</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d Huckel model with open boundary condition and t=-1. Set energy of orbitals alpha equal to 0. System has 4 sites and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>
 <span class="s2">                    Save it to the fcidump file called huckel_1d&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1D Huckel model with open boundary condition
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Simple 1d Huckel model with open boundary condition and hopping parameter t=-1. Energy of orbitals alpha is set to 0. System has 4 sites and 4 orbitals.
 </pre></div>
 </div>
 </div>
@@ -568,7 +568,7 @@ We will convert one-electron integral to dense matrix and print it using the <co
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Hubbard model with t=-1 and U=0.5
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Hubbard model with periodic boundary condition and hopping parameter (t) equal to -1. On-site Coulomb interaction (U) between electrons is equal to 0.5. The energy of orbital (alpha) is set to 0. The system has 2 electrons and 4 orbitals.
 [[ 0. -1.  0. -1.]
  [-1.  0. -1.  0.]
  [ 0. -1.  0. -1.]
@@ -592,7 +592,7 @@ Element (3, 3, 3, 3) has value 0.5
 <p>In this example we will see how to generate a Heisenber XXX model. We will set the number of electrons to 4, the number of orbitals to 4. The coupling terms between electrons are <span class="math notranslate nohighlight">\(J_{eq} = J_{ax} = 0.5\)</span>. This time we will not save the output to a file.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heisenberg</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d XXX Heisenberg model with periodic boundary condition. Set both coupling terms to 0.5.</span><span class="se">\</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">heisenberg</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a 1d Heisenberg model with periodic boundary condition. Both coupling terms are equal to 0.5.</span><span class="se">\</span>
 <span class="s2">                           System has 4 sites and 4 orbitals. Return ouput in the spinorbital basis and don&#39;t save the result.&quot;</span><span class="p">)</span>
 
 <span class="c1"># checking if parameters are set correctly</span>
@@ -608,7 +608,7 @@ Element (3, 3, 3, 3) has value 0.5
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1D Heisenberg model with XXX interactions.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The 1D Heisenberg model with periodic boundary condition describes the interaction between spins located at different sites along a chain. The coupling parameter J_eq represents the coupling energy along the x and y axes, while the coupling parameter J_ax represents the coupling energy along the z axis. In this case, both coupling terms are set to 0.5, indicating a moderate interaction strength between neighboring spins.
 J_ax is: 
  [[0.  0.5 0.  0.5]
  [0.5 0.  0.5 0. ]
@@ -638,7 +638,7 @@ We will set a 2 dimensional lattice 3x2 lattice with periodic boundary condition
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The 2D Richardson-Gaudin model is a model describing interacting electrons on a lattice with 2 dimensions. It has 6 electrons and a size of 3x2 with periodic boundary conditions. The coupling parameter J is 0.5. The model exhibits 4-fold symmetry.
 </pre></div>
 </div>
 </div>
@@ -655,12 +655,12 @@ We will set a 2 dimensional lattice 3x2 lattice with periodic boundary condition
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adjacency matrix is:
  
- [[0. 1. 0. 0. 0. 1.]
- [1. 0. 1. 0. 0. 0.]
- [0. 1. 0. 1. 0. 0.]
- [0. 0. 1. 0. 1. 0.]
- [0. 0. 0. 1. 0. 1.]
- [1. 0. 0. 0. 1. 0.]] 
+ [[0. 1. 1. 2. 0. 0.]
+ [1. 0. 1. 0. 2. 0.]
+ [1. 1. 0. 0. 0. 2.]
+ [2. 0. 0. 0. 1. 1.]
+ [0. 2. 0. 1. 0. 1.]
+ [0. 0. 2. 1. 1. 0.]] 
 
 J_ax is:
  [[0. 0. 0. 0. 0. 0.]
@@ -671,12 +671,12 @@ J_ax is:
  [0. 0. 0. 0. 0. 0.]] 
 
 J_eq is:
- [[0.  0.5 0.  0.  0.  0.5]
- [0.5 0.  0.5 0.  0.  0. ]
- [0.  0.5 0.  0.5 0.  0. ]
- [0.  0.  0.5 0.  0.5 0. ]
- [0.  0.  0.  0.5 0.  0.5]
- [0.5 0.  0.  0.  0.5 0. ]]
+ [[0.  0.5 0.5 1.  0.  0. ]
+ [0.5 0.  0.5 0.  1.  0. ]
+ [0.5 0.5 0.  0.  0.  1. ]
+ [1.  0.  0.  0.  0.5 0.5]
+ [0.  1.  0.  0.5 0.  0.5]
+ [0.  0.  1.  0.5 0.5 0. ]]
 </pre></div>
 </div>
 </div>
