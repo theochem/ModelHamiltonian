@@ -7,10 +7,6 @@ on:
       - main
       - website
 
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
 
 # This job installs dependencies, builds the book, and pushes it to `gh-pages`
 jobs:
