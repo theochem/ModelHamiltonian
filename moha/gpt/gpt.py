@@ -48,7 +48,8 @@ def map_to_toml(funcs):
                      "norb",
                      "nelec",
                      "symmetry",
-                     "moltype"]:
+                     "moltype",
+                     "Lx", "Ly"]:
             if key == 'symmetry':
                 value = int(value)
             toml_dict["system"][key] = value
@@ -81,7 +82,7 @@ def load_config():
     return OPENAI_API_KEY, GPT_MODEL
 
 
-@retry(wait=wait_random_exponential(multiplier=1, max=40),
+@retry(wait=wait_random_exponential(multiplier=1, max=100),
        stop=stop_after_attempt(3))
 def chat_completion_request(messages, model, client,
                             tools=None,
@@ -157,6 +158,10 @@ def generate_ham(prompt):
     client = OpenAI(api_key=OPENAI_API_KEY)
     # initialize messages
     messages = []
+    messages.append({"role": "system",
+                    "content":
+                    "You will be given a description of Hamiltonian.\
+                     You need to map it to the correct keywords and describe the generated system."})  # noqa E128
     messages.append({"role": "system",
                     "content":
                     "Don't make assumptions about what values to plug into functions."})  # noqa E128
