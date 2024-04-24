@@ -226,6 +226,8 @@ def build_moha(data):
         adjacency = build_connectivity_1d(data)
     elif data["system"]["moltype"] == "2d":
         adjacency = build_connectivity_2d(data)
+        # fixing double counting of bonds if periodic bc and Lx <= 2 or Ly <= 2
+        adjacency[np.where(adjacency == 2)] = 1
     elif data["system"]["moltype"] == "molfile":
         adjacency = build_connectivity_molfile(data)
     else:
