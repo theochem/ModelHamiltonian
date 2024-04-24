@@ -3,10 +3,10 @@ repos:
     rev: v2.1.0
     hooks:
     -   id: trailing-whitespace
-        exclude: ^(docs|examples)/
+        files: ^moha/.*\.py$
 -   repo: https://github.com/asottile/pyupgrade
     rev: v1.25.0
     hooks:
     -   id: pyupgrade
         args: [--py36-plus]
-        exclude: ^(docs|examples)/
+        files: ^moha/.*\.py$
