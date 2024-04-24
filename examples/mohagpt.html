@@ -509,7 +509,7 @@ We will save ouput to fcidump file that will be called <code class="docutils lit
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Simple 1d Huckel model with open boundary condition and hopping parameter t=-1. Energy of orbitals alpha is set to 0. System has 4 sites and 4 orbitals.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is a simple 1D Huckel model with open boundary condition. The hopping parameter (t) is set to -1, indicating a negative energy for interaction between adjacent orbitals. The energy of orbitals (alpha) is set to 0, indicating no energy difference between orbitals. The system has 4 sites and 4 spatial orbitals.
 </pre></div>
 </div>
 </div>
@@ -568,7 +568,7 @@ We will convert one-electron integral to dense matrix and print it using the <co
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Hubbard model with periodic boundary condition and hopping parameter (t) equal to -1. On-site Coulomb interaction (U) between electrons is equal to 0.5. The energy of orbital (alpha) is set to 0. The system has 2 electrons and 4 orbitals.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Hubbard model describes interacting electrons on a lattice. The parameter t is the hopping parameter, controlling the energy penalty for an electron to hop between neighboring sites. The parameter U is the on-site Coulomb interaction, representing the energy cost for two electrons to occupy the same site. In this system, there are 2 electrons distributed over 4 orbitals. The energy of each orbital is set to 0. The system has periodic boundary conditions, meaning the last site is connected to the first site.
 [[ 0. -1.  0. -1.]
  [-1.  0. -1.  0.]
  [ 0. -1.  0. -1.]
@@ -608,7 +608,7 @@ Element (3, 3, 3, 3) has value 0.5
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The 1D Heisenberg model with periodic boundary condition describes the interaction between spins located at different sites along a chain. The coupling parameter J_eq represents the coupling energy along the x and y axes, while the coupling parameter J_ax represents the coupling energy along the z axis. In this case, both coupling terms are set to 0.5, indicating a moderate interaction strength between neighboring spins.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is a 1D Heisenberg model with periodic boundary condition. The system has 4 sites and 4 orbitals. The coupling terms along both the x and y axes are equal to 0.5.
 J_ax is: 
  [[0.  0.5 0.  0.5]
  [0.5 0.  0.5 0. ]
@@ -638,7 +638,7 @@ We will set a 2 dimensional lattice 3x2 lattice with periodic boundary condition
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The 2D Richardson-Gaudin model is a model describing interacting electrons on a lattice with 2 dimensions. It has 6 electrons and a size of 3x2 with periodic boundary conditions. The coupling parameter J is 0.5. The model exhibits 4-fold symmetry.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2D Richardson-Gaudin model with 6 electrons, 3x2 size, periodic boundary condition, and coupling J=0.5 in the spatial basis. Assuming 4-fold symmetry.
 </pre></div>
 </div>
 </div>
@@ -655,12 +655,12 @@ We will set a 2 dimensional lattice 3x2 lattice with periodic boundary condition
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Adjacency matrix is:
  
- [[0. 1. 1. 2. 0. 0.]
- [1. 0. 1. 0. 2. 0.]
- [1. 1. 0. 0. 0. 2.]
- [2. 0. 0. 0. 1. 1.]
- [0. 2. 0. 1. 0. 1.]
- [0. 0. 2. 1. 1. 0.]] 
+ [[0. 1. 1. 1. 0. 0.]
+ [1. 0. 1. 0. 1. 0.]
+ [1. 1. 0. 0. 0. 1.]
+ [1. 0. 0. 0. 1. 1.]
+ [0. 1. 0. 1. 0. 1.]
+ [0. 0. 1. 1. 1. 0.]] 
 
 J_ax is:
  [[0. 0. 0. 0. 0. 0.]
@@ -671,12 +671,12 @@ J_ax is:
  [0. 0. 0. 0. 0. 0.]] 
 
 J_eq is:
- [[0.  0.5 0.5 1.  0.  0. ]
- [0.5 0.  0.5 0.  1.  0. ]
- [0.5 0.5 0.  0.  0.  1. ]
- [1.  0.  0.  0.  0.5 0.5]
- [0.  1.  0.  0.5 0.  0.5]
- [0.  0.  1.  0.5 0.5 0. ]]
+ [[0.  0.5 0.5 0.5 0.  0. ]
+ [0.5 0.  0.5 0.  0.5 0. ]
+ [0.5 0.5 0.  0.  0.  0.5]
+ [0.5 0.  0.  0.  0.5 0.5]
+ [0.  0.5 0.  0.5 0.  0.5]
+ [0.  0.  0.5 0.5 0.5 0. ]]
 </pre></div>
 </div>
 </div>
