@@ -44,7 +44,8 @@ gui = [
 ]
 
 gpt = [
-    "toml"
+    "toml",
+    "openai"
 ]
 
 toml = [
