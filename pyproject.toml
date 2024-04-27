@@ -40,7 +40,7 @@ Source = "https://github.com/theochem/ModelHamiltonian/"
 
 [project.optional-dependencies]
 gui = [
-    "tkinter",
+    "rdkit"
 ]
 
 gpt = [
