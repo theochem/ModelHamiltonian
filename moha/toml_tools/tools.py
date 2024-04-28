@@ -57,7 +57,7 @@ def set_defaults(input_data):
 
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
-            if type(data_value) == str:
+            if type(data_value) == str and param_type != "control":
                 input_data[param_type][param] = data_value.lower()
 
 
@@ -162,13 +162,21 @@ def build_connectivity_molfile(data):
     -------
     adjacency: numpy array
         adjacency matrix
+    
+    Notes
+    -----
+    Hamiltonian bonds should be defined as symbolic
+    bonds in the molfile (bondtype = 0).
     """
     if "molfile" not in data["system"]:
         raise ValueError(
             "System parameter 'molfile' must be specified for"
-            "moltyple 'molfile'.")
+            "moltype 'molfile'.")
     else:
         mol_file = data["system"]["molfile"]
+
+    bonded_atoms = 0
+    bonded_atom_idx = {}
     with open(mol_file, "r") as f:
         for line_num, line in enumerate(f, start=1):
             # skip first 3 header lines
@@ -183,19 +191,32 @@ def build_connectivity_molfile(data):
             # skip lines containing list of atoms
             elif line_num <= 4 + natoms:
                 continue
-            # build connectivity from bonds
+            # build connectivity from bonded atoms
             elif line_num <= 4 + natoms + nbonds:
-                atom1_idx = int(arr[0])
-                atom2_idx = int(arr[1])
-                adjacency[atom1_idx-1, atom2_idx-1] = 1
+                bond_type = int(arr[2])
+                # skip non-symbolic bonds
+                if bond_type != 0:
+                    continue
+                else:
+                    atom1_idx = int(arr[0])
+                    if atom1_idx not in bonded_atom_idx.keys():
+                        bonded_atom_idx[atom1_idx] = bonded_atoms
+                        bonded_atoms += 1
+                    atom2_idx = int(arr[1])
+                    if atom2_idx not in bonded_atom_idx.keys():
+                        bonded_atom_idx[atom2_idx] = bonded_atoms
+                        bonded_atoms += 1
+                    mapped_atom1_idx = bonded_atom_idx[atom1_idx]
+                    mapped_atom2_idx = bonded_atom_idx[atom2_idx]
+                    adjacency[mapped_atom1_idx, mapped_atom2_idx] = 1
+            # end reading molfile after connectivity block
             else:
                 break
 
-    data["system"]["norb"] = natoms
-    data["system"]["nelec"] = natoms
+    data["system"]["norb"] = bonded_atoms
+    data["system"]["nelec"] = bonded_atoms
 
-    print(data)
-
+    adjacency = adjacency[:bonded_atoms, :bonded_atoms]
     adjacency += adjacency.T
 
     return adjacency
