@@ -1,0 +1,60 @@
+# This file is part of ModelHamiltonian.
+#
+# ModelHamiltonian is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
+#
+# ModelHamiltonian is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with ModelHamiltonian. If not, see <http://www.gnu.org/licenses/>.
+
+[build-system]
+requires = ["setuptools>=65.0", "setuptools_scm[toml]>=7.1.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moha"
+authors = [
+  { name="QC-Devs Community", email="qcdevs@gmail.com" },
+]
+description = "ModelHamiltonian generates 1- and 2-electron integrals corresponding to various model Hamiltonians."
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.6"
+dependencies = [
+    "numpy>=1.16",
+    "scipy>=1.4",
+    "pytest",
+]
+dynamic =["version" ]
+
+[project.urls]
+Documentation = "https://moha.qcdevs.org"
+Issues = "https://github.com/theochem/ModelHamiltonian/issues"
+Source = "https://github.com/theochem/ModelHamiltonian/"
+
+[project.optional-dependencies]
+gui = [
+    "rdkit"
+]
+
+gpt = [
+    "toml",
+    "openai"
+]
+
+toml = [
+    "toml"
+]
+
+[tool.setuptools]
+packages = ["moha"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["test"]
