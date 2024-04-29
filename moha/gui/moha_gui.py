@@ -22,7 +22,7 @@ RDLogger.DisableLog('rdApp.*')
 # Examples 
 # CID 42626654
 # smiles_entry = C1=CC=C2C=CC=CC2=C1
-# molfile_path = "../examples/mol/Fe8S7_mod.mol"
+# molfile_path = "../../examples/mol/Fe8S7.mol"
 
 #----- MOLECULE -----#
 
@@ -134,20 +134,26 @@ def on_ham_dropdown_select(event, root, widgets, ents):
     hubbard_fields = ["alpha", "beta", "u_onsite"]
     huckel_fields = ["alpha", "beta"]
     heisenberg_fields = ["J_eq", "J_ax", "mu"]
+    ising_fields = ["J_ax", "mu"]
+    rg_fields = ["J_eq", "mu"]
 
     fields = []
     if selected_ham_value == "PPP":
-        fields =ppp_fields
+        fields = ppp_fields
     elif selected_ham_value == "Hubbard":
         fields = hubbard_fields
     elif selected_ham_value == "Huckel":
         fields = huckel_fields
     elif selected_ham_value == "Heisenberg":
         fields = heisenberg_fields
-    # Add other options as needed
+    elif selected_ham_value == "Ising":
+        fields = ising_fields
+    elif selected_ham_value == "RG":
+        fields = rg_fields
+    # Add other supported hamiltonians as needed
 
-    state_data["model"]["hamiltonian"] = selected_ham_value
     ents = make_model_form(root, widgets, fields, ents)
+    ents.append(("hamiltonian", ham_dropdown))
 
 #----- CONTROL -----#
 
@@ -350,7 +356,7 @@ if __name__ == '__main__':
     root.bind('<Escape>', (lambda event, : root.quit()))
 
     # DEBUG BINDINGS
-    #root.bind('<1>', (lambda event, : print(control_ents)))
+    #root.bind('<1>', (lambda event, : print(model_ents)))
 
     #-------- THEME --------#
     sv_ttk.set_theme("dark")
