@@ -169,7 +169,7 @@ def build_connectivity_molfile(data):
             "moltyple 'molfile'.")
     else:
         mol_file = data["system"]["molfile"]
-    with open(mol_file, "r") as f:
+    with open(mol_file) as f:
         for line_num, line in enumerate(f, start=1):
             # skip first 3 header lines
             if line_num <= 3:
