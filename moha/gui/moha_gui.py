@@ -10,8 +10,10 @@ from rdkit.Chem import Draw
 import sv_ttk
 
 import sys
-sys.path.append("../.")
+sys.path.append("../../.")
 from moha.toml_tools import *
+
+from gui_utils import *
 
 # Suppress RDKit messages
 from rdkit import RDLogger
@@ -82,9 +84,11 @@ def build_molecule(entries):
               " for moltype: " + mol_field)
 
 def on_moltype_dropdown_select(event, ents, selected):
+    moltype = selected.get()
     modified_ent = list(ents[0])
-    modified_ent[0] = selected.get()
+    modified_ent[0] = moltype
     ents[0] = modified_ent
+    state_data["system"]["moltype"] = moltype
 
 #----- MODEL -----#
 
@@ -190,32 +194,27 @@ def save_integrals(entries):
     else:
         print("Need to build molecule first!")
 
-#----- UTILS -----#
+#----- SAVE/QUIT BUTTONS -----#
+def make_save_quit_buttons(frame):
+    # Create a frame for the buttons at the bottom right corner
+    right_button_frame = tk.Frame(frame)
+    right_button_frame.place(relx=1, rely=1, anchor='se')
 
-def destroy_widgets(widgets):
-        # Destroy old form widgets if they exist
-        for widget in widgets:
-            widget.destroy()
-        widgets = []
+    # Position the "Quit" button
+    quit_button = ttk.Button(right_button_frame, 
+                             text='Quit', 
+                             command=root.quit)
+    quit_button.pack(side=tk.RIGHT, padx=5)
 
-def enable_dropdown_on_click(dropdown, prompt_text):
-    # If the dropdown is clicked, enable it and remove the prompt text
-    if dropdown.get() == prompt_text:
-        dropdown.state(["!disabled"])
-        dropdown.set("")
+    # Position the "Save Integrals" button
+    save_integrals_button = ttk.Button(right_button_frame,
+                                       text='Save Integrals',
+                                       command=(lambda e=model_ents: save_integrals(e)))
+    save_integrals_button.pack(side=tk.RIGHT, padx=5)
 
-def set_prompt(dropdown, prompt_text):
-    # Initialize dropdown text to default prompt
-    dropdown.state(["disabled"])
-    dropdown.set(prompt_text)
-    dropdown.state(["readonly"])
-    dropdown.bind("<Button-1>", (lambda event,
-                                 prompt_text = prompt_text,
-                                 dropdown = dropdown: 
-                                 enable_dropdown_on_click(dropdown, prompt_text)))
 
 if __name__ == '__main__':
-    required_default_paramfile = "../moha/toml_tools/defaults.toml"
+    required_default_paramfile = "../../moha/toml_tools/defaults.toml"
     state_data = tomllib.load(open(required_default_paramfile, "rb"))
 
     format_options = {
@@ -246,10 +245,7 @@ if __name__ == '__main__':
 
     # Add a title above the fields
     mol_title = "Molecule"
-    mol_title_frame = tk.Frame(right_frame)
-    mol_title_frame.pack(side=tk.TOP, fill=tk.X, pady=(0,0))
-    mol_title_label = ttk.Label(mol_title_frame, text=mol_title, font=format_options["title_font"])
-    mol_title_label.pack(side=tk.LEFT)
+    mol_title_frame = make_title(right_frame, mol_title)
 
     # Create a frame for the molecule form
     mol_form_frame = tk.Frame(right_frame)
@@ -274,7 +270,7 @@ if __name__ == '__main__':
 
     moltype_dropdown.bind("<<ComboboxSelected>>", (lambda event, 
                                                    ents=mol_ents,
-                                                   selected = selected_moltype:
+                                                   selected=selected_moltype:
                                                    on_moltype_dropdown_select(event, ents, selected)))
 
     # Create the "Build Molecule" button
@@ -287,10 +283,7 @@ if __name__ == '__main__':
 
     # Add a title above the fields
     model_title = "Model"
-    model_title_frame = tk.Frame(right_frame)
-    model_title_frame.pack(side=tk.TOP, fill=tk.X, pady=(20,0))
-    model_title_label = ttk.Label(model_title_frame, text=model_title, font=format_options["title_font"])
-    model_title_label.pack(side=tk.LEFT)
+    model_title_frame = make_title(right_frame, model_title, pady=(20,0))
 
     # Initialize model entries
     model_widgets = []
@@ -324,10 +317,7 @@ if __name__ == '__main__':
 
     # Add a title above the fields
     control_title = "Output"
-    control_title_frame = tk.Frame(right_frame)
-    control_title_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(0,0))
-    control_title_label = tk.Label(control_title_frame, text=control_title, font=format_options["title_font"])
-    control_title_label.pack(side=tk.LEFT)
+    control_title_frame = make_title(right_frame, control_title, side=tk.BOTTOM)
 
     # Create a frame for the dropdown
     save_format_dropdown_frame = ttk.Frame(control_title_frame)
@@ -353,28 +343,14 @@ if __name__ == '__main__':
 
     #-------- SAVE/QUIT BUTTONS --------#
 
-    # Create a frame for the buttons at the bottom right corner
-    right_button_frame = tk.Frame(right_frame)
-    right_button_frame.place(relx=1, rely=1, anchor='se')
-
-    # Position the "Quit" button
-    quit_button = ttk.Button(right_button_frame, 
-                             text='Quit', 
-                             command=root.quit)
-    quit_button.pack(side=tk.RIGHT, padx=5)
-
-    # Position the "Save Integrals" button
-    save_integrals_button = ttk.Button(right_button_frame,
-                                       text='Save Integrals',
-                                       command=(lambda e=model_ents: save_integrals(e)))
-    save_integrals_button.pack(side=tk.RIGHT, padx=5)
+    make_save_quit_buttons(right_frame)
 
     #-------- KEYBINDS --------#
     root.bind('<Return>', (lambda event, e=mol_ents: build_molecule(e)))
     root.bind('<Escape>', (lambda event, : root.quit()))
 
     # DEBUG BINDINGS
-    #root.bind('<1>', (lambda event, : print(mol_ents)))
+    #root.bind('<1>', (lambda event, : print(control_ents)))
 
     #-------- THEME --------#
     sv_ttk.set_theme("dark")
