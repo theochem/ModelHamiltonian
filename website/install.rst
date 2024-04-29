@@ -61,3 +61,22 @@ Run the following to test ModelHamiltonian:
 .. code:: shell
 
     pytest -v moha/test/test*
+
+To intall GPT version of ModelHamiltonian, run the following:
+
+.. code:: shell
+
+    python3 -m pip install .[gpt]
+
+To install the GUI version of ModelHamiltonian, run the following:
+
+.. code:: shell
+
+    python3 -m pip install .[gui]
+
+To install TOML version of ModelHamiltonian, run the following:
+
+.. code:: shell
+
+    python3 -m pip install .[toml]
+    
