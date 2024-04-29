@@ -17,6 +17,7 @@ The Model Hamiltonian Package is designed to facilitate research in quantum chem
 - Huckel Model 
 - XXZ Heisenberg Model
 - Ising Model
+- Richardson-Gauding Model
 
 ## Key Features
 
@@ -24,23 +25,23 @@ The Model Hamiltonian Package is designed to facilitate research in quantum chem
 
 The Model Hamiltonian Package simplifies the process of generating 0, 1, and 2 electron integrals for various quantum models. With intuitive APIs and comprehensive documentation, users can effortlessly obtain the necessary integrals for their simulations and calculations.
 
-### 2. Command Line Support
-
-For seamless integration into existing workflows, the Model Hamiltonian Package offers command line support. Users can leverage command line interface (CLI) commands to generate electron integrals, making it convenient to automate tasks and integrate the package into scripts and pipelines.
-
-### 3. Symmetry Conversion
+### 2. Symmetry Conversion
 
 The package provides functionality for converting between 2, 4, and 8-fold symmetries, allowing users to adapt the generated integrals to the specific symmetry requirements of their quantum models. This feature enhances flexibility and compatibility with a wide range of simulation techniques and frameworks.
 
-### 4. FCIDUMP File Support
+### 3. FCIDUMP File Support
 
 To facilitate interoperability with other quantum chemistry software packages, the Model Hamiltonian Package supports the FCIDUMP file format. Users can export electron integrals in FCIDUMP format, enabling seamless integration with popular quantum chemistry software tools and libraries.
 
-### 5. Integration of ChatGPT Functionality
+### 4. Integration of ChatGPT Functionality
 
 In a unique feature, the Model Hamiltonian Package integrates ChatGPT functionality, enabling users to generate and save model hamiltonians by interacting with a conversational AI assistant directly within the package environment.
 
 These key features collectively make the Model Hamiltonian Package a comprehensive and user-friendly tool for generating electron integrals, offering flexibility, efficiency, interoperability, and enhanced user support. Whether you're a researcher, student, or practitioner in the field of quantum science, the Model Hamiltonian Package provides the necessary tools to advance your research and simulations.
+
+### 5. User-Friendy Graphical User Interface
+
+The Model Hamiltonian Package includes a user-friendly graphical user interface (GUI) that simplifies the process of generating electron integrals for various quantum models. With an intuitive design and interactive features, the GUI enables users to input model parameters, generate electron integrals, and export results with ease. We support SMILES and MOl files as input for building the molecular structure. Give it a try and experience the convenience of the ModelHamiltonian Package GUI.
 
 Get Started with ModelHamiltonian Today!
 Join the QC-Devs community and elevate your research endeavors.
