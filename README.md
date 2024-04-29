@@ -1,8 +1,7 @@
 # Model Hamiltonian
 
-This utility generates 1- and 2-electron integrals corresponding to various model Hamiltonians. The basic input is some indication of connectivity, either explicitly or as a lattice. One then specifies the Hamiltonian of interest. The output are 1- and 2-electron integrals in a format convenient for use in other (external) software packages. Notably, these integrals can be transformed into FCIDUMP format using [IOData](iodata.qcdevs.org).
+This utility generates 1- and 2-electron integrals corresponding to various model Hamiltonians. The basic input is some indication of connectivity, either explicitly or as a lattice. One then specifies the Hamiltonian of interest. The output are 1- and 2-electron integrals in a format convenient for use in other (external) software packages.
 
-&#x1f6e0;&#xfe0f; This module is currently under development; major API changes are expected soon!
 
 ## Installation
 
@@ -10,12 +9,25 @@ This utility generates 1- and 2-electron integrals corresponding to various mode
 python3 -m pip install -e .
 ```
 
-## Building Sphinx-Doc
+### Subversions of the ModelHamiltonian
+To install a specific subversion of the ModelHamiltonian, you can use the following command:
+- For the GPT subversion:
 
 ```
-python3 -m pip install --user sphinx-rtd-theme
-cd docs && make html
+python3 -m pip install -e .[gpt]
 ```
+- For the GUI subversion:
+
+```
+python3 -m pip install -e .[gui]
+```
+
+- For the TOML subversion:
+
+```
+python3 -m pip install -e .[toml]
+```
+
 ## Coding Guidelines
 We document our Coding Guidelines in the [QC-devs guidelines repo](https://github.com/theochem/guidelines/). We particularly suggest you review:
 
