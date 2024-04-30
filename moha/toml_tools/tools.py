@@ -57,7 +57,7 @@ def set_defaults(input_data):
 
             # make all strings lowercase for case-insensitive comparisons
             data_value = input_data[param_type][param]
-            if type(data_value) == str and param_type != "control":
+            if isinstance(data_value, str) and param_type != "control":
                 input_data[param_type][param] = data_value.lower()
 
 
@@ -220,6 +220,7 @@ def build_connectivity_molfile(data):
     adjacency += adjacency.T
 
     return adjacency
+
 
 def build_connectivity_smiles(data):
     """
