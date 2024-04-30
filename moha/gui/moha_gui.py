@@ -24,14 +24,15 @@ def build_molecule(ents):
     r"""
     Build molecule from one of molfile or smiles moltyes.
 
-    Examples:
-    smiles_entry = C1=CC=C2C=CC=CC2=C1
-    molfile_path = "../../examples/mol/Fe8S7.mol"
-
     Parameters
     ----------
     ents: list
         list of molecule form entries
+
+    Notes
+    -----
+    smiles_entry: C1=CC=C2C=CC=CC2=C1
+    molfile_path: "../../examples/mol/Fe8S7.mol"
     """
     # Get moltype and field entry
     mol_field = ents[0][0]
@@ -437,6 +438,9 @@ def save_integrals():
     set_model(model_ents)
     set_control(control_ents)
     if state_data["system"]["moltype"] == "molfile":
+        dict_to_ham(state_data)
+        print("Integrals have been saved!")
+    elif state_data["system"]["moltype"] == "smiles":
         dict_to_ham(state_data)
         print("Integrals have been saved!")
     else:

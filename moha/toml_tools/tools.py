@@ -221,6 +221,38 @@ def build_connectivity_molfile(data):
 
     return adjacency
 
+def build_connectivity_smiles(data):
+    """
+    Build adjacency matrix for smiles moltype.
+
+    Parameters
+    ----------
+    data: dict
+        dict containing toml input data.
+
+    Returns
+    -------
+    adjacency: numpy array
+        adjacency matrix
+
+    Notes
+    -----
+    Hamiltonian bonds should be defined as symbolic
+    bonds in the molfile (bondtype = 0).
+    """
+    if "smiles" not in data["system"]:
+        raise ValueError(
+            "System parameter 'smiles' must be specified for"
+            "moltype 'smiles'.")
+    else:
+        smiles = data["system"]["smiles"]
+
+    # import rdkit here to avoid import error if smiles is not used
+    from rdkit.Chem import MolFromSmiles, rdmolops
+    mol = MolFromSmiles(smiles)
+    adjacency = rdmolops.GetAdjacencyMatrix(mol)
+    return adjacency
+
 
 def build_moha(data):
     """
@@ -243,6 +275,7 @@ def build_moha(data):
         model hamiltonian object.
     """
     # build connectivity for moltype
+    print("System is:", data["system"]["moltype"])
     if data["system"]["moltype"] == "1d":
         adjacency = build_connectivity_1d(data)
     elif data["system"]["moltype"] == "2d":
@@ -251,6 +284,8 @@ def build_moha(data):
         adjacency[np.where(adjacency == 2)] = 1
     elif data["system"]["moltype"] == "molfile":
         adjacency = build_connectivity_molfile(data)
+    elif data["system"]["moltype"] == "smiles":
+        adjacency = build_connectivity_smiles(data)
     else:
         raise ValueError("Moltype " + data["system"]["moltype"] +
                          " not supported.")
