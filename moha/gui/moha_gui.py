@@ -1,13 +1,11 @@
 import tkinter as tk
 import tomllib
 import sv_ttk
-import sys
 from tkinter import ttk
 from PIL import ImageTk
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit import RDLogger
-sys.path.append("../../.")
 from moha.toml_tools import *
 from gui_utils import *
 # Uses 'Sun Valley' theme from sv_ttk
@@ -494,7 +492,7 @@ if __name__ == '__main__':
     mol_frame.pack(side=tk.LEFT, 
                    fill=tk.BOTH, 
                    pady=(30, 30), 
-                   padx=(30,30))
+                   padx=(30, 30))
 
     # Make right frame to contain input fields
     field_frame = tk.Frame(root, width=200)
