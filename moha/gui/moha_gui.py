@@ -16,7 +16,8 @@ from gui_utils import *
 # Suppress RDKit messages
 RDLogger.DisableLog('rdApp.*')
 
-#----- MOLECULE -----#
+# ----- MOLECULE -----#
+
 
 def build_molecule(ents):
     '''
@@ -87,6 +88,7 @@ def build_molecule(ents):
     else:
         print("Invalid Entry: " + mol_entry + " for moltype: " + mol_field)
 
+
 def make_moltype_fields(frame, fields, ents):
     '''
     Make fields relevant to moltype in molecule form
@@ -127,6 +129,7 @@ def make_moltype_fields(frame, fields, ents):
                           selected=selected_moltype:
                           on_moltype_dropdown_select(ents, selected)))
 
+
 def on_moltype_dropdown_select(ents, selected):
     '''
     Build molecule from one of molfile or smiles moltyes
@@ -141,6 +144,7 @@ def on_moltype_dropdown_select(ents, selected):
     modified_ent[0] = moltype
     ents[0] = modified_ent
     state_data["system"]["moltype"] = moltype
+
 
 def make_molecule_form(frame, fields, ents):
     '''
@@ -168,6 +172,7 @@ def make_molecule_form(frame, fields, ents):
     make_moltype_fields(frame, fields, ents)
 
 #----- MODEL -----#
+
 
 def make_model_fields(frame, widgets, fields=[], ents=[]):
     '''
@@ -208,6 +213,7 @@ def make_model_fields(frame, widgets, fields=[], ents=[]):
         # Append the entry to entries list
         ents.append((field, ent))
 
+
 def set_model(ents):
     '''
     Set the model elements of state_data
@@ -224,6 +230,7 @@ def set_model(ents):
             state_data["model"][field] = 0
         else:
             state_data["model"][field] = value
+
 
 def on_ham_dropdown_select(frame, widgets, ents, selected):
     '''
@@ -267,6 +274,7 @@ def on_ham_dropdown_select(frame, widgets, ents, selected):
     # Add other supported hamiltonians as needed
 
     make_model_fields(frame, widgets, fields, ents)
+
 
 def make_model_form(frame, widgets, ents):
     '''
@@ -327,6 +335,7 @@ def make_model_form(frame, widgets, ents):
 
 #----- CONTROL -----#
 
+
 def make_control_fields(frame, ents):
     '''
     Make fields relevant to the control/output form
@@ -355,6 +364,7 @@ def make_control_fields(frame, ents):
 
         ents.append((field, ent))
 
+
 def set_control(ents):
     '''
     Set the control elements of state_data
@@ -371,6 +381,7 @@ def set_control(ents):
             continue
         else:
             state_data["control"][field] = value.lower()
+
 
 def make_control_form(frame, ents):
     '''
@@ -415,6 +426,7 @@ def make_control_form(frame, ents):
 
     ents.append(("integral_format", save_format_dropdown))
 
+
 def save_integrals():
     '''
     Save integrals to file specified in control fields
@@ -430,6 +442,8 @@ def save_integrals():
         print("Need to build molecule first!")
 
 #----- SAVE/QUIT BUTTONS -----#
+
+
 def make_save_quit_buttons(frame):
     '''
     Make buttons for save integrals and quit
@@ -454,6 +468,7 @@ def make_save_quit_buttons(frame):
                                        text='Save Integrals',
                                        command=save_integrals)
     save_integrals_button.pack(side=tk.RIGHT, padx=5)
+
 
 if __name__ == '__main__':
     required_default_paramfile = "../../moha/toml_tools/defaults.toml"
