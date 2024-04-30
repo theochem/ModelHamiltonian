@@ -72,7 +72,7 @@ def build_molecule(ents):
         mol_frame_height = mol_frame.winfo_height()
 
         # Create mol image
-        img = Draw.MolToImage(new_mol, 
+        img = Draw.MolToImage(new_mol,
                               size=(mol_frame_width, mol_frame_height))
         img_tk = ImageTk.PhotoImage(img)
 
@@ -167,7 +167,7 @@ def make_molecule_form(frame, fields, ents):
     # Create the "Build Molecule" button
     build_mol_button = ttk.Button(mol_title_frame,
                                   text='Build Molecule',
-                                  command=(lambda ents=ents: 
+                                  command=(lambda ents=ents:
                                            build_molecule(ents)))
     build_mol_button.pack(side=tk.RIGHT)
 
@@ -486,22 +486,22 @@ if __name__ == '__main__':
     root.geometry("1100x500")
 
     # Make left frame to display molecule with rdkit
-    mol_frame = tk.Frame(root, 
-                         background="white", 
-                         borderwidth=5, 
-                         relief=tk.SOLID, 
+    mol_frame = tk.Frame(root,
+                         background="white",
+                         borderwidth=5,
+                         relief=tk.SOLID,
                          width=640)
-    mol_frame.pack(side=tk.LEFT, 
-                   fill=tk.BOTH, 
-                   pady=(30, 30), 
+    mol_frame.pack(side=tk.LEFT,
+                   fill=tk.BOTH,
+                   pady=(30, 30),
                    padx=(30,30))
 
     # Make right frame to contain input fields
     field_frame = tk.Frame(root, width=200)
-    field_frame.pack(side=tk.LEFT, 
-                     fill=tk.BOTH, 
-                     expand=True, 
-                     padx=(0, 30), 
+    field_frame.pack(side=tk.LEFT,
+                     fill=tk.BOTH,
+                     expand=True,
+                     padx=(0, 30),
                      pady=(30, 30))
 
     # Make Molecule form
