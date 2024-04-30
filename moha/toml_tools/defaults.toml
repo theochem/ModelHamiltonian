@@ -2,7 +2,7 @@
 outdir = "."
 save_integrals = false
 integral_format = "fcidump"
-prefix = ''
+prefix = 'ModelHamiltonian'
 
 [system]
 moltype = "1d"

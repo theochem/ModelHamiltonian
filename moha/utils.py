@@ -23,7 +23,8 @@ def convert_indices(N, *args):
     if len(args) == 4:
         # Check if indices are right
         for elem in args:
-            if not isinstance(elem, int) and not isinstance(elem, np.int64):
+            if not isinstance(elem, int) and not isinstance(elem, np.int64) \
+                    and not isinstance(elem, np.int32):
                 raise TypeError("Wrong indices")
             if elem >= N:
                 raise TypeError("index is greater than size of the matrix")
