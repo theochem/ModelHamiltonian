@@ -250,6 +250,9 @@ def build_connectivity_smiles(data):
     from rdkit.Chem import MolFromSmiles, rdmolops
     mol = MolFromSmiles(smiles)
     adjacency = rdmolops.GetAdjacencyMatrix(mol)
+
+    data["system"]["norb"] = adjacency.shape[0]
+    data["system"]["nelec"] = adjacency.shape[0]
     return adjacency
 
 
