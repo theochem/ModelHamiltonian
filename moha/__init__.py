@@ -1,7 +1,7 @@
 r"""Model Hamiltonian module."""
 
 
-from .hamiltonians import HamPPP, HamHub, HamHuck,\
+from .hamiltonians import HamPPP, HamHub, HamHuck, \
                           HamHeisenberg, HamIsing, HamRG
 
 
