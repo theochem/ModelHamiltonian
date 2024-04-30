@@ -2,7 +2,11 @@ r"""Model Hamiltonian classes."""
 
 import numpy as np
 
-from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
+from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack, SparseEfficiencyWarning
+
+import warnings
+
+warnings.simplefilter('ignore', SparseEfficiencyWarning)
 
 from .api import HamiltonianAPI
 
