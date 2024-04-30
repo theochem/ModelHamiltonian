@@ -10,6 +10,7 @@ from rdkit.Chem import Draw
 from rdkit import RDLogger
 from moha.toml_tools import *
 from gui_utils import *
+from pathlib import Path
 # Uses 'Sun Valley' theme from sv_ttk
 # Created by rdbende at https://github.com/rdbende/Sun-Valley-ttk-theme
 
@@ -471,7 +472,7 @@ def make_save_quit_buttons(frame):
 
 
 if __name__ == '__main__':
-    required_default_paramfile = "../../moha/toml_tools/defaults.toml"
+    required_default_paramfile = Path(__file__).parent.parent/"toml_tools"/"defaults.toml"
     state_data = tomllib.load(open(required_default_paramfile, "rb"))
 
     root = tk.Tk()
