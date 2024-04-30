@@ -72,7 +72,8 @@ def build_molecule(ents):
         mol_frame_height = mol_frame.winfo_height()
 
         # Create mol image
-        img = Draw.MolToImage(new_mol, size=(mol_frame_width, mol_frame_height))
+        img = Draw.MolToImage(new_mol, 
+                              size=(mol_frame_width, mol_frame_height))
         img_tk = ImageTk.PhotoImage(img)
 
         # Clear any previous content from the mol_frame
@@ -106,7 +107,7 @@ def make_moltype_fields(frame, fields, ents):
     mol_form_frame.pack(fill=tk.X)
 
     row = ttk.Frame(mol_form_frame)
-    row.pack(fill=tk.X, pady=(5,0))
+    row.pack(fill=tk.X, pady=(5, 0))
 
     ent = ttk.Entry(row)
     ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
@@ -118,16 +119,16 @@ def make_moltype_fields(frame, fields, ents):
                                     values=fields,
                                     textvariable=selected_moltype,
                                     width=6)
-    moltype_dropdown.pack(side=tk.LEFT, padx=(0,20))
+    moltype_dropdown.pack(side=tk.LEFT, padx=(0, 20))
 
     # Add dropdown entry to ents
     ents.append(("moltype", moltype_dropdown))
 
     moltype_dropdown.bind("<<ComboboxSelected>>",
                           (lambda event,
-                          ents=ents,
-                          selected=selected_moltype:
-                          on_moltype_dropdown_select(ents, selected)))
+                           ents=ents,
+                           selected=selected_moltype:
+                           on_moltype_dropdown_select(ents, selected)))
 
 
 def on_moltype_dropdown_select(ents, selected):
@@ -166,12 +167,13 @@ def make_molecule_form(frame, fields, ents):
     # Create the "Build Molecule" button
     build_mol_button = ttk.Button(mol_title_frame,
                                   text='Build Molecule',
-                                  command=(lambda ents=ents: build_molecule(ents)))
+                                  command=(lambda ents=ents: 
+                                           build_molecule(ents)))
     build_mol_button.pack(side=tk.RIGHT)
 
     make_moltype_fields(frame, fields, ents)
 
-#----- MODEL -----#
+# ----- MODEL -----#
 
 
 def make_model_fields(frame, widgets, fields=[], ents=[]):
@@ -291,7 +293,7 @@ def make_model_form(frame, widgets, ents):
     '''
     # Add a title above the fields
     model_title = "Model"
-    model_title_frame = make_title(frame, model_title, pady=(20,0))
+    model_title_frame = make_title(frame, model_title, pady=(20, 0))
 
     # Initialize model entries
     make_model_fields(frame, widgets, ents)
@@ -303,8 +305,8 @@ def make_model_form(frame, widgets, ents):
     # Create a Combobox widget for hamiltonian
     selected_item = tk.StringVar()
     ham_dropdown = ttk.Combobox(ham_dropdown_frame,
-                                textvariable = selected_item,
-                                width = 20)
+                                textvariable=selected_item,
+                                width=20)
     ham_dropdown['values'] = [
         "PPP",
         "Hubbard",
@@ -333,7 +335,7 @@ def make_model_form(frame, widgets, ents):
 
     ents.append(("hamiltonian", ham_dropdown))
 
-#----- CONTROL -----#
+# ----- CONTROL -----#
 
 
 def make_control_fields(frame, ents):
@@ -441,7 +443,7 @@ def save_integrals():
     else:
         print("Need to build molecule first!")
 
-#----- SAVE/QUIT BUTTONS -----#
+# ----- SAVE/QUIT BUTTONS -----#
 
 
 def make_save_quit_buttons(frame):
@@ -478,50 +480,61 @@ if __name__ == '__main__':
     root.title("ModelHamiltonian GUI")
 
     # comment/uncomment to disable/enable window resizing
-    #root.resizable(width=False, height=False)
+    # root.resizable(width=False, height=False)
 
     # Set the window width and height
     root.geometry("1100x500")
 
     # Make left frame to display molecule with rdkit
-    mol_frame = tk.Frame(root, background="white", borderwidth=5, relief=tk.SOLID, width=640)
-    mol_frame.pack(side=tk.LEFT, fill=tk.BOTH, pady=(30, 30), padx=(30,30))
+    mol_frame = tk.Frame(root, 
+                         background="white", 
+                         borderwidth=5, 
+                         relief=tk.SOLID, 
+                         width=640)
+    mol_frame.pack(side=tk.LEFT, 
+                   fill=tk.BOTH, 
+                   pady=(30, 30), 
+                   padx=(30,30))
 
     # Make right frame to contain input fields
     field_frame = tk.Frame(root, width=200)
-    field_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0,30), pady=(30,30))
+    field_frame.pack(side=tk.LEFT, 
+                     fill=tk.BOTH, 
+                     expand=True, 
+                     padx=(0, 30), 
+                     pady=(30, 30))
 
-    #-------- MOLECULE FORM --------#
+    # Make Molecule form
 
     mol_fields = ["Molfile", "SMILES"]
     mol_ents = []
 
     make_molecule_form(field_frame, mol_fields, mol_ents)
 
-    #-------- MODEL FORM --------#
+    # Make Model form
 
     model_ents = []
     model_widgets = []
     make_model_form(field_frame, model_widgets, model_ents)
 
-    #-------- CONTROL FORM --------#
+    # Make Output/Control form
 
     control_ents = []
     make_control_form(field_frame, control_ents)
 
-    #-------- SAVE/QUIT BUTTONS --------#
+    # Make Save/Quit buttons
 
     make_save_quit_buttons(field_frame)
 
-    #-------- KEYBINDS --------#
+    # Set keybinds
     root.bind('<Return>', (lambda event, ents=mol_ents: build_molecule(ents)))
     root.bind('<Escape>', (lambda event, : root.quit()))
 
-    # DEBUG BINDINGS
-    #root.bind('<1>', (lambda event, : print(control_ents)))
+    # Debug bindings
+    # root.bind('<1>', (lambda event, : print(control_ents)))
 
-    #-------- THEME --------#
+    # Set "Sun Valley" theme
     sv_ttk.set_theme("dark")
 
-    #--------
+    # Start tkinter event loop
     root.mainloop()
