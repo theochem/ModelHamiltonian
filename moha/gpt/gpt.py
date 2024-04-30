@@ -3,7 +3,7 @@
 import json
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-import tomllib
+import toml
 from moha.toml_tools.tools import dict_to_ham
 import json
 from pathlib import Path
@@ -75,7 +75,7 @@ def load_config():
         GPT model type
     """
     config_path = Path(__file__).parent / "config.toml"
-    config = tomllib.load(open(config_path, "rb"))
+    config = toml.load(config_path)
     OPENAI_API_KEY = config["key"]
     GPT_MODEL = config["model"]
 
