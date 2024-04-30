@@ -56,4 +56,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/_build/html
           publish_branch: gh-pages
-          cname: moha.qcdevs.org
+          cname: modelh.qcdevs.org
