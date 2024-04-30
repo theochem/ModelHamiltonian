@@ -40,7 +40,8 @@ Source = "https://github.com/theochem/ModelHamiltonian/"
 
 [project.optional-dependencies]
 gui = [
-    "rdkit"
+    "rdkit",
+    "sv-ttk"
 ]
 
 gpt = [
