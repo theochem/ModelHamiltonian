@@ -1,7 +1,7 @@
 r"""Model Hamiltonian GUI."""
 
 import tkinter as tk
-import tomllib
+import toml
 import sv_ttk
 from tkinter import ttk
 from PIL import ImageTk
@@ -472,7 +472,7 @@ def make_save_quit_buttons(frame):
 
 if __name__ == '__main__':
     required_default_paramfile = "../../moha/toml_tools/defaults.toml"
-    state_data = tomllib.load(open(required_default_paramfile, "rb"))
+    state_data = toml.load(required_default_paramfile)
 
     root = tk.Tk()
     root.title("ModelHamiltonian GUI")
