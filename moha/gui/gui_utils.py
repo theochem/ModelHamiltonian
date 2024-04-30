@@ -58,7 +58,7 @@ def set_prompt(dropdown, prompt_text):
     dropdown.bind("<Button-1>", (lambda event,
                                  prompt_text=prompt_text,
                                  dropdown=dropdown:
-                                 enable_dropdown_on_click(dropdown, 
+                                 enable_dropdown_on_click(dropdown,
                                                           prompt_text)))
 
 
