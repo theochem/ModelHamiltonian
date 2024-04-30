@@ -256,7 +256,7 @@ def on_ham_dropdown_select(frame, widgets, ents, selected):
     selected_ham_value = selected.get()
 
     # Select the appropriate fields based on the selected value
-    ppp_fields = ["alpha", "beta", "charge"]
+    ppp_fields = ["alpha", "beta", "charge", "u_onsite"]
     hubbard_fields = ["alpha", "beta", "u_onsite"]
     huckel_fields = ["alpha", "beta"]
     heisenberg_fields = ["J_eq", "J_ax", "mu"]
@@ -487,7 +487,7 @@ if __name__ == '__main__':
     # root.resizable(width=False, height=False)
 
     # Set the window width and height
-    root.geometry("1100x500")
+    root.geometry("1100x520")
 
     # Make left frame to display molecule with rdkit
     mol_frame = tk.Frame(root,
