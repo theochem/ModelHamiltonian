@@ -478,7 +478,7 @@ def make_save_quit_buttons(frame):
 if __name__ == '__main__':
     required_default_paramfile = Path(__file__).parent.\
         parent/"toml_tools"/"defaults.toml"
-    state_data = tomllib.load(open(required_default_paramfile, "rb"))
+    state_data = toml.load(required_default_paramfile)
 
     root = tk.Tk()
     root.title("ModelHamiltonian GUI")
