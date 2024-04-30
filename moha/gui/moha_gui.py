@@ -489,9 +489,9 @@ if __name__ == '__main__':
                          borderwidth=5,
                          relief=tk.SOLID,
                          width=640)
-    mol_frame.pack(side=tk.LEFT, 
-                   fill=tk.BOTH, 
-                   pady=(30, 30), 
+    mol_frame.pack(side=tk.LEFT,
+                   fill=tk.BOTH,
+                   pady=(30, 30),
                    padx=(30, 30))
 
     # Make right frame to contain input fields
