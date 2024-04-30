@@ -8,9 +8,6 @@ __all__ = [
     "make_title"
 ]
 
-format_options = {
-    "title_font" : ("Arial", 12, "bold"),
-}
 
 def destroy_widgets(widgets):
     '''
@@ -26,6 +23,7 @@ def destroy_widgets(widgets):
         widget.destroy()
     widgets = []
 
+
 def enable_dropdown_on_click(dropdown, prompt_text):
     '''
     Enable dropdown and remove promt text on click
@@ -40,6 +38,7 @@ def enable_dropdown_on_click(dropdown, prompt_text):
     if dropdown.get() == prompt_text:
         dropdown.state(["!disabled"])
         dropdown.set("")
+
 
 def set_prompt(dropdown, prompt_text):
     '''
@@ -57,11 +56,13 @@ def set_prompt(dropdown, prompt_text):
     dropdown.set(prompt_text)
     dropdown.state(["readonly"])
     dropdown.bind("<Button-1>", (lambda event,
-                                 prompt_text = prompt_text,
-                                 dropdown = dropdown:
-                                 enable_dropdown_on_click(dropdown, prompt_text)))
+                                 prompt_text=prompt_text,
+                                 dropdown=dropdown:
+                                 enable_dropdown_on_click(dropdown, 
+                                                          prompt_text)))
 
-def make_title(frame, title, pady=(0,0), side=tk.TOP):
+
+def make_title(frame, title, pady=(0, 0), side=tk.TOP):
     '''
     Make and display title in frame
 
@@ -76,11 +77,12 @@ def make_title(frame, title, pady=(0,0), side=tk.TOP):
     side: one of tk.TOP, tk.BOTTOM, tk.LEFT, tk.RIGHT
         the side which the title will be packed
     '''
+    title_font = ("Arial", 12, "bold")
     title_frame = tk.Frame(frame)
     title_frame.pack(side=side, fill=tk.X, pady=pady)
     title_label = ttk.Label(title_frame,
                             text=title,
-                            font=format_options["title_font"])
+                            font=title_font)
     title_label.pack(side=tk.LEFT)
 
     return title_frame
