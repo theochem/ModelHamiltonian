@@ -34,7 +34,7 @@ dependencies = [
 dynamic =["version" ]
 
 [project.urls]
-Documentation = "https://moha.qcdevs.org"
+Documentation = "https://modelh.qcdevs.org"
 Issues = "https://github.com/theochem/ModelHamiltonian/issues"
 Source = "https://github.com/theochem/ModelHamiltonian/"
 

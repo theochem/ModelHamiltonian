@@ -3,7 +3,7 @@
 
 [ModelHamiltonian](https://github.com/theochem/ModelHamiltonian.git) is a free, open-source, and cross-platform Python library designed to help you effortlessly provides functionalities to generate 0, 1, and 2 electron integrals. Please use the following citation in any publication using ModelHamiltonian library:
 
-**"MoHa: A Python-scriptable library for generating 0, 1, and 2 electron integrals"**:
+**"ModelHamiltonian: A Python-scriptable library for generating 0, 1, and 2 electron integrals"**:
 Valerii Chuiko, Addison Richards, Gabriela Sanchez-Diaz, Marco Martínez González,Michelle Richer, Farnaz Heidar-Zadeh, and Paul W. Ayers
 
 
