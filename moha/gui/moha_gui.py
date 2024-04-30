@@ -1,3 +1,5 @@
+r"""Model Hamiltonian GUI."""
+
 import tkinter as tk
 import tomllib
 import sv_ttk
@@ -18,8 +20,9 @@ RDLogger.DisableLog('rdApp.*')
 
 
 def build_molecule(ents):
-    '''
+    r"""
     Build molecule from one of molfile or smiles moltyes.
+
     Examples:
     smiles_entry = C1=CC=C2C=CC=CC2=C1
     molfile_path = "../../examples/mol/Fe8S7.mol"
@@ -28,7 +31,7 @@ def build_molecule(ents):
     ----------
     ents: list
         list of molecule form entries
-    '''
+    """
     # Get moltype and field entry
     mol_field = ents[0][0]
     mol_entry = ents[0][1].get()
@@ -89,8 +92,8 @@ def build_molecule(ents):
 
 
 def make_moltype_fields(frame, fields, ents):
-    '''
-    Make fields relevant to moltype in molecule form
+    r"""
+    Make fields relevant to moltype in molecule form.
 
     Parameters
     ----------
@@ -100,7 +103,7 @@ def make_moltype_fields(frame, fields, ents):
         the fields relevant to moltype
     ents: list
         list of molecule form entries
-    '''
+    """
     mol_form_frame = tk.Frame(frame)
     mol_form_frame.pack(fill=tk.X)
 
@@ -130,14 +133,14 @@ def make_moltype_fields(frame, fields, ents):
 
 
 def on_moltype_dropdown_select(ents, selected):
-    '''
-    Build molecule from one of molfile or smiles moltyes
+    r"""
+    Build molecule from one of molfile or smiles moltyes.
 
     Parameters
     ----------
     ents: list
         list of molecule form entries
-    '''
+    """
     moltype = selected.get()
     modified_ent = list(ents[0])
     modified_ent[0] = moltype
@@ -146,8 +149,8 @@ def on_moltype_dropdown_select(ents, selected):
 
 
 def make_molecule_form(frame, fields, ents):
-    '''
-    Make form for molecule entries
+    r"""
+    Make form for molecule entries.
 
     Parameters
     ----------
@@ -157,7 +160,7 @@ def make_molecule_form(frame, fields, ents):
         the fields relevant to moltype
     ents: list
         list of molecule form entries
-    '''
+    """
     # Add a title above the fields
     mol_title = "Molecule"
     mol_title_frame = make_title(frame, mol_title)
@@ -175,8 +178,8 @@ def make_molecule_form(frame, fields, ents):
 
 
 def make_model_fields(frame, widgets, fields=[], ents=[]):
-    '''
-    Make fields relevant to selected hamiltonian in model form
+    r"""
+    Make fields relevant to selected hamiltonian in model form.
 
     Parameters
     ----------
@@ -188,7 +191,7 @@ def make_model_fields(frame, widgets, fields=[], ents=[]):
         the fields relevant to the hamiltonian
     ents: list
         list of model form entries
-    '''
+    """
     destroy_widgets(widgets)
     if ents != []:
         ham_ent = ents[0]
@@ -215,14 +218,14 @@ def make_model_fields(frame, widgets, fields=[], ents=[]):
 
 
 def set_model(ents):
-    '''
-    Set the model elements of state_data
+    r"""
+    Set the model elements of state_data.
 
     Parameters
     ----------
     ents: list
         list of model form entries
-    '''
+    """
     for ent in ents:
         field = ent[0]
         value = ent[1].get()
@@ -233,7 +236,7 @@ def set_model(ents):
 
 
 def on_ham_dropdown_select(frame, widgets, ents, selected):
-    '''
+    r"""
     Reset hamiltonian fields on dropdown selection.
 
     Parameters
@@ -246,7 +249,7 @@ def on_ham_dropdown_select(frame, widgets, ents, selected):
         list of model form entries
     selected: tk.StringVar
         selected value of the hamiltonian dropdown
-    '''
+    """
     # Get the selected value from the Combobox
     selected_ham_value = selected.get()
 
@@ -277,8 +280,8 @@ def on_ham_dropdown_select(frame, widgets, ents, selected):
 
 
 def make_model_form(frame, widgets, ents):
-    '''
-    Make form for model entries
+    r"""
+    Make form for model entries.
 
     Parameters
     ----------
@@ -288,7 +291,7 @@ def make_model_form(frame, widgets, ents):
         widgets associated with all hamiltonian field elements
     ents: list
         list of model form entries
-    '''
+    """
     # Add a title above the fields
     model_title = "Model"
     model_title_frame = make_title(frame, model_title, pady=(20, 0))
@@ -337,8 +340,8 @@ def make_model_form(frame, widgets, ents):
 
 
 def make_control_fields(frame, ents):
-    '''
-    Make fields relevant to the control/output form
+    r"""
+    Make fields relevant to the control/output form.
 
     Parameters
     ----------
@@ -346,7 +349,7 @@ def make_control_fields(frame, ents):
         the frame to display the fields within
     ents: list
         list of control form entries
-    '''
+    """
     fields = ["outdir", "prefix"]
     for field in fields:
         if field == fields[0]:
@@ -366,14 +369,14 @@ def make_control_fields(frame, ents):
 
 
 def set_control(ents):
-    '''
-    Set the control elements of state_data
+    r"""
+    Set the control elements of state_data.
 
     Parameters
     ----------
     ents: list
     list of control form entries
-    '''
+    """
     for entry in ents:
         field = entry[0]
         value = entry[1].get()
@@ -384,8 +387,8 @@ def set_control(ents):
 
 
 def make_control_form(frame, ents):
-    '''
-    Make form for control/output entries
+    r"""
+    Make form for control/output entries.
 
     Parameters
     ----------
@@ -393,7 +396,7 @@ def make_control_form(frame, ents):
         the frame to display the form within
     ents: list
         list of control form entries
-    '''
+    """
     # Create control fields starting from bottom of field_frame
     make_control_fields(frame, ents)
 
@@ -428,10 +431,10 @@ def make_control_form(frame, ents):
 
 
 def save_integrals():
-    '''
+    r"""
     Save integrals to file specified in control fields
     by calling dict_to_ham.
-    '''
+    """
     state_data["control"]["save_integrals"] = True
     set_model(model_ents)
     set_control(control_ents)
@@ -445,14 +448,14 @@ def save_integrals():
 
 
 def make_save_quit_buttons(frame):
-    '''
-    Make buttons for save integrals and quit
+    r"""
+    Make buttons for save integrals and quit.
 
     Parameters
     ----------
     frame: tk.Frame
         the frame to display the buttons within
-    '''
+    """
     # Create a frame for the buttons at the bottom right corner
     right_button_frame = tk.Frame(frame)
     right_button_frame.place(relx=1, rely=1, anchor='se')

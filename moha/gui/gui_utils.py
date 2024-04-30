@@ -1,3 +1,5 @@
+r"""Model Hamiltonian GUI utilities submodule."""
+
 import tkinter as tk
 from tkinter import ttk
 
