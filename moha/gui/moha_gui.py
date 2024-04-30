@@ -432,8 +432,7 @@ def make_control_form(frame, ents):
 
 def save_integrals():
     r"""
-    Save integrals to file specified in control fields
-    by calling dict_to_ham.
+    Save integrals to file specified in control fields.
     """
     state_data["control"]["save_integrals"] = True
     set_model(model_ents)
