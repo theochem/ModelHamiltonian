@@ -1,34 +1,30 @@
 import tkinter as tk
-from tkinter import ttk
 import tomllib
+import sv_ttk
+import sys
+from tkinter import ttk
 from PIL import ImageTk
 from rdkit import Chem
 from rdkit.Chem import Draw
-
-# import 'Sun Valley' theme
-# created by rdbende at https://github.com/rdbende/Sun-Valley-ttk-theme
-import sv_ttk
-
-import sys
-sys.path.append("../../.")
 from moha.toml_tools import *
-
 from gui_utils import *
+# Uses 'Sun Valley' theme from sv_ttk
+# Created by rdbende at https://github.com/rdbende/Sun-Valley-ttk-theme
+
+sys.path.append("../../.")
 
 # Suppress RDKit messages
 from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
-# Examples
-# CID 42626654
-# smiles_entry = C1=CC=C2C=CC=CC2=C1
-# molfile_path = "../../examples/mol/Fe8S7.mol"
-
 #----- MOLECULE -----#
 
 def build_molecule(ents):
     '''
-    Build molecule from one of molfile or smiles moltyes
+    Build molecule from one of molfile or smiles moltyes.
+    Examples:
+    smiles_entry = C1=CC=C2C=CC=CC2=C1
+    molfile_path = "../../examples/mol/Fe8S7.mol"
 
     Parameters
     ----------
