@@ -6,15 +6,14 @@ from tkinter import ttk
 from PIL import ImageTk
 from rdkit import Chem
 from rdkit.Chem import Draw
+from rdkit import RDLogger
+sys.path.append("../../.")
 from moha.toml_tools import *
 from gui_utils import *
 # Uses 'Sun Valley' theme from sv_ttk
 # Created by rdbende at https://github.com/rdbende/Sun-Valley-ttk-theme
 
-sys.path.append("../../.")
-
 # Suppress RDKit messages
-from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
 #----- MOLECULE -----#
