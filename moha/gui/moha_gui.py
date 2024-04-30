@@ -10,6 +10,7 @@ from rdkit.Chem import Draw
 from rdkit import RDLogger
 from moha.toml_tools import *
 from gui_utils import *
+from pathlib import Path
 # Uses 'Sun Valley' theme from sv_ttk
 # Created by rdbende at https://github.com/rdbende/Sun-Valley-ttk-theme
 
@@ -23,14 +24,15 @@ def build_molecule(ents):
     r"""
     Build molecule from one of molfile or smiles moltyes.
 
-    Examples:
-    smiles_entry = C1=CC=C2C=CC=CC2=C1
-    molfile_path = "../../examples/mol/Fe8S7.mol"
-
     Parameters
     ----------
     ents: list
         list of molecule form entries
+
+    Notes
+    -----
+    smiles_entry: C1=CC=C2C=CC=CC2=C1
+    molfile_path: "../../examples/mol/Fe8S7.mol"
     """
     # Get moltype and field entry
     mol_field = ents[0][0]
@@ -438,6 +440,9 @@ def save_integrals():
     if state_data["system"]["moltype"] == "molfile":
         dict_to_ham(state_data)
         print("Integrals have been saved!")
+    elif state_data["system"]["moltype"] == "smiles":
+        dict_to_ham(state_data)
+        print("Integrals have been saved!")
     else:
         print("Need to build molecule first!")
 
@@ -471,8 +476,9 @@ def make_save_quit_buttons(frame):
 
 
 if __name__ == '__main__':
-    required_default_paramfile = "../../moha/toml_tools/defaults.toml"
-    state_data = toml.load(required_default_paramfile)
+    required_default_paramfile = Path(__file__).parent.\
+        parent/"toml_tools"/"defaults.toml"
+    state_data = tomllib.load(open(required_default_paramfile, "rb"))
 
     root = tk.Tk()
     root.title("ModelHamiltonian GUI")
