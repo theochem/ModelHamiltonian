@@ -19,7 +19,7 @@ from gui_utils import *
 from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
-# Examples 
+# Examples
 # CID 42626654
 # smiles_entry = C1=CC=C2C=CC=CC2=C1
 # molfile_path = "../../examples/mol/Fe8S7.mol"
@@ -63,7 +63,7 @@ def build_molecule(ents):
         new_mol = Chem.RWMol(mol)
 
         # Identify and set symbolic bonds
-        symbolic_bonds = [bond.GetIdx() for bond in new_mol.GetBonds() 
+        symbolic_bonds = [bond.GetIdx() for bond in new_mol.GetBonds()
                           if bond.GetBondTypeAsDouble() == 0]
         for bond_idx in symbolic_bonds:
             new_mol.GetBondWithIdx(bond_idx).SetBondType(Chem.BondType.ZERO)
@@ -83,8 +83,8 @@ def build_molecule(ents):
         destroy_widgets(mol_frame.winfo_children())
 
         # Create a canvas in the mol_frame and display mol
-        canvas = tk.Canvas(mol_frame, 
-                           width=mol_frame_width, 
+        canvas = tk.Canvas(mol_frame,
+                           width=mol_frame_width,
                            height=mol_frame_height)
         canvas.img = img_tk
         canvas.create_image(0, 0, anchor=tk.NW, image=img_tk)
@@ -117,16 +117,16 @@ def make_moltype_fields(frame, fields, ents):
 
     # Create a Combobox widget for mol input
     selected_moltype = tk.StringVar(value=fields[0])
-    moltype_dropdown = ttk.Combobox(row, 
-                                    values=fields, 
-                                    textvariable=selected_moltype, 
+    moltype_dropdown = ttk.Combobox(row,
+                                    values=fields,
+                                    textvariable=selected_moltype,
                                     width=6)
     moltype_dropdown.pack(side=tk.LEFT, padx=(0,20))
 
     # Add dropdown entry to ents
     ents.append(("moltype", moltype_dropdown))
 
-    moltype_dropdown.bind("<<ComboboxSelected>>", 
+    moltype_dropdown.bind("<<ComboboxSelected>>",
                           (lambda event,
                           ents=ents,
                           selected=selected_moltype:
@@ -165,8 +165,8 @@ def make_molecule_form(frame, fields, ents):
     mol_title_frame = make_title(frame, mol_title)
 
     # Create the "Build Molecule" button
-    build_mol_button = ttk.Button(mol_title_frame, 
-                                  text='Build Molecule', 
+    build_mol_button = ttk.Button(mol_title_frame,
+                                  text='Build Molecule',
                                   command=(lambda ents=ents: build_molecule(ents)))
     build_mol_button.pack(side=tk.RIGHT)
 
@@ -299,15 +299,15 @@ def make_model_form(frame, widgets, ents):
 
     # Create a Combobox widget for hamiltonian
     selected_item = tk.StringVar()
-    ham_dropdown = ttk.Combobox(ham_dropdown_frame, 
-                                textvariable = selected_item, 
+    ham_dropdown = ttk.Combobox(ham_dropdown_frame,
+                                textvariable = selected_item,
                                 width = 20)
     ham_dropdown['values'] = [
-        "PPP", 
-        "Hubbard", 
-        "Huckel", 
-        "Heisenberg", 
-        "Ising", 
+        "PPP",
+        "Hubbard",
+        "Huckel",
+        "Heisenberg",
+        "Ising",
         "RG"
         ]
 
@@ -317,17 +317,17 @@ def make_model_form(frame, widgets, ents):
 
     ham_dropdown.pack(side=tk.RIGHT)
 
-    ham_dropdown.bind("<<ComboboxSelected>>", 
+    ham_dropdown.bind("<<ComboboxSelected>>",
                       (lambda event,
                        frame=frame,
                        widgets=widgets,
                        ents=ents,
-                       selected=selected_item: 
+                       selected=selected_item:
                        on_ham_dropdown_select(frame,
                                               widgets,
                                               ents,
                                               selected)))
-    
+
     ents.append(("hamiltonian", ham_dropdown))
 
 #----- CONTROL -----#
@@ -354,10 +354,10 @@ def make_control_fields(frame, ents):
 
         lab = ttk.Label(row, width=15, text=field, anchor='w')
         lab.pack(side=tk.LEFT)
-        
+
         ent = ttk.Entry(row)
         ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
-        
+
         ents.append((field, ent))
 
 def set_control(ents):
@@ -401,7 +401,7 @@ def make_control_form(frame, ents):
 
     # Create a Combobox widget for the save format
     selected_save_format = tk.StringVar()
-    save_format_dropdown = ttk.Combobox(save_format_dropdown_frame, 
+    save_format_dropdown = ttk.Combobox(save_format_dropdown_frame,
                                         textvariable=selected_save_format,
                                         width=20)
     save_format_dropdown['values'] = ["FCIDUMP", "npz"]
@@ -412,12 +412,12 @@ def make_control_form(frame, ents):
 
     save_format_dropdown.pack(side=tk.RIGHT)
 
-    save_format_dropdown.bind("<<ComboboxSelected>>", 
+    save_format_dropdown.bind("<<ComboboxSelected>>",
                               (lambda event,
                                ents=ents,
                                selected=selected_save_format:
                                set_control(ents)))
-    
+
     ents.append(("integral_format", save_format_dropdown))
 
 def save_integrals():
@@ -449,8 +449,8 @@ def make_save_quit_buttons(frame):
     right_button_frame.place(relx=1, rely=1, anchor='se')
 
     # Position the "Quit" button
-    quit_button = ttk.Button(right_button_frame, 
-                             text='Quit', 
+    quit_button = ttk.Button(right_button_frame,
+                             text='Quit',
                              command=root.quit)
     quit_button.pack(side=tk.RIGHT, padx=5)
 
