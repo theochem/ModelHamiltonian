@@ -1,11 +1,11 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.1.0
+    rev: v4.6.0
     hooks:
     -   id: trailing-whitespace
         files: ^moha/.*\.py$
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v1.25.0
+    rev: v3.15.2
     hooks:
     -   id: pyupgrade
         args: [--py36-plus]

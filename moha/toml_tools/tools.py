@@ -176,8 +176,8 @@ def build_connectivity_molfile(data):
         mol_file = data["system"]["molfile"]
 
     bonded_atoms = 0
-    bonded_atom_idx = {}
     with open(mol_file, "r") as f:
+        bonded_atom_idx = {}
         for line_num, line in enumerate(f, start=1):
             # skip first 3 header lines
             if line_num <= 3:
