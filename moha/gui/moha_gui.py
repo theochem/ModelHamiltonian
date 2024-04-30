@@ -1,7 +1,7 @@
 r"""Model Hamiltonian GUI."""
 
 import tkinter as tk
-import tomllib
+import toml
 import sv_ttk
 from tkinter import ttk
 from PIL import ImageTk

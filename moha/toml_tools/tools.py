@@ -1,6 +1,6 @@
 """File containing functions for generating hamiltonian from toml file."""
 
-import tomllib
+import toml
 import numpy as np
 from os.path import exists
 from os.path import join
@@ -30,9 +30,7 @@ def set_defaults(input_data):
         raise Exception("Default input file 'defaults.toml' is required.")
 
     # load defaults.toml data into default_data
-    default_data = tomllib.load(
-                       open(required_default_paramfile, "rb")
-            )
+    default_data = toml.load(required_default_paramfile)
 
     # set defaults in input_data
     for param_type in default_data.keys():
@@ -405,7 +403,7 @@ def from_toml(toml_file):
     -------
     moha.Ham
     """
-    data = tomllib.load(open(toml_file, "rb"))
+    data = toml.load(toml_file)
     ham = dict_to_ham(data)
     return ham
 
