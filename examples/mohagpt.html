@@ -509,7 +509,8 @@ We will save ouput to fcidump file that will be called <code class="docutils lit
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is a simple 1D Huckel model with open boundary condition. The hopping parameter (t) is set to -1, indicating a negative energy for interaction between adjacent orbitals. The energy of orbitals (alpha) is set to 0, indicating no energy difference between orbitals. The system has 4 sites and 4 spatial orbitals.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The given system represents a 1D chain of 4 sites with 4 orbitals. It is described by the Huckel model, which characterizes pi-electron systems. The energy of each orbital is set to zero. The hopping parameter between adjacent orbitals is -1, indicating a delocalized electron system. The system has no charge at each site.
+System is: 1d
 </pre></div>
 </div>
 </div>
@@ -568,7 +569,8 @@ We will convert one-electron integral to dense matrix and print it using the <co
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Hubbard model describes interacting electrons on a lattice. The parameter t is the hopping parameter, controlling the energy penalty for an electron to hop between neighboring sites. The parameter U is the on-site Coulomb interaction, representing the energy cost for two electrons to occupy the same site. In this system, there are 2 electrons distributed over 4 orbitals. The energy of each orbital is set to 0. The system has periodic boundary conditions, meaning the last site is connected to the first site.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Hubbard model is a simplified model for studying electron behavior in a solid material. It describes the behavior of electrons on a lattice and includes parameters for the energy of each orbital, the hopping parameter between adjacent orbitals, and the Coulomb interaction between electrons on the same site. In this case, the energy of the orbital is set to 0, the hopping parameter is -1, and the on-site Coulomb interaction is 0.5. The system has 4 orbitals and 2 electrons. The boundary conditions are periodic, which means that the system forms a ring-like structure.
+System is: 1d
 [[ 0. -1.  0. -1.]
  [-1.  0. -1.  0.]
  [ 0. -1.  0. -1.]
@@ -577,10 +579,6 @@ Element (0, 0, 0, 0) has value 0.5
 Element (1, 1, 1, 1) has value 0.5
 Element (2, 2, 2, 2) has value 0.5
 Element (3, 3, 3, 3) has value 0.5
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/valeriichuiko/anaconda3/lib/python3.11/site-packages/scipy/sparse/_index.py:100: SparseEfficiencyWarning: Changing the sparsity structure of a csr_matrix is expensive. lil_matrix is more efficient.
-  self._set_intXint(row, col, x.flat[0])
 </pre></div>
 </div>
 </div>
@@ -608,7 +606,8 @@ Element (3, 3, 3, 3) has value 0.5
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is a 1D Heisenberg model with periodic boundary condition. The system has 4 sites and 4 orbitals. The coupling terms along both the x and y axes are equal to 0.5.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1D Heisenberg model with periodic boundary condition. The coupling terms along x and y axes, J_eq and J_ax, respectively, are both equal to 0.5.
+System is: 1d
 J_ax is: 
  [[0.  0.5 0.  0.5]
  [0.5 0.  0.5 0. ]
@@ -638,7 +637,8 @@ We will set a 2 dimensional lattice 3x2 lattice with periodic boundary condition
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2D Richardson-Gaudin model with 6 electrons, 3x2 size, periodic boundary condition, and coupling J=0.5 in the spatial basis. Assuming 4-fold symmetry.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>A 2D Richardson-Gaudin model with 6 electrons. The system has periodic boundary conditions and a 3x2 size. The coupling parameter J is 0.5. The model assumes 4-fold symmetry.
+System is: 2d
 </pre></div>
 </div>
 </div>
