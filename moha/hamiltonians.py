@@ -2,13 +2,19 @@ r"""Model Hamiltonian classes."""
 
 import numpy as np
 
-from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack
+from scipy.sparse import csr_matrix, diags, lil_matrix, hstack, vstack, \
+    SparseEfficiencyWarning
 
 from .api import HamiltonianAPI
 
 from .utils import convert_indices, expand_sym
 
 from typing import Union
+
+import warnings
+
+warnings.simplefilter('ignore',
+                      SparseEfficiencyWarning)
 
 __all__ = [
     "HamPPP",
