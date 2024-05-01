@@ -742,10 +742,10 @@ Error of integration:  8.67591249968029e-11
 <p>There are two supported file formats:</p>
 <ol class="arabic">
 <li><p><code class="docutils literal notranslate"><span class="pre">.fcidump</span></code></p>
-<p>In this case the integrals are saved in the FCIDUMP format. User needs to provide a TextIO file, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'w')</span></code>, number of electron and spinpolarization. The lates is set to 0 by default.</p>
+<p>In this case the integrals are saved in the FCIDUMP format. User needs to provide a TextIO file, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'w')</span></code> or string that corresponds to a filename, e.g <code class="docutils literal notranslate"><span class="pre">&quot;&lt;filename&gt;&quot;</span></code> , number of electron and spinpolarization. The lates is set to 0 by default.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.npz</span> <span class="pre">file</span></code></p>
-<p>In this case the integrals are saved in .npz file format. User needs to provide a filename. Energy shift, one-, and two-electron integrals are saved under the keys <code class="docutils literal notranslate"><span class="pre">e0</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code> and <code class="docutils literal notranslate"><span class="pre">h2</span></code> respectively.</p>
+<p>In this case the integrals are saved in .npz file format. User needs to provide a filename or TextIO object, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'wb')</span></code>. Energy shift, one-, and two-electron integrals are saved under the keys <code class="docutils literal notranslate"><span class="pre">e0</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code> and <code class="docutils literal notranslate"><span class="pre">h2</span></code> respectively.</p>
 </li>
 </ol>
 <div class="cell docutils container">
@@ -762,9 +762,9 @@ Error of integration:  8.67591249968029e-11
 <span class="n">h2</span> <span class="o">=</span> <span class="n">hubbard</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         
 <span class="c1"># saving the integrals as a npz file</span>
-<span class="n">hubbard</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="s2">&quot;hubbard_6.npz&quot;</span><span class="p">)</span>
+<span class="n">hubbard</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;hubbard_6_obj&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
 <span class="c1"># saving the integrals as fcidump file</span>
-<span class="n">hubbard</span><span class="o">.</span><span class="n">save_fcidump</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;hubbard_6_site.fcidump&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="n">nelec</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">hubbard</span><span class="o">.</span><span class="n">save_fcidump</span><span class="p">(</span><span class="s1">&#39;hubbard_6_site_str.fcidump&#39;</span><span class="p">,</span> <span class="n">nelec</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

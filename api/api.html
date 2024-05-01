@@ -476,12 +476,12 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.save_fcidump">
-<span class="sig-name descname"><span class="pre">save_fcidump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinpol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_fcidump" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_fcidump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nelec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinpol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.save_fcidump" title="Link to this definition">#</a></dt>
 <dd><p>Save all parts of hamiltonian in fcidump format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<em>TextIO file</em>)</p></li>
+<li><p><strong>f</strong> (<em>TextIO file</em><em>, </em><em>str</em>) – File object or file name to save the integrals</p></li>
 <li><p><strong>nelec</strong> (<em>int</em>) – The number of electrons in the system</p></li>
 <li><p><strong>spinpol</strong> (<em>float</em>) – The spin polarization. By default, its value is derived from the
 molecular orbitals (mo attribute), as abs(nalpha - nbeta).
@@ -515,16 +515,21 @@ this attribute can be set.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.api.HamiltonianAPI.savez">
-<span class="sig-name descname"><span class="pre">savez</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.savez" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">savez</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.api.HamiltonianAPI.savez" title="Link to this definition">#</a></dt>
 <dd><p>Save file as regular npz file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fname</strong> (<em>str</em>) – name of the file</p>
+<dd class="field-odd"><p><strong>f</strong> (<em>TextIO</em><em>, </em><em>str</em>) – File object or file name to save the integrals</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>To provide a TextIO object, use the following code:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">open(&quot;file.npz&quot;,</span> <span class="pre">&quot;wb&quot;)</span> <span class="pre">as</span> <span class="pre">f:</span>
+<span class="pre">`</span></code></p>
 </dd></dl>
 
 <dl class="py method">

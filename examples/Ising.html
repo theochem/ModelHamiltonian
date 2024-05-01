@@ -802,10 +802,10 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
 <p>There are two supported file formats:</p>
 <ol class="arabic">
 <li><p><code class="docutils literal notranslate"><span class="pre">.fcidump</span></code></p>
-<p>In this case the integrals are saved in the FCIDUMP format. User needs to provide a TextIO file, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'w')</span></code>, number of electron and spinpolarization. The lates is set to 0 by default.</p>
+<p>In this case the integrals are saved in the FCIDUMP format. User needs to provide a TextIO file, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'w')</span></code> or string that corresponds to a filename, e.g <code class="docutils literal notranslate"><span class="pre">&quot;&lt;filename&gt;&quot;</span></code> , number of electron and spinpolarization. The lates is set to 0 by default.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.npz</span> <span class="pre">file</span></code></p>
-<p>In this case the integrals are saved in .npz file format. User needs to provide a filename. Energy shift, one-, and two-electron integrals are saved under the keys <code class="docutils literal notranslate"><span class="pre">e0</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code> and <code class="docutils literal notranslate"><span class="pre">h2</span></code> respectively.</p>
+<p>In this case the integrals are saved in .npz file format. User needs to provide a filename or TextIO object, for example <code class="docutils literal notranslate"><span class="pre">open(&quot;&lt;filename&gt;&quot;,</span> <span class="pre">'wb')</span></code>. Energy shift, one-, and two-electron integrals are saved under the keys <code class="docutils literal notranslate"><span class="pre">e0</span></code>, <code class="docutils literal notranslate"><span class="pre">h1</span></code> and <code class="docutils literal notranslate"><span class="pre">h2</span></code> respectively.</p>
 </li>
 </ol>
 <div class="cell docutils container">
