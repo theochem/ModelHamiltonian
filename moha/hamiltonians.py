@@ -11,6 +11,7 @@ from .utils import convert_indices, expand_sym
 
 from typing import Union
 
+from moha.rauk.rauk import  assign_rauk_parameters, compute_param_dist_overlap
 import warnings
 
 warnings.simplefilter('ignore',
@@ -89,6 +90,7 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.atom_types = None
+        self.dist_atoms = None
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
         self.zero_energy = None
@@ -124,10 +126,23 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        one_body_term = (
+        
+        # check if all parameters are integers in connectivity matrix
+        if isinstance(self.connectivity, np.ndarray):
+            one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
-        )
+            )
+        elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
+            one_body_term = assign_rauk_parameters(self.connectivity, self.atom_types, 
+                                                   self.atoms_num, self.n_sites)
+            # run rauk function
+        elif np.all([isinstance(k, float) for _, _, k in self.connectivity]):
+            one_body_term = compute_param_dist_overlap(self.connectivity, self.atom_types,
+                                                       self.atoms_num, self.n_sites, self.dist_atoms)
+        else:
+            raise TypeError("Connectivity matrix has wrong type")
+        
 
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):

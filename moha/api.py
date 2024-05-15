@@ -41,6 +41,7 @@ class HamiltonianAPI(ABC):
             return None, self.connectivity_matrix
 
         for atom1, atom2, bond in self.connectivity:
+            
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
             for pair in [(atom1_name, site1), (atom2_name, site2)]:
@@ -56,13 +57,14 @@ class HamiltonianAPI(ABC):
                 atom_types[site] = atom
             self.atom_types = atom_types
         connectivity_mtrx = np.zeros((max_site, max_site))
-
+        dist_atoms = []
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
+            dist_atoms.append((atom1_name,atom2_name, bond))
             connectivity_mtrx[site1 - 1, site2 - 1] = bond
             # numbering of sites starts from 1
-
+        self.dist_atoms = dist_atoms
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
         return atoms_sites_lst, self.connectivity_matrix
