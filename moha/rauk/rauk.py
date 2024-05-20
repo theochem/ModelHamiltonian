@@ -6,6 +6,8 @@ from scipy.special import gamma
 
 from moha.utils import get_atom_type
 
+from pathlib import Path
+
 from scipy.sparse import csr_matrix, diags
 import os
 import json
@@ -40,19 +42,13 @@ def build_one_body_matrix(connectivity, atom_dictionary, atoms_num, n_sites, bon
 def assign_rauk_parameters(connectivity, atom_types, atoms_num, n_sites):
     r"""Assigns the alpha and beta value from Rauk's table in matrix form"""
 
-    dir_path = os.path.dirname(os.path.abspath(__file__))
 
     # Paths to the JSON files
-    hx_dict_path = os.path.join(dir_path, 'hx_dictionary.json')
-    kxy_matrix_path = os.path.join(dir_path, 'kxy_matrix_1.json')
-
-    # Load the dictionary from the hx_dictionary.json file
-    with open(hx_dict_path, 'r') as file:
-        hx_dictionary = json.load(file)
-
-    # Load the matrix from the kxy_matrix_1.json file
-    with open(kxy_matrix_path, 'r') as file:
-        kxy_matrix_1_list = json.load(file)
+    hx_dictionary_path = Path(__file__).parent / "hx_dictionary.json"
+    hx_dictionary = json.load(open(hx_dictionary_path, "rb"))
+    
+    kxy_matrix_1_path = Path(__file__).parent / "kxy_matrix_1.json"
+    kxy_matrix_1_list = json.load(open(kxy_matrix_1_path, "rb"))
 
     # Convert list back to numpy array
     kxy_matrix_1 = np.array(kxy_matrix_1_list)

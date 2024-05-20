@@ -133,6 +133,11 @@ class HamPPP(HamiltonianAPI):
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
             )
+        elif np.all(l == 'C' for l in self.atom_types):
+            one_body_term = (
+                diags([self.alpha for _ in range(self.n_sites)])
+                + self.beta * self.connectivity_matrix
+            )
         elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
             one_body_term = assign_rauk_parameters(self.connectivity, self.atom_types, 
                                                    self.atoms_num, self.n_sites)
