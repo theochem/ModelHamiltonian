@@ -47,7 +47,7 @@ def build_one_body_matrix(
 
         param_nodiag_mtrx[site1 - 1, site2 - 1] = bond_dictionary[key1 + key2]
 
-    param_nodiag_mtrx = param_nodiag_mtrx+ param_nodiag_mtrx.T
+    param_nodiag_mtrx = param_nodiag_mtrx + param_nodiag_mtrx.T
     param_diag_mtrx = csr_matrix(param_diag_mtrx)
     param_nodiag_mtrx = csr_matrix(param_nodiag_mtrx)
     one_body = param_diag_mtrx + param_nodiag_mtrx
