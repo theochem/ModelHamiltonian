@@ -69,7 +69,7 @@ def compute_param_dist_overlap(
         atom_types,
         atoms_num,
         n_sites,
-        dist_atoms,
+        atoms_dist,
         atom_dictionary,
         bond_dictionary):
     if atom_dictionary is None:
@@ -86,7 +86,7 @@ def compute_param_dist_overlap(
         ionization_path = Path(__file__).parent / "ionization.json"
         ionization = json.load(open(ionization_path, "rb"))
         bond_dictionary = {}
-        for trip in dist_atoms:
+        for trip in atoms_dist:
             beta_xy = generate_alpha_beta(
                 trip[2], trip[0], trip[1], ionization, ev_H)
             bond_dictionary[trip[0] + trip[1]] = beta_xy

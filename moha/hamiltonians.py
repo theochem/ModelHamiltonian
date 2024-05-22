@@ -11,7 +11,8 @@ from .utils import convert_indices, expand_sym
 
 from typing import Union
 
-from moha.rauk.rauk import  assign_rauk_parameters, compute_param_dist_overlap
+from moha.rauk.rauk import  assign_rauk_parameters
+from moha.rauk.PariserParr import compute_param_dist_overlap
 import warnings
 
 warnings.simplefilter('ignore',
@@ -36,7 +37,9 @@ class HamPPP(HamiltonianAPI):
             u_onsite=None,
             gamma=None,
             charges=None,
-            sym=1
+            sym=1,
+            atom_dictionary = None,
+            bond_dictionary = None
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -90,12 +93,14 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.atom_types = None
-        self.dist_atoms = None
+        self.atoms_dist = None
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
+        self.bond_dictionary = bond_dictionary
+        self.atom_dictionary = atom_dictionary
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
@@ -126,25 +131,39 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        
         # check if all parameters are integers in connectivity matrix
         if isinstance(self.connectivity, np.ndarray):
             one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
             )
-        elif np.all(l == 'C' for l in self.atom_types):
+            print("Connectivity matrix is an array")
+        elif (self.alpha != -0.414 or self.beta != -0.0533) or np.all([atom == 'C' for atom in self.atom_types]):
             one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)])
                 + self.beta * self.connectivity_matrix
             )
+            print("Connectivity matrix is a list with carbons")
         elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
-            one_body_term = assign_rauk_parameters(self.connectivity, self.atom_types, 
-                                                   self.atoms_num, self.n_sites)
+            one_body_term = assign_rauk_parameters(
+                self.connectivity, 
+                self.atom_types, 
+                self.atoms_num, 
+                self.n_sites,
+                self.atom_dictionary,
+                self.bond_dictionary
+            )
             # run rauk function
         elif np.all([isinstance(k, float) for _, _, k in self.connectivity]):
-            one_body_term = compute_param_dist_overlap(self.connectivity, self.atom_types,
-                                                       self.atoms_num, self.n_sites, self.dist_atoms)
+            one_body_term = compute_param_dist_overlap(
+                self.connectivity, 
+                self.atom_types,
+                self.atoms_num,
+                self.n_sites, 
+                self.atoms_dist,
+                self.atom_dictionary,
+                self.bond_dictionary
+            )
         else:
             raise TypeError("Connectivity matrix has wrong type")
         
@@ -304,6 +323,8 @@ class HamHub(HamPPP):
             beta=beta,
             u_onsite=u_onsite,
             gamma=None,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
             charges=np.array(0),
             sym=sym
         )
@@ -323,6 +344,8 @@ class HamHuck(HamHub):
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
+            atom_dictionary=None,
+            bond_dictionary=None,
     ):
         r"""
         Huckel hamiltonian.
@@ -360,7 +383,9 @@ class HamHuck(HamHub):
             beta=beta,
             u_onsite=None,
             gamma=None,
-            sym=sym
+            sym=sym,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 

@@ -11,24 +11,27 @@ __all__ = [
     "get_atom_type",
     "expand_sym",
 ]
+
+
 def get_atom_type(atom):
     """
-    Return atom type and position index, where atom type includes the site index from
-    parentheses appended to the main atom type, e.g., "C2(3)" -> "C3", 2.
+    Return atom type and position index, where atom type includes
+    the site index from parentheses appended to the main atom type,
+    e.g., "C2(3)" -> "C3", 2.
 
     :param atom: str - atom description
     :return: tuple - (atom type with site, position index)
     """
     # The pattern matches an initial letter sequence for the atom type,
-    # followed by a number for the position, and numbers in parentheses for site index to be appended.
+    # followed by a number for the position, and numbers in parentheses for
+    # site index to be appended.
     pattern = r"([A-Za-z]+)(\d+)\((\d+)\)"
     match = re.match(pattern, atom)
-    
+
     if match:
         # If the pattern matches, append the site index to the atom type
         atom_type = match.group(1) + match.group(3)
         position_index = int(match.group(2))
-        return atom_type, position_index
     else:
         # Fallback for handling cases without parentheses
         i = 1
@@ -37,7 +40,11 @@ def get_atom_type(atom):
         i -= 1
         if i == 0:
             raise ValueError(f"Invalid atom format: {atom}")
-        return atom[:-i], int(atom[-i:])
+        atom_type = atom[:-i]
+        position_index = int(atom[-i:])
+
+    return atom_type, position_index
+
 
 def convert_indices(N, *args):
     r"""
@@ -55,7 +62,6 @@ def convert_indices(N, *args):
                 raise TypeError("Wrong indices")
             if elem >= N:
                 raise TypeError("index is greater than size of the matrix")
-
         # converting indices
         i, j, k, l_ = args
         p = int(i * N + j)
@@ -77,7 +83,6 @@ def convert_indices(N, *args):
         return [i, j, k, l_]
     else:
         raise TypeError("Wrong indices")
-
 
 
 def expand_sym(sym, integral, nbody):
