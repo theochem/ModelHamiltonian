@@ -131,19 +131,22 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        # check if all parameters are integers in connectivity matrix
+        # check if connectivity matrix is adjacency
         if isinstance(self.connectivity, np.ndarray):
             one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
             )
-            print("Connectivity matrix is an array")
-        elif (self.alpha != -0.414 or self.beta != -0.0533) or np.all([atom == 'C' for atom in self.atom_types]):
+        # check if alpha and beta are different from the default or a carbon
+        # chain
+        elif (
+            self.alpha != -0.414 and self.beta != -0.0533
+        ) or len(np.unique(self.atom_types)) == 1:
             one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)])
                 + self.beta * self.connectivity_matrix
             )
-            print("Connectivity matrix is a list with carbons")
+        # check if elements in connectivity matrix are integer
         elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
             one_body_term = assign_rauk_parameters(
                 self.connectivity,
@@ -153,7 +156,7 @@ class HamPPP(HamiltonianAPI):
                 self.atom_dictionary,
                 self.bond_dictionary
             )
-            # run rauk function
+        # check if elements in connectivity matrix are float
         elif np.all([isinstance(k, float) for _, _, k in self.connectivity]):
             one_body_term = compute_param_dist_overlap(
                 self.connectivity,

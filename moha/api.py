@@ -52,10 +52,12 @@ class HamiltonianAPI(ABC):
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
+            # Initialize atom_types with None, and adjust size for 0-based
+            # indexing
+            atom_types = [None] * max_site
             for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
-            atom_types.pop(0)
+                # Adjust site index for 0-based array index
+                atom_types[site - 1] = atom
             self.atom_types = atom_types
         connectivity_mtrx = np.zeros((max_site, max_site))
         atoms_dist = []

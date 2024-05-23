@@ -8,7 +8,7 @@ from pathlib import Path
 
 import json
 
-from moha.rauk.rauk import build_one_body_matrix
+from moha.rauk.rauk import build_one_body
 
 
 def generate_alpha_beta(distance, atom1_name, atom2_name, ionization, ev_H):
@@ -89,13 +89,16 @@ def compute_param_dist_overlap(
         for trip in atoms_dist:
             beta_xy = generate_alpha_beta(
                 trip[2], trip[0], trip[1], ionization, ev_H)
-            bond_dictionary[trip[0] + trip[1]] = beta_xy
-            bond_dictionary[trip[1] + trip[0]] = beta_xy
+            bond_key_forward = ','.join([trip[0], trip[1]])
+            bond_key_reverse = ','.join([trip[1], trip[0]])
 
-    one_body = build_one_body_matrix(
+            # Store beta_xy value using both forward and reverse keys
+            bond_dictionary[bond_key_forward] = beta_xy
+            bond_dictionary[bond_key_reverse] = beta_xy
+
+    one_body = build_one_body(
         connectivity,
         atom_dictionary,
-        atoms_num,
         n_sites,
         bond_dictionary)
 
