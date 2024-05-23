@@ -14,13 +14,25 @@ __all__ = [
 
 
 def get_atom_type(atom):
-    """
-    Return atom type and position index, where atom type includes
-    the site index from parentheses appended to the main atom type,
-    e.g., "C2(3)" -> "C3", 2.
+    r"""
+    Construct the one-body matrix for a molecular compound.
 
-    :param atom: str - atom description
-    :return: tuple - (atom type with site, position index)
+    Parameters
+    ----------
+    connectivity : list of tuples
+        List of tuples representing bonds between atoms (atom1, atom2, order).
+    atom_dictionary : dict
+        Dictionary mapping atom types to properties for  matrix elements.
+    n_sites : int
+        Total number of unique atomic sites in the molecule.
+    bond_dictionary : dict
+        Dictionary mapping 'type1,type2' pairs to properties for off-diagonal
+        elements.
+
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+        Compressed sparse
     """
     # The pattern matches an initial letter sequence for the atom type,
     # followed by a number for the position, and numbers in parentheses for

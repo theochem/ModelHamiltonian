@@ -1,3 +1,4 @@
+r"""Rauk Module."""
 import numpy as np
 
 from moha.utils import get_atom_type
@@ -14,8 +15,8 @@ def build_one_body(
         atom_dictionary,
         n_sites,
         bond_dictionary):
-    """
-    Constructs the one-body matrix for a compound.
+    r"""
+    Construct the one-body matrix for a compound.
 
     Parameters:
     - connectivity (list of tuples): List of tuples where each tuple
@@ -78,9 +79,10 @@ def assign_rauk_parameters(
         atom_dictionary,
         bond_dictionary):
     r"""
-    Assigns Rauk parameters and constructs the one-body matrix using
-    predefined values and external data for specified atom types and
-    connectivity.
+    Assign Rauk parameters and constructs the one-body matrix.
+
+    It uses a  predefined values and external data
+    for specified atom types and connectivity.
 
     Parameters
     ----------
@@ -102,7 +104,6 @@ def assign_rauk_parameters(
     scipy.sparse.csr_matrix
         Matrix representing molecular structure.
     """
-
     if atom_dictionary is None:
         atom_dictionary = {}
         # Paths to the JSON files

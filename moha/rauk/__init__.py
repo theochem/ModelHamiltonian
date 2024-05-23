@@ -1,1 +1,1 @@
-r"rauk Module"
+r"""Model Hamiltonian rauk module."""
