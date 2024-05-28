@@ -17,7 +17,7 @@ from pathlib import Path
 import json
 
 
-def generate_alpha_beta(distance, atom1_name, atom2_name, ionization, ev_H):
+def populate_PP_dct(distance, atom1_name, atom2_name, ionization):
     r"""
     Calculate the beta for a bond based on atomic ionization and distance.
 
@@ -31,20 +31,19 @@ def generate_alpha_beta(distance, atom1_name, atom2_name, ionization, ev_H):
         Name of the second atom.
     ionization : dict
         Dictionary containing ionization energies of atoms.
-    ev_H : float
-        Conversion factor from electron volts to hartrees.
 
     Returns
     -------
     float
         Calculated beta parameter for the bond.
     """
+    ev_H = constants.value('electron volt-hartree relationship')
     alpha_x = float(-ionization[atom1_name]) * ev_H
     alpha_y = float(-ionization[atom2_name]) * ev_H
-    Rxy = distance
-    p = -(((alpha_x) + (alpha_y)) * Rxy) / 2
+    Rxy = float(distance)
+    p = - 0.5 * Rxy * (alpha_x + alpha_y)
     t = abs((alpha_x - alpha_y) / (alpha_x + alpha_y))
-    beta_xy = 1.75 * (Sxy(t, p)) * ((alpha_x + alpha_y) / 2)
+    beta_xy = 1.75 * Sxy(t, p) * (alpha_x + alpha_y) * 0.5
     return beta_xy
 
 
@@ -114,8 +113,7 @@ def Bn(n, t, p):
     """
     if t == 0:
         return 2 / (n + 1)
-    else:
-        return -np.exp(-p * t) * an(n, p * t) - np.exp(p * t) * bn(n, p * t)
+    return -np.exp(-p * t) * an(n, p * t) - np.exp(p * t) * bn(n, p * t)
 
 
 def An(n, p):
@@ -202,15 +200,13 @@ def compute_param_dist_overlap(
             if atom not in atom_dictionary.keys():
                 atom_dictionary[atom] = -ionization[atom] * ev_H
     if bond_dictionary is None:
-        ev_H = constants.value('electron volt-hartree relationship')
         ionization_path = Path(__file__).parent / "ionization.json"
         ionization = json.load(open(ionization_path, "rb"))
         bond_dictionary = {}
-        for trip in atoms_dist:
-            beta_xy = generate_alpha_beta(
-                trip[2], trip[0], trip[1], ionization, ev_H)
-            bond_key_forward = ','.join([trip[0], trip[1]])
-            bond_key_reverse = ','.join([trip[1], trip[0]])
+        for atom1, atom2, dist in atoms_dist:
+            beta_xy = populate_PP_dct(dist, atom1, atom2, ionization)
+            bond_key_forward = ','.join([atom1, atom2])
+            bond_key_reverse = ','.join([atom2, atom1])
             bond_dictionary[bond_key_forward] = beta_xy
             bond_dictionary[bond_key_reverse] = beta_xy
 

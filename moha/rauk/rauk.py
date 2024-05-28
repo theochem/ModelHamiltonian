@@ -18,17 +18,23 @@ def build_one_body(
     r"""
     Construct the one-body matrix for a compound.
 
-    Parameters:
-    - connectivity (list of tuples): List of tuples where each tuple
-    represents a bondbetween two atoms.
-    - atom_dictionary (dict): Dictionary mapping atom names and properties
-    - atoms_num (list): List of tuples (atom_name, quantity).
-    - n_sites (int): Total number of sites (atoms) in the molecule.
-    - bond_dictionary (dict): Dictionary mapping pairs of atom names
-    to properties.
+    Parameters
+    ----------
+    connectivity : list of tuples
+        List of tuples where each tuple represents a bond between two atoms.
+    atom_dictionary : dict
+        Dictionary mapping atom names to properties.
+    atoms_num : list
+        List of tuples (atom_name, quantity).
+    n_sites : int
+        Total number of sites (atoms) in the molecule.
+    bond_dictionary : dict
+        Dictionary mapping pairs of atom names to properties.
 
-    Returns:
-    - scipy.sparse.csr_matrix: one-body matrix.
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+        One-body matrix.
     """
     # Populate diagonal and non-diagonal matrix elements
     # Create a sparse diagonal matrix
@@ -143,8 +149,8 @@ def assign_rauk_parameters(
             bond_key = ','.join([atom1_name, atom2_name])
             bond_value = kxy_matrix[index1, index2] * abs(beta_c)
             bond_dictionary[bond_key] = bond_value
-            bond_dictionary[','.join([atom2_name, atom1_name])] = bond_value
             # Ensure symmetry
+            bond_dictionary[','.join([atom2_name, atom1_name])] = bond_value
 
     one_body = build_one_body(
         connectivity,

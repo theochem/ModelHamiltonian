@@ -137,8 +137,8 @@ class HamPPP(HamiltonianAPI):
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
             )
-        # check if alpha and beta are different from the default or a carbon
-        # chain
+        # check if alpha and beta are different from the default or
+        # all atom types are the same
         elif (
             self.alpha != -0.414 and self.beta != -0.0533
         ) or len(np.unique(self.atom_types)) == 1:
