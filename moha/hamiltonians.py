@@ -11,6 +11,8 @@ from .utils import convert_indices, expand_sym
 
 from typing import Union
 
+from moha.rauk.rauk import assign_rauk_parameters
+from moha.rauk.PariserParr import compute_param_dist_overlap
 import warnings
 
 warnings.simplefilter('ignore',
@@ -35,7 +37,9 @@ class HamPPP(HamiltonianAPI):
             u_onsite=None,
             gamma=None,
             charges=None,
-            sym=1
+            sym=1,
+            atom_dictionary=None,
+            bond_dictionary=None
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -89,11 +93,14 @@ class HamPPP(HamiltonianAPI):
         self.gamma = gamma
         self.charges = charges
         self.atom_types = None
+        self.atoms_dist = None
         self.atoms_num, self.connectivity_matrix = \
             self.generate_connectivity_matrix()
         self.zero_energy = None
         self.one_body = None
         self.two_body = None
+        self.bond_dictionary = bond_dictionary
+        self.atom_dictionary = atom_dictionary
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
@@ -124,10 +131,44 @@ class HamPPP(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        one_body_term = (
+        # check if connectivity matrix is adjacency
+        if isinstance(self.connectivity, np.ndarray):
+            one_body_term = (
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
-        )
+            )
+        # check if alpha and beta are different from the default or
+        # all atom types are the same
+        elif (
+            self.alpha != -0.414 and self.beta != -0.0533
+        ) or len(np.unique(self.atom_types)) == 1:
+            one_body_term = (
+                diags([self.alpha for _ in range(self.n_sites)])
+                + self.beta * self.connectivity_matrix
+            )
+        # check if elements in connectivity matrix are integer
+        elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
+            one_body_term = assign_rauk_parameters(
+                self.connectivity,
+                self.atom_types,
+                self.atoms_num,
+                self.n_sites,
+                self.atom_dictionary,
+                self.bond_dictionary
+            )
+        # check if elements in connectivity matrix are float
+        elif np.all([isinstance(k, float) for _, _, k in self.connectivity]):
+            one_body_term = compute_param_dist_overlap(
+                self.connectivity,
+                self.atom_types,
+                self.atoms_num,
+                self.n_sites,
+                self.atoms_dist,
+                self.atom_dictionary,
+                self.bond_dictionary
+            )
+        else:
+            raise TypeError("Connectivity matrix has wrong type")
 
         one_body_term = one_body_term.tolil()
         if (self.gamma is not None) and (self.charges is not None):
@@ -284,6 +325,8 @@ class HamHub(HamPPP):
             beta=beta,
             u_onsite=u_onsite,
             gamma=None,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
             charges=np.array(0),
             sym=sym
         )
@@ -303,6 +346,8 @@ class HamHuck(HamHub):
             alpha=-0.414,
             beta=-0.0533,
             sym=1,
+            atom_dictionary=None,
+            bond_dictionary=None,
     ):
         r"""
         Huckel hamiltonian.
@@ -340,7 +385,9 @@ class HamHuck(HamHub):
             beta=beta,
             u_onsite=None,
             gamma=None,
-            sym=sym
+            sym=sym,
+            atom_dictionary=atom_dictionary,
+            bond_dictionary=bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
 
@@ -417,7 +464,7 @@ class HamHeisenberg(HamiltonianAPI):
         zero_energy: float
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
-            + 0.25 * np.sum(self.J_ax)/2  # divide by 2 to avoid double counting # noqa: E501
+            + 0.25 * np.sum(self.J_ax) / 2  # divide by 2 to avoid double counting # noqa: E501
         self.zero_energy = zero_energy
         return zero_energy
 
@@ -476,7 +523,7 @@ class HamHeisenberg(HamiltonianAPI):
                 raise TypeError("mu array has wrong basis")
 
         one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
-                                    (np.sum(J_ax, axis=1)-np.diag(J_ax))/2,
+                                    (np.sum(J_ax, axis=1) - np.diag(J_ax)) / 2,
                                     format="csr")
 
         self.one_body = one_body_term
@@ -509,7 +556,7 @@ class HamHeisenberg(HamiltonianAPI):
             J_eq = self.J_eq
             J_ax = self.J_ax
             for p in range(n_sp):
-                for q in range(p+1, n_sp):
+                for q in range(p + 1, n_sp):
                     i, j = convert_indices(Nv, p, q, p, q)
                     v[i, j] = 0.25 * J_ax[p, q]
 

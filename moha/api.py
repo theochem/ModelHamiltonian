@@ -22,6 +22,7 @@ class HamiltonianAPI(ABC):
 
     def generate_connectivity_matrix(self):
         r"""
+
         Generate connectivity matrix.
 
         Returns
@@ -53,18 +54,22 @@ class HamiltonianAPI(ABC):
         self.n_sites = len(atoms_sites_lst)
 
         if self.atom_types is None:
-            atom_types = [None for i in range(max_site + 1)]
+            # Initialize atom_types with None, and adjust size for 0-based
+            # indexing
+            atom_types = [None] * max_site
             for atom, site in atoms_sites_lst:
-                atom_types[site] = atom
+                # Adjust site index for 0-based array index
+                atom_types[site - 1] = atom
             self.atom_types = atom_types
         connectivity_mtrx = np.zeros((max_site, max_site))
-
+        atoms_dist = []
         for atom1, atom2, bond in self.connectivity:
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
+            atoms_dist.append((atom1_name, atom2_name, bond))
             connectivity_mtrx[site1 - 1, site2 - 1] = bond
             # numbering of sites starts from 1
-
+        self.atoms_dist = atoms_dist
         connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
         self.connectivity_matrix = csr_matrix(connectivity_mtrx)
         return atoms_sites_lst, self.connectivity_matrix
@@ -247,7 +252,7 @@ class HamiltonianAPI(ABC):
                                            p, p + self.n_sites,
                                            p, p + self.n_sites)
                 spatial_int[pp, pp] = integral[(pp_, pp_)]
-                for q in range(p+1, self.n_sites):
+                for q in range(p + 1, self.n_sites):
                     # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb
                     pq, pq = convert_indices(self.n_sites, p, q, p, q)
                     pq_, pq_ = convert_indices(n, p, q, p, q)

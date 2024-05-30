@@ -4,12 +4,58 @@ import numpy as np
 
 from scipy.sparse import diags
 
+import re
 
 __all__ = [
     "convert_indices",
     "get_atom_type",
     "expand_sym",
 ]
+
+
+def get_atom_type(atom):
+    r"""
+    Construct the one-body matrix for a molecular compound.
+
+    Parameters
+    ----------
+    connectivity : list of tuples
+        List of tuples representing bonds between atoms (atom1, atom2, order).
+    atom_dictionary : dict
+        Dictionary mapping atom types to properties for  matrix elements.
+    n_sites : int
+        Total number of unique atomic sites in the molecule.
+    bond_dictionary : dict
+        Dictionary mapping 'type1,type2' pairs to properties for off-diagonal
+        elements.
+
+    Returns
+    -------
+    scipy.sparse.csr_matrix
+        Compressed sparse
+    """
+    # The pattern matches an initial letter sequence for the atom type,
+    # followed by a number for the position, and numbers in parentheses for
+    # site index to be appended.
+    pattern = r"([A-Za-z]+)(\d+)\((\d+)\)"
+    match = re.match(pattern, atom)
+
+    if match:
+        # If the pattern matches, append the site index to the atom type
+        atom_type = match.group(1) + match.group(3)
+        position_index = int(match.group(2))
+    else:
+        # Fallback for handling cases without parentheses
+        i = 1
+        while i <= len(atom) and atom[-i].isdigit():
+            i += 1
+        i -= 1
+        if i == 0:
+            raise ValueError(f"Invalid atom format: {atom}")
+        atom_type = atom[:-i]
+        position_index = int(atom[-i:])
+
+    return atom_type, position_index
 
 
 def convert_indices(N, *args):
@@ -28,7 +74,6 @@ def convert_indices(N, *args):
                 raise TypeError("Wrong indices")
             if elem >= N:
                 raise TypeError("index is greater than size of the matrix")
-
         # converting indices
         i, j, k, l_ = args
         p = int(i * N + j)
@@ -50,21 +95,6 @@ def convert_indices(N, *args):
         return [i, j, k, l_]
     else:
         raise TypeError("Wrong indices")
-
-
-def get_atom_type(atom):
-    r"""
-    Return atom type and site index; "C23" -> "C", 23.
-
-    :param atom: str
-    :return: tuple
-
-    """
-    i = 1
-    while atom[-i:].isdigit():
-        i += 1
-    i -= 1
-    return atom[:-i], int(atom[-i:])
 
 
 def expand_sym(sym, integral, nbody):
