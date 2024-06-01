@@ -137,8 +137,8 @@ class HamPPP(HamiltonianAPI):
                 diags([self.alpha for _ in range(self.n_sites)], format="csr")
                 + self.beta * self.connectivity_matrix
             )
-        # check if alpha and beta are different from the default or a carbon
-        # chain
+        # check if alpha and beta are different from the default or
+        # all atom types are the same
         elif (
             self.alpha != -0.414 and self.beta != -0.0533
         ) or len(np.unique(self.atom_types)) == 1:
@@ -150,9 +150,6 @@ class HamPPP(HamiltonianAPI):
         elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
             one_body_term = assign_rauk_parameters(
                 self.connectivity,
-                self.atom_types,
-                self.atoms_num,
-                self.n_sites,
                 self.atom_dictionary,
                 self.bond_dictionary
             )
