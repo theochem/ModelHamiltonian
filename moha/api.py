@@ -13,6 +13,8 @@ from .utils import convert_indices
 from moha.rauk.utils import get_atom_type, get_atoms_list
 
 
+from typing import Union
+
 __all__ = [
     "HamiltonianAPI",
 ]
@@ -289,13 +291,14 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    def save_fcidump(self, f: TextIO, nelec=0, spinpol=0):
+    def save_fcidump(self, f: Union[TextIO, str], nelec=0, spinpol=0):
         r"""
         Save all parts of hamiltonian in fcidump format.
 
         Parameters
         ----------
-        f: TextIO file
+        f: TextIO file, str
+            File object or file name to save the integrals
         nelec: int
             The number of electrons in the system
         spinpol: float
@@ -309,6 +312,10 @@ class HamiltonianAPI(ABC):
         -------
         None
         """
+        # Open file if it is a string
+        if isinstance(f, str):
+            f = open(f, "w")
+
         # Reduce symmetry of integral
         one_ints = expand_sym(self._sym, self.one_body, 1)
 
@@ -365,17 +372,24 @@ class HamiltonianAPI(ABC):
         """
         pass
 
-    def savez(self, fname: str):
+    def savez(self, f: Union[TextIO, str]):
         r"""Save file as regular npz file.
 
         Parameters
         ----------
-        fname: str
-            name of the file
+        f: TextIO, str
+            File object or file name to save the integrals
 
         Returns
         -------
         None
+
+        Notes
+        -----
+        To provide a TextIO object, use the following code:
+        ```
+        open("file.npz", "wb") as f:
+        ```
         """
         if self.zero_energy is not None:
             e0 = self.zero_energy
@@ -392,7 +406,7 @@ class HamiltonianAPI(ABC):
         else:
             raise ValueError("Two body integrals were not calculated.")
 
-        np.savez(fname, e0=e0, h1=h, h2=v)
+        np.savez(f, e0=e0, h1=h, h2=v)
 
 
 def expand_sym(sym, integral, nbody):
