@@ -10,6 +10,7 @@ parts:
       - file: examples/Demonstration.ipynb
       - file: examples/Ising.ipynb
       - file: examples/mohagpt.ipynb
+      - file: examples/gui.ipynb
 
     - caption: API
       chapters:
