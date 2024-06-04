@@ -12,7 +12,7 @@ from .utils import convert_indices, expand_sym
 from typing import Union
 
 from moha.rauk.rauk import assign_rauk_parameters
-from moha.rauk.PariserParr import compute_param_dist_overlap
+from moha.rauk.PariserParr import compute_overlap
 import warnings
 
 warnings.simplefilter('ignore',
@@ -39,7 +39,8 @@ class HamPPP(HamiltonianAPI):
             charges=None,
             sym=1,
             atom_dictionary=None,
-            bond_dictionary=None
+            bond_dictionary=None,
+            orbital_overlap=None
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -101,6 +102,7 @@ class HamPPP(HamiltonianAPI):
         self.two_body = None
         self.bond_dictionary = bond_dictionary
         self.atom_dictionary = atom_dictionary
+        self.orbital_overlap = orbital_overlap
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
@@ -147,25 +149,20 @@ class HamPPP(HamiltonianAPI):
                 + self.beta * self.connectivity_matrix
             )
         # check if elements in connectivity matrix are integer
-        elif np.all([isinstance(k, int) for _, _, k in self.connectivity]):
+        elif np.all([isinstance(elem[2], int) for elem in self.connectivity]):
             one_body_term = assign_rauk_parameters(
                 self.connectivity,
-                self.atom_types,
-                self.atoms_num,
-                self.n_sites,
                 self.atom_dictionary,
                 self.bond_dictionary
             )
         # check if elements in connectivity matrix are float
-        elif np.all([isinstance(k, float) for _, _, k in self.connectivity]):
-            one_body_term = compute_param_dist_overlap(
+        elif np.all([isinstance(elem[2], float)
+                    for elem in self.connectivity]):
+            one_body_term = compute_overlap(
                 self.connectivity,
-                self.atom_types,
-                self.atoms_num,
-                self.n_sites,
-                self.atoms_dist,
                 self.atom_dictionary,
-                self.bond_dictionary
+                self.bond_dictionary,
+                self.orbital_overlap
             )
         else:
             raise TypeError("Connectivity matrix has wrong type")
@@ -283,6 +280,7 @@ class HamHub(HamPPP):
             atom_types=None,
             atom_dictionary=None,
             bond_dictionary=None,
+            orbital_overlap=None,
             Bz=None,
             gamma=None,
     ):
@@ -327,6 +325,7 @@ class HamHub(HamPPP):
             gamma=None,
             atom_dictionary=atom_dictionary,
             bond_dictionary=bond_dictionary,
+            orbital_overlap=orbital_overlap,
             charges=np.array(0),
             sym=sym
         )

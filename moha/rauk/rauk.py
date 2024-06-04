@@ -1,7 +1,7 @@
 r"""Rauk Module."""
 import numpy as np
 
-from moha.utils import get_atom_type
+from moha.rauk.utils import get_atom_type, get_atoms_list
 
 from pathlib import Path
 
@@ -13,7 +13,6 @@ import json
 def build_one_body(
         connectivity,
         atom_dictionary,
-        n_sites,
         bond_dictionary):
     r"""
     Construct the one-body matrix for a compound.
@@ -24,10 +23,6 @@ def build_one_body(
         List of tuples where each tuple represents a bond between two atoms.
     atom_dictionary : dict
         Dictionary mapping atom names to properties.
-    atoms_num : list
-        List of tuples (atom_name, quantity).
-    n_sites : int
-        Total number of sites (atoms) in the molecule.
     bond_dictionary : dict
         Dictionary mapping pairs of atom names to properties.
 
@@ -41,13 +36,16 @@ def build_one_body(
     diagonal_values = []
     atom_indices = {}
 
+    _, n_sites = get_atoms_list(connectivity, return_nsites=True)
+
     # Initialize matrices and helper dictionaries
     diagonal_values = np.zeros(n_sites)
     param_nodiag_mtrx = np.zeros((n_sites, n_sites))
     atom_indices = {}
 
     # Populate diagonal and non-diagonal matrix elements
-    for atom1, atom2, _ in connectivity:
+    for tpl in connectivity:
+        atom1, atom2 = tpl[0], tpl[1]
         for atom in [atom1, atom2]:
             atom_type, index = get_atom_type(atom)
             if index not in atom_indices:
@@ -79,9 +77,6 @@ def build_one_body(
 
 def assign_rauk_parameters(
         connectivity,
-        atom_types,
-        atoms_num,
-        n_sites,
         atom_dictionary,
         bond_dictionary):
     r"""
@@ -94,12 +89,6 @@ def assign_rauk_parameters(
     ----------
     connectivity : list
         Connections between atoms.
-    atom_types : list
-        Atom types in the molecule.
-    atoms_num : list
-        Tuples of number and types of atoms.
-    n_sites : int
-        Total number of atomic sites.
     atom_dictionary : dict, optional
         Atom parameters dictionary. If None, loaded from JSON.
     bond_dictionary : dict, optional
@@ -119,8 +108,11 @@ def assign_rauk_parameters(
         beta_c = -0.0533  # Value for sp2 orbitals of Carbon atom.
         # Create atom dictionary using predefined values without overlap
         # parameters
-        for atom in atom_types:
-            atom_dictionary[atom] = alpha_c + hx_dictionary[atom] * abs(beta_c)
+        for atom1, atom2, _ in connectivity:
+            atom1_name, site1 = get_atom_type(atom1)
+            atom2_name, site2 = get_atom_type(atom2)
+            hx_value = hx_dictionary[atom1_name] * abs(beta_c)
+            atom_dictionary[atom1_name] = alpha_c + hx_value
     if bond_dictionary is None:
         # Paths to the JSON files
         hx_dictionary_path = Path(__file__).parent / "hx_dictionary.json"
@@ -155,7 +147,6 @@ def assign_rauk_parameters(
     one_body = build_one_body(
         connectivity,
         atom_dictionary,
-        n_sites,
         bond_dictionary)
 
     return one_body

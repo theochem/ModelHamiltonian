@@ -13,51 +13,6 @@ __all__ = [
 ]
 
 
-def get_atom_type(atom):
-    r"""
-    Construct the one-body matrix for a molecular compound.
-
-    Parameters
-    ----------
-    connectivity : list of tuples
-        List of tuples representing bonds between atoms (atom1, atom2, order).
-    atom_dictionary : dict
-        Dictionary mapping atom types to properties for  matrix elements.
-    n_sites : int
-        Total number of unique atomic sites in the molecule.
-    bond_dictionary : dict
-        Dictionary mapping 'type1,type2' pairs to properties for off-diagonal
-        elements.
-
-    Returns
-    -------
-    scipy.sparse.csr_matrix
-        Compressed sparse
-    """
-    # The pattern matches an initial letter sequence for the atom type,
-    # followed by a number for the position, and numbers in parentheses for
-    # site index to be appended.
-    pattern = r"([A-Za-z]+)(\d+)\((\d+)\)"
-    match = re.match(pattern, atom)
-
-    if match:
-        # If the pattern matches, append the site index to the atom type
-        atom_type = match.group(1) + match.group(3)
-        position_index = int(match.group(2))
-    else:
-        # Fallback for handling cases without parentheses
-        i = 1
-        while i <= len(atom) and atom[-i].isdigit():
-            i += 1
-        i -= 1
-        if i == 0:
-            raise ValueError(f"Invalid atom format: {atom}")
-        atom_type = atom[:-i]
-        position_index = int(atom[-i:])
-
-    return atom_type, position_index
-
-
 def convert_indices(N, *args):
     r"""
     Convert indices from 4d array to 2d numpy array and vice-versa.

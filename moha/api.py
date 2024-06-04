@@ -8,7 +8,10 @@ import numpy as np
 
 from scipy.sparse import csr_matrix, lil_matrix, diags
 
-from .utils import convert_indices, get_atom_type
+from .utils import convert_indices
+
+from moha.rauk.utils import get_atom_type, get_atoms_list
+
 
 from typing import Union
 
@@ -30,9 +33,6 @@ class HamiltonianAPI(ABC):
         tuple
             (dictionary, np.ndarray)
         """
-        max_site = 0
-        atoms_sites_lst = []
-
         # check if self.connectivity is a matrix
         # if so, put assign it to self.connectivity_matrix
         # and set the atom_types to None
@@ -43,15 +43,9 @@ class HamiltonianAPI(ABC):
 
             return None, self.connectivity_matrix
 
-        for atom1, atom2, bond in self.connectivity:
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            for pair in [(atom1_name, site1), (atom2_name, site2)]:
-                if pair not in atoms_sites_lst:
-                    atoms_sites_lst.append(pair)
-            if max_site < max(site1, site2):  # finding the max index of site
-                max_site = max(site1, site2)
-        self.n_sites = len(atoms_sites_lst)
+        atoms_sites_lst = get_atoms_list(self.connectivity)
+        max_site = max([site for _, site in atoms_sites_lst])
+        self.n_sites = max_site
 
         if self.atom_types is None:
             # Initialize atom_types with None, and adjust size for 0-based
@@ -63,7 +57,8 @@ class HamiltonianAPI(ABC):
             self.atom_types = atom_types
         connectivity_mtrx = np.zeros((max_site, max_site))
         atoms_dist = []
-        for atom1, atom2, bond in self.connectivity:
+        for tpl in self.connectivity:
+            atom1, atom2, bond = tpl[0], tpl[1], tpl[2]
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
             atoms_dist.append((atom1_name, atom2_name, bond))
