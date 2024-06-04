@@ -43,6 +43,7 @@ class HamiltonianAPI(ABC):
 
         atoms_sites_lst = get_atoms_list(self.connectivity)
         max_site = max([site for _, site in atoms_sites_lst])
+        self.n_sites = max_site
 
         if self.atom_types is None:
             # Initialize atom_types with None, and adjust size for 0-based
@@ -54,7 +55,8 @@ class HamiltonianAPI(ABC):
             self.atom_types = atom_types
         connectivity_mtrx = np.zeros((max_site, max_site))
         atoms_dist = []
-        for atom1, atom2, bond in self.connectivity:
+        for tpl in self.connectivity:
+            atom1, atom2, bond = tpl[0], tpl[1], tpl[2]
             atom1_name, site1 = get_atom_type(atom1)
             atom2_name, site2 = get_atom_type(atom2)
             atoms_dist.append((atom1_name, atom2_name, bond))

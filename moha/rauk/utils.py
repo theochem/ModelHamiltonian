@@ -43,7 +43,7 @@ def get_atom_type(atom):
     return atom_type, position_index
 
 
-def get_atoms_list(connectivity):
+def get_atoms_list(connectivity, return_nsites=False):
     r"""
     Process the connectivity information of a molecular compound.
 
@@ -51,16 +51,21 @@ def get_atoms_list(connectivity):
     ----------
     connectivity : list of tuples
         List of tuples representing bonds between atoms (atom1, atom2, order).
+    return_nsites : bool, optional
+        Whether to return total number of sites in the system
 
     Returns
     -------
-    int
-        Total number of unique atomic sites in the molecule.
+    atoms_sites_lst: list
+        List with atom types and site indices.
+    max_site : int
+        Maximum site index in the system.
     """
     atoms_sites_lst = []
     max_site = 0
 
-    for atom1, atom2, _ in connectivity:
+    for tpl in connectivity:
+        atom1, atom2 = tpl[0], tpl[1]
         atom1_name, site1 = get_atom_type(atom1)
         atom2_name, site2 = get_atom_type(atom2)
         for pair in [(atom1_name, site1), (atom2_name, site2)]:
@@ -68,5 +73,7 @@ def get_atoms_list(connectivity):
                 atoms_sites_lst.append(pair)
         if max_site < max(site1, site2):  # finding the max index of site
             max_site = max(site1, site2)
+    if return_nsites:
+        return atoms_sites_lst, max_site
 
     return atoms_sites_lst

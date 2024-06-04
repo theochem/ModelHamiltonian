@@ -1,7 +1,7 @@
 r"""Rauk Module."""
 import numpy as np
 
-from moha.rauk.utils import get_atom_type
+from moha.rauk.utils import get_atom_type, get_atoms_list
 
 from pathlib import Path
 
@@ -36,7 +36,7 @@ def build_one_body(
     diagonal_values = []
     atom_indices = {}
 
-    n_sites = len(atom_dictionary)
+    _, n_sites = get_atoms_list(connectivity, return_nsites=True)
 
     # Initialize matrices and helper dictionaries
     diagonal_values = np.zeros(n_sites)
@@ -44,7 +44,8 @@ def build_one_body(
     atom_indices = {}
 
     # Populate diagonal and non-diagonal matrix elements
-    for atom1, atom2, _ in connectivity:
+    for tpl in connectivity:
+        atom1, atom2 = tpl[0], tpl[1]
         for atom in [atom1, atom2]:
             atom_type, index = get_atom_type(atom)
             if index not in atom_indices:
