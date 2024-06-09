@@ -251,18 +251,20 @@ def compute_overlap(
                 bond_dictionary[bond_key_forward] = beta_xy
                 bond_dictionary[bond_key_reverse] = beta_xy
         else:
-            for tpl in connectivity:
+            for i, tpl in enumerate(connectivity):
                 atom1, atom2, dist = tpl[0], tpl[1], tpl[2]
                 atom1_name, _ = get_atom_type(atom1)
                 atom2_name, _ = get_atom_type(atom2)
                 bond_key_forward = ','.join([atom1_name, atom2_name])
                 bond_key_reverse = ','.join([atom2_name, atom1_name])
-                Sxy = orbital_overlap[bond_key_forward]
+
+                Sxy = orbital_overlap[i]
 
                 beta_xy = populate_PP_dct(
                     dist, atom1_name, atom2_name, ionization, Sxy)
                 bond_dictionary[bond_key_forward] = beta_xy
                 bond_dictionary[bond_key_reverse] = beta_xy
+                i += 1
 
     one_body = build_one_body(
         connectivity,
@@ -272,20 +274,93 @@ def compute_overlap(
     return one_body
 
 
-def calculate_gamma(Uxy_bar, Rxy):
-    """
-    Calculate the gamma value based on Uxy and Rxy.
+def compute_gamma(u_onsite, Rxy_list, connectivity):
+    r"""
+    Calculate the gamma values for each pair of sites.
 
     Parameters
     ----------
-    Uxy_bar (float): Represents the potential energy
-    Rxy (float): Represents the distance or a related measure.
+    u_onsite (list of float): List of potential energies for sites.
+    Rxy_list (list of float): List of distances
+    connectivity (list of tuples): Each tuple contains indices of two
+                                   sites (atom1, atom2), indicating that a
+                                   gamma value should be computed for
+                                   this pair.
 
     Returns
     ----------
-    float: Computed gamma value based on the given parameters.
+    np.ndarray: A matrix of computed gamma values for each pair.
+                Non-connected pairs have a gamma value of zero.
     """
-    # Example formula, needs actual formula to be replaced here
-    # This is just a placeholder formula
-    gamma = Uxy_bar / (Uxy_bar * Rxy + np.exp(-1 / 2 * Uxy_bar**2 * Rxy ** 2))
-    return gamma
+    num_sites = len(u_onsite)
+    gamma_matrix = np.zeros((num_sites, num_sites))
+
+    for tpl in connectivity:
+        atom1, atom2 = tpl[0], tpl[1]
+        atom1_name, site1 = get_atom_type(atom1)
+        atom2_name, site2 = get_atom_type(atom2)
+
+        if site1 < num_sites and site2 < num_sites:
+            Ux = u_onsite[site1]
+            Uy = u_onsite[site2]
+            Rxy = Rxy_list[site1]
+            Uxy_bar = 0.5 * (Ux + Uy)
+            gamma = Uxy_bar / \
+                (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
+            gamma_matrix[site1][site2] = gamma
+
+    return gamma_matrix
+
+
+def compute_u(connectivity, atom_dictionary, affinity_dictionary):
+    r"""
+    Calculate the onsite potential energy (U) for each site.
+
+    Parameters
+    ----------
+    connectivity (list of tuples): Each tuple contains indices of two sites
+                                (atom1, atom2) and the distance between them.
+    atom_dictionary (dict): Dictionary mapping atom types to their
+                            ionization energies.
+    affinity_dictionary (dict): Dictionary mapping atom types to their
+                            electron affinities.
+
+    Returns
+    ----------
+    tuple: Contains two elements:
+           1. List of float: Onsite potential energies calculated
+           for each site based on their ionization energy
+           and electron affinity.
+           2. List of float: Distances corresponding to each
+           connectivity tuple.
+    """
+    if atom_dictionary is None:
+        atom_dictionary = {}
+        hx_dictionary_path = Path(__file__).parent / "hx_dictionary.json"
+        hx_dictionary = json.load(open(hx_dictionary_path, "rb"))
+        alpha_c = -0.414  # Value for sp2 orbital of Carbon atom.
+        beta_c = -0.0533  # Value for sp2 orbitals of Carbon atom.
+        for key, value in hx_dictionary.items():
+            hx_value = value * abs(beta_c)
+            atom_dictionary[key] = alpha_c + hx_value
+
+    if affinity_dictionary is None:
+        affinity_path = Path(__file__).parent / "affinity.json"
+        affinity_dictionary = json.load(open(affinity_path, "rb"))
+
+    u_onsite = []
+    Rxy_list = []
+
+    for tpl in connectivity:
+        atom1, atom2, dist = tpl[0], tpl[1], tpl[2]
+        atom1_name, _ = get_atom_type(atom1)
+        atom2_name, _ = get_atom_type(atom2)
+
+        ionization = atom_dictionary[atom1_name]
+        affinity = affinity_dictionary[atom1_name]
+        U_x = ionization - affinity
+
+        u_onsite.append(U_x)
+        Rxy_list.append(dist)
+
+    return u_onsite, Rxy_list
