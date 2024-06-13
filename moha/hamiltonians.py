@@ -162,6 +162,16 @@ class HamPPP(HamiltonianAPI):
         # check if elements in connectivity matrix are float
         elif np.all([isinstance(elem[2], float)
                     for elem in self.connectivity]):
+            if self.orbital_overlap is not None:
+                # Assuming self.orbital_overlap should be a 2D array
+                if hasattr(self, 'orbital_overlap') and self.orbital_overlap.ndim == 2:
+                    if self.n_sites != self.orbital_overlap.shape[0] or self.n_sites != self.orbital_overlap.shape[1]:
+                        raise TypeError("Overlap matrix has wrong dimensions")
+                else:
+                    raise ValueError("orbital_overlap is not properly initialized or not a 2D matrix")
+
+# Proceed with the rest of the function
+
             one_body_term = compute_overlap(
                 self.connectivity,
                 self.atom_dictionary,
