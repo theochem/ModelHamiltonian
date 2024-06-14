@@ -251,13 +251,13 @@ def compute_overlap(
                 bond_dictionary[bond_key_forward] = beta_xy
                 bond_dictionary[bond_key_reverse] = beta_xy
         else:
-            for  tpl in connectivity:
+            for tpl in connectivity:
                 atom1, atom2, dist = tpl[0], tpl[1], tpl[2]
                 atom1_name, site1 = get_atom_type(atom1)
                 atom2_name, site2 = get_atom_type(atom2)
                 bond_key_forward = ','.join([atom1_name, atom2_name])
                 bond_key_reverse = ','.join([atom2_name, atom1_name])
-                site1, site2 = site1-1, site2-1
+                site1, site2 = site1 - 1, site2 - 1
 
                 Sxy = orbital_overlap[site1, site2]
 
