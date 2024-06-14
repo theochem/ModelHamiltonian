@@ -31,8 +31,8 @@ python3 -m pip install -e .[toml]
 ## Coding Guidelines
 We document our Coding Guidelines in the [QC-devs guidelines repo](https://github.com/theochem/guidelines/). We particularly suggest you review:
 
-* [Contributing to QC-dev](https://github.com/theochem/guidelines/blob/main/contributing.md)
-* [QC-Devs Code of Conduct](https://github.com/theochem/guidelines/blob/main/CodeOfConduct.md)
+* [Contributing to QC-dev](https://github.com/theochem/.github/blob/main/contributing.md)
+* [QC-Devs Code of Conduct](https://github.com/theochem/.github/blob/main/CodeOfConduct.md)
 
 We also recommend installing pre-commit hooks. That ensure certain basic coding
 style issues can be detected and fixed before submitting the pull request.
