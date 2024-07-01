@@ -14,7 +14,7 @@ def test_hub2():
     """
     hubbard = HamHub([("C1", "C2", 1)],
                      alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
-    print(hubbard.u_onsite)
+
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1,

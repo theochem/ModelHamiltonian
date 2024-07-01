@@ -247,6 +247,8 @@ class HamPPP(HamiltonianAPI):
 
         if self.gamma is None and not isinstance(
                 self.connectivity, np.ndarray):
+            _, self.Rxy_list = compute_u(
+                self.connectivity, self.atom_dictionary, self.affinity_dct)
             self.gamma = compute_gamma(
                 self.u_onsite, self.Rxy_list, self.connectivity)
 
