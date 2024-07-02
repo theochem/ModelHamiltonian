@@ -158,6 +158,21 @@ class HamPPP(HamiltonianAPI):
         # check if elements in connectivity matrix are float
         elif np.all([isinstance(elem[2], float)
                     for elem in self.connectivity]):
+            if self.orbital_overlap is not None:
+                # Assuming self.orbital_overlap should be a 2D array
+                if hasattr(
+                        self,
+                        'orbital_overlap') and self.orbital_overlap.ndim == 2:
+                    if self.n_sites != self.orbital_overlap.shape[
+                            0] or self.n_sites != self.orbital_overlap.shape[
+                                1]:
+                        raise TypeError("Overlap matrix has wrong dimensions")
+                else:
+                    raise ValueError(
+                        "orbital_overlap is not properly initialized ")
+
+# Proceed with the rest of the function
+
             one_body_term = compute_overlap(
                 self.connectivity,
                 self.atom_dictionary,
@@ -216,13 +231,24 @@ class HamPPP(HamiltonianAPI):
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
+        if self.u_onsite is None:
+            self.u_onsite, self.Rxy_list = compute_u(
+                self.connectivity, self.atom_dictionary, self.affinity_dct)
 
         if self.u_onsite is not None:
             for p in range(n_sp):
                 i, j = convert_indices(Nv, p, p + n_sp, p, p + n_sp)
+
                 v[i, j] = self.u_onsite[p]
 
-        if self.gamma is not None:
+        if self.gamma is None and not isinstance(
+                self.connectivity, np.ndarray):
+            _, self.Rxy_list = compute_u(
+                self.connectivity, self.atom_dictionary, self.affinity_dct)
+            self.gamma = compute_gamma(
+                self.u_onsite, self.Rxy_list, self.connectivity)
+
+        elif self.gamma is not None:
             if basis == "spinorbital basis" and \
                     self.gamma.shape != (n_sp, n_sp):
                 raise TypeError("Gamma matrix has wrong shape")
