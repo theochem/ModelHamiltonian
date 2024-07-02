@@ -14,6 +14,7 @@ def test_hub2():
     """
     hubbard = HamHub([("C1", "C2", 1)],
                      alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
+
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
     v = hubbard.generate_two_body_integral(sym=1,
@@ -41,10 +42,17 @@ def test_hub4():
     nsites = np.linspace(2, 8, 4).astype(int)
     for nsite in nsites:
         nelec = nsite // 2
-        hubbard = HamPPP([(f"C{i}", f"C{i + 1}", 1) for i in range(1, nsite)] +
-                         [(f"C{nsite}", f"C{1}", 1)],
-                         alpha=0, beta=-1,
-                         u_onsite=np.array([1 for i in range(nsite + 1)]))
+        hubbard = HamPPP([(f"C{i}",
+                           f"C{i + 1}",
+                           1) for i in range(1,
+                                             nsite)] + [(f"C{nsite}",
+                                                         f"C{1}",
+                                                         1)],
+                         alpha=0,
+                         beta=-1,
+                         u_onsite=np.array([1 for i in range(nsite)]),
+                         gamma=np.zeros((nsite,
+                                         nsite)))
         ecore = hubbard.generate_zero_body_integral()
         h = hubbard.generate_one_body_integral(basis='spatial basis',
                                                dense=True)
@@ -73,8 +81,8 @@ def test_ethylene():
     """
     a = -11.26
     b = -1.45
-    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b,
-                     gamma=None, charges=None, sym=None)
+    hubbard = HamPPP([("C1", "C2", 1)], alpha=a, beta=b, gamma=np.zeros(
+        (2, 2)), charges=None, sym=None, u_onsite=[0, 0])
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(basis='spinorbital basis',
                                            dense=True)
