@@ -291,3 +291,56 @@ def calculate_gamma(Uxy_bar, Rxy):
     # This is just a placeholder formula
     gamma = Uxy_bar / (Uxy_bar * Rxy + np.exp(-1 / 2 * Uxy_bar**2 * Rxy ** 2))
     return gamma
+
+def compute_u(connectivity, atom_dictionary, affinity_dictionary):
+    r"""
+    Calculate the onsite potential energy (U) for each site.
+
+    Parameters
+    ----------
+    connectivity (list of tuples): Each tuple contains indices of two sites
+                                (atom1, atom2) and the distance between them.
+    atom_dictionary (dict): Dictionary mapping atom types to their
+                            ionization energies.
+    affinity_dictionary (dict): Dictionary mapping atom types to their
+                            electron affinities.
+
+    Returns
+    ----------
+    tuple: Contains two elements:
+           1. List of float: Onsite potential energies calculated
+           for each site based on their ionization energy
+           and electron affinity.
+           2. List of float: Distances corresponding to each
+           connectivity tuple.
+    """
+    if atom_dictionary is None:
+        atom_dictionary = {}
+        hx_dictionary_path = Path(__file__).parent / "hx_dictionary.json"
+        hx_dictionary = json.load(open(hx_dictionary_path, "rb"))
+        alpha_c = -0.414  # Value for sp2 orbital of Carbon atom.
+        beta_c = -0.0533  # Value for sp2 orbitals of Carbon atom.
+        for key, value in hx_dictionary.items():
+            hx_value = value * abs(beta_c)
+            atom_dictionary[key] = alpha_c + hx_value
+
+    if affinity_dictionary is None:
+        affinity_path = Path(__file__).parent / "affinity.json"
+        affinity_dictionary = json.load(open(affinity_path, "rb"))
+
+    u_onsite = []
+    Rxy_list = []
+
+    for tpl in connectivity:
+        atom1, atom2, dist = tpl[0], tpl[1], tpl[2]
+        atom1_name, _ = get_atom_type(atom1)
+        atom2_name, _ = get_atom_type(atom2)
+
+        ionization = atom_dictionary[atom1_name]
+        affinity = affinity_dictionary[atom1_name]
+        U_x = ionization - affinity
+
+        u_onsite.append(U_x)
+        Rxy_list.append(dist)
+
+    return u_onsite, Rxy_list
