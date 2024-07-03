@@ -12,7 +12,7 @@ from .utils import convert_indices, expand_sym
 from typing import Union
 
 from moha.rauk.rauk import assign_rauk_parameters
-from moha.rauk.PariserParr import compute_overlap
+from moha.rauk.PariserParr import compute_overlap, compute_u, compute_gamma
 import warnings
 
 warnings.simplefilter('ignore',
