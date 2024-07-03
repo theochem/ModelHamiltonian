@@ -274,7 +274,7 @@ def compute_overlap(
     return one_body
 
 
-def calculate_gamma(Uxy_bar, Rxy):
+def compute_gamma(Uxy_bar, Rxy):
     """
     Calculate the gamma value based on Uxy and Rxy.
 
