@@ -12,7 +12,7 @@ from .utils import convert_indices, expand_sym
 from typing import Union
 
 from moha.rauk.rauk import assign_rauk_parameters
-from moha.rauk.PariserParr import compute_overlap, compute_u, compute_gamma
+from moha.rauk.PariserParr import compute_overlap, compute_gamma, compute_u
 import warnings
 
 warnings.simplefilter('ignore',
@@ -40,7 +40,9 @@ class HamPPP(HamiltonianAPI):
             sym=1,
             atom_dictionary=None,
             bond_dictionary=None,
-            orbital_overlap=None
+            orbital_overlap=None,
+            affinity_dct=None,
+            Rxy_list=None
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -103,6 +105,8 @@ class HamPPP(HamiltonianAPI):
         self.bond_dictionary = bond_dictionary
         self.atom_dictionary = atom_dictionary
         self.orbital_overlap = orbital_overlap
+        self.affinity_dct = affinity_dct
+        self.Rxy_list = Rxy_list
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
@@ -701,4 +705,5 @@ class HamRG(HamHeisenberg):
             mu=mu,
             J_eq=J_eq,
             J_ax=J_ax,
-            connectivity=connectivity)
+            connectivity=connectivity
+        )

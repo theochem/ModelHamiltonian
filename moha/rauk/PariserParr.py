@@ -274,23 +274,43 @@ def compute_overlap(
     return one_body
 
 
-def compute_gamma(Uxy_bar, Rxy):
-    """
-    Calculate the gamma value based on Uxy and Rxy.
+def compute_gamma(u_onsite, Rxy_list, connectivity):
+    r"""
+    Calculate the gamma values for each pair of sites.
 
     Parameters
     ----------
-    Uxy_bar (float): Represents the potential energy
-    Rxy (float): Represents the distance or a related measure.
+    u_onsite (list of float): List of potential energies for sites.
+    Rxy_list (list of float): List of distances
+    connectivity (list of tuples): Each tuple contains indices of two
+                                   sites (atom1, atom2), indicating that a
+                                   gamma value should be computed for
+                                   this pair.
 
     Returns
     ----------
-    float: Computed gamma value based on the given parameters.
+    np.ndarray: A matrix of computed gamma values for each pair.
+                Non-connected pairs have a gamma value of zero.
     """
-    # Example formula, needs actual formula to be replaced here
-    # This is just a placeholder formula
-    gamma = Uxy_bar / (Uxy_bar * Rxy + np.exp(-1 / 2 * Uxy_bar**2 * Rxy ** 2))
-    return gamma
+    num_sites = len(u_onsite)
+    gamma_matrix = np.zeros((num_sites, num_sites))
+
+    for tpl in connectivity:
+        atom1, atom2 = tpl[0], tpl[1]
+        atom1_name, site1 = get_atom_type(atom1)
+        atom2_name, site2 = get_atom_type(atom2)
+
+        if site1 < num_sites and site2 < num_sites:
+            Ux = u_onsite[site1]
+            Uy = u_onsite[site2]
+            Rxy = Rxy_list[site1]
+            Uxy_bar = 0.5 * (Ux + Uy)
+            gamma = Uxy_bar / \
+                (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
+            gamma_matrix[site1][site2] = gamma
+
+    return gamma_matrix
+
 
 def compute_u(connectivity, atom_dictionary, affinity_dictionary):
     r"""
