@@ -299,15 +299,16 @@ def compute_gamma(u_onsite, Rxy_list, connectivity):
         atom1, atom2 = tpl[0], tpl[1]
         atom1_name, site1 = get_atom_type(atom1)
         atom2_name, site2 = get_atom_type(atom2)
-
-        if site1 < num_sites and site2 < num_sites:
-            Ux = u_onsite[site1]
-            Uy = u_onsite[site2]
-            Rxy = Rxy_list[site1]
-            Uxy_bar = 0.5 * (Ux + Uy)
-            gamma = Uxy_bar / \
-                (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
-            gamma_matrix[site1][site2] = gamma
+        # Get_atom_type returns site index starting from 1
+        # So we need to subtract 1 to get the correct index
+        site1, site2 = site1-1, site2-1
+        Ux = u_onsite[site1]
+        Uy = u_onsite[site2]
+        Rxy = Rxy_list[site1]
+        Uxy_bar = 0.5 * (Ux + Uy)
+        gamma = Uxy_bar / \
+            (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
+        gamma_matrix[site1][site2] = gamma
 
     return gamma_matrix
 
