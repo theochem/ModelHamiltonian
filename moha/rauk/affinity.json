@@ -1,4 +1,5 @@
 {
+    "_comment": "Values representing affinity. Data was taken from https://en.wikipedia.org/wiki/Electron_affinity_(data_page) on 06/10/2024",
     "H": 0.754195,
     "He": -0.5,
     "Li": 0.618049,
