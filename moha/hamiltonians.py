@@ -793,7 +793,6 @@ class HamTJUV(HamPPP, HamHeisenberg):
         # Default charges to an array of ones if not provided
         if charges is None:
             charges = np.ones(len(connectivity_ppp))
-
         mu = np.zeros(connectivity_heisenberg.shape[0])
 
         # Initialize the PPP part
