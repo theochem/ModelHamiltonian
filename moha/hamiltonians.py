@@ -726,7 +726,6 @@ class HamTJUV(HamPPP, HamHeisenberg):
                  orbital_overlap=None,
                  affinity_dct=None,
                  Rxy_list=None,
-                 mu=None,
                  J_eq=None,
                  J_ax=None):
         r"""
@@ -794,8 +793,8 @@ class HamTJUV(HamPPP, HamHeisenberg):
         # Default charges to an array of ones if not provided
         if charges is None:
             charges = np.ones(len(connectivity_ppp))
-        if mu is None:
-            mu = np.zeros(connectivity_heisenberg.shape[0])
+
+        mu = np.zeros(connectivity_heisenberg.shape[0])
 
         # Initialize the PPP part
         self.ocupation_part = HamPPP(connectivity=connectivity_ppp,
