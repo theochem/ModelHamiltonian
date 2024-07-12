@@ -713,8 +713,7 @@ class HamTJUV(HamPPP, HamHeisenberg):
     r"""t-J-U-V Hamiltonian."""
 
     def __init__(self,
-                 connectivity_ppp: Union[list, np.ndarray],
-                 connectivity_heisenberg: np.ndarray,
+                 connectivity: Union[list, np.ndarray],
                  alpha=-0.414,
                  beta=-0.0533,
                  u_onsite=None,
@@ -792,11 +791,10 @@ class HamTJUV(HamPPP, HamHeisenberg):
         """
         # Default charges to an array of ones if not provided
         if charges is None:
-            charges = np.ones(len(connectivity_ppp))
-        mu = np.zeros(connectivity_heisenberg.shape[0])
+            charges = np.ones(len(connectivity))
 
         # Initialize the PPP part
-        self.ocupation_part = HamPPP(connectivity=connectivity_ppp,
+        self.ocupation_part = HamPPP(connectivity=connectivity,
                                      alpha=alpha,
                                      beta=beta,
                                      u_onsite=u_onsite,
@@ -809,11 +807,16 @@ class HamTJUV(HamPPP, HamHeisenberg):
                                      affinity_dct=affinity_dct,
                                      Rxy_list=Rxy_list)
 
+        connectivity_matrix = np.asarray(
+            self.ocupation_part.connectivity_matrix.todense())
+
+        mu = np.zeros(connectivity_matrix.shape[0])
+
         # Initialize the Heisenberg part
         self.spin_part = HamHeisenberg(mu=mu,
                                        J_eq=J_eq,
                                        J_ax=J_ax,
-                                       connectivity=connectivity_heisenberg)
+                                       connectivity=connectivity_matrix)
 
     def generate_zero_body_integral(self):
         r"""Generate zero body integral.
