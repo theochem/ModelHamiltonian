@@ -707,3 +707,170 @@ class HamRG(HamHeisenberg):
             J_ax=J_ax,
             connectivity=connectivity
         )
+
+
+class HamTJUV(HamPPP, HamHeisenberg):
+    r"""t-J-U-V Hamiltonian."""
+
+    def __init__(self,
+                 connectivity: Union[list, np.ndarray],
+                 alpha=-0.414,
+                 beta=-0.0533,
+                 u_onsite=None,
+                 gamma=None,
+                 charges=None,
+                 sym=1,
+                 atom_dictionary=None,
+                 bond_dictionary=None,
+                 orbital_overlap=None,
+                 affinity_dct=None,
+                 Rxy_list=None,
+                 J_eq=None,
+                 J_ax=None):
+        r"""
+        Initialize t-J-U-V Hamiltonian.
+
+        Parameters
+        ----------
+        connectivity_ppp: Union[list, np.ndarray]
+            List of tuples specifying sites and bonds
+            np.ndarray of shape (n_sites, n_sites)
+            between sites for the PPP model.
+        connectivity_heisenberg: np.ndarray
+            Numpy array that specifies the connectivity beetwen sites
+            Heisenberg model.
+        alpha: float
+            Specifies the site energy if all sites are equivalent.
+            Default value is the 2p-pi orbital of Carbon.
+        beta: float
+            Specifies the resonance energy, hopping term, if all bonds are
+            equivalent. The default value is appropriate for a pi-bond between
+            Carbon atoms.
+        u_onsite: np.ndarray
+            On-site Coulomb interaction; 1d np.ndarray.
+        gamma: np.ndarray
+            Parameter that specifies long-range Coulomb interaction;
+            2d np.ndarray.
+        charges: np.ndarray
+            Charges on sites; 1d np.ndarray.
+        sym: int
+            Symmetry of the Hamiltonian: int [1, 2, 4, 8]. Default is 1.
+        atom_dictionary: dict
+            Dictionary of atom types and their properties.
+        bond_dictionary: dict
+            Dictionary of bond types and their properties.
+        orbital_overlap: np.ndarray
+            Overlap matrix for orbitals.
+        affinity_dct: dict
+            Affinity dictionary for the system.
+        Rxy_list: list
+            List of coordinates or positions in the system.
+        mu: np.ndarray
+            Zeeman term for the Heisenberg model.
+        J_eq: np.ndarray
+            J equatorial term for the Heisenberg model.
+        J_ax: np.ndarray
+            J axial term for the Heisenberg model.
+
+        Notes
+        -----
+        The Hamiltonian is given by:
+        .. math::
+            \begin{align}
+            \hat{H}_{\mathrm{tJUV}} &=
+            \sum_{pq} h_{pq} a_p^{\dagger} a_q \\
+            &+ \sum_p U_p \hat{n}_{p\alpha} \hat{n}_{p\beta} \\
+            &+ \frac{1}{2} \sum_{p \ne q} \gamma_{pq}\\
+            &+ \left( \hat{n}_{p\alpha} + \hat{n}_{p\beta} - Q_p \right)\\
+            &+ \left( \hat{n}_{q\alpha} + \hat{n}_{q\beta} - Q_q \right) \\
+            &+ \sum_{pq} \left[ J_{pq}^{\text{ax}} S_p^Z S_q^Z +\\
+            &+ J_{pq}^{\text{eq}} \left( S_p^X S_q^X + S_p^Y S_q^Y \right)\\
+            &+ \right]
+            \end{align}
+
+        """
+        # Default charges to an array of ones if not provided
+        if charges is None:
+            charges = np.ones(len(connectivity))
+
+        # Initialize the PPP part
+        self.ocupation_part = HamPPP(connectivity=connectivity,
+                                     alpha=alpha,
+                                     beta=beta,
+                                     u_onsite=u_onsite,
+                                     gamma=gamma,
+                                     charges=charges,
+                                     sym=sym,
+                                     atom_dictionary=atom_dictionary,
+                                     bond_dictionary=bond_dictionary,
+                                     orbital_overlap=orbital_overlap,
+                                     affinity_dct=affinity_dct,
+                                     Rxy_list=Rxy_list)
+
+        connectivity_matrix = np.asarray(
+            self.ocupation_part.connectivity_matrix.todense())
+
+        mu = np.zeros(connectivity_matrix.shape[0])
+
+        # Initialize the Heisenberg part
+        self.spin_part = HamHeisenberg(mu=mu,
+                                       J_eq=J_eq,
+                                       J_ax=J_ax,
+                                       connectivity=connectivity_matrix)
+
+    def generate_zero_body_integral(self):
+        r"""Generate zero body integral.
+
+        Returns
+        -------
+        float
+        """
+        self.zero_energy = self.ocupation_part.generate_zero_body_integral(
+        ) + self.spin_part.generate_zero_body_integral()
+        return self.zero_energy
+
+    def generate_one_body_integral(self, basis: str, dense: bool):
+        r"""
+        Generate one body integral in spatial or spin orbital basis.
+
+        Parameters
+        ----------
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            Dense or sparse matrix; default False
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
+        """
+        one_body_ppp = self.ocupation_part.generate_one_body_integral(
+            basis, dense)
+        one_body_heisenberg = self.spin_part.generate_one_body_integral(
+            dense, basis)
+        self.one_body = one_body_ppp + one_body_heisenberg
+        return self.one_body
+
+    def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
+        r"""
+        Generate two body integral in spatial or spin orbital basis.
+
+        Parameters
+        ----------
+        basis: str
+            ['spatial', 'spin orbital']
+        dense: bool
+            Dense or sparse matrix; default False
+        sym: int
+            Symmetry -- [2, 4, 8] default is 1
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix or np.ndarray
+        """
+        two_body_ppp = self.ocupation_part.generate_two_body_integral(
+            basis, dense, sym)
+        two_body_heisenberg = self.spin_part.generate_two_body_integral(
+            sym, dense, basis)
+        self.two_body = two_body_ppp + two_body_heisenberg
+        return self.two_body
