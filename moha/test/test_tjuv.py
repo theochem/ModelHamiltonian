@@ -40,10 +40,10 @@ def test_tjuv_consistency_zero_body():
 
     heisenberg = HamHeisenberg(J_eq=J_eq, J_ax=J_ax, mu=0, connectivity=connectivity)
     heisenberg_zero = heisenberg.generate_zero_body_integral()
-    
+
     hpp = HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=np.zeros((2, 2)), charges=None, sym=None, u_onsite=u_onsite)
     hpp_zero = hpp.generate_zero_body_integral()
-    
+
     assert_allclose(tjuv_zero, heisenberg_zero + hpp_zero)
 
 def test_tjuv_consistency_one_body():
