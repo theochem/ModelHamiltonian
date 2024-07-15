@@ -14,18 +14,18 @@ To install a specific subversion of the ModelHamiltonian, you can use the follow
 - For the GPT subversion:
 
 ```
-python3 -m pip install -e .[gpt]
+python3 -m pip install .[gpt]
 ```
 - For the GUI subversion:
 
 ```
-python3 -m pip install -e .[gui]
+python3 -m pip install .[gui]
 ```
 
 - For the TOML subversion:
 
 ```
-python3 -m pip install -e .[toml]
+python3 -m pip install .[toml]
 ```
 
 ## Coding Guidelines
