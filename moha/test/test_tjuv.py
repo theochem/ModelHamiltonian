@@ -34,16 +34,16 @@ def test_tjuv_consistency_zero_body():
                             sym=sym,
                             J_eq=J_eq,
                             J_ax=J_ax)
-    
+
     # Generate the zero body integral
     tjuv_zero = tjuv_hamiltonian.generate_zero_body_integral()
-    
+
     heisenberg = HamHeisenberg(J_eq=J_eq, J_ax=J_ax, mu=0, connectivity=connectivity)
     heisenberg_zero = heisenberg.generate_zero_body_integral()
     hpp = HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=np.zeros((2, 2)), charges=None, sym=None, u_onsite=[1, 1])
     hpp_zero = hpp.generate_zero_body_integral()
     assert_allclose(tjuv_zero, heisenberg_zero + hpp_zero)
-    
+
 def test_tjuv_consistency_one_body():
     r"""
     Checking consistency of TJUV model
@@ -74,19 +74,19 @@ def test_tjuv_consistency_one_body():
                                sym=sym,
                                J_eq=J_eq,
                                J_ax=J_ax,)
-    
+
     # Generate the one-body integral
     tjuv_one_body = tjuv_hamiltonian.generate_one_body_integral(basis='spatial basis', dense=True)
-    
+
     heisenberg = HamHeisenberg(J_eq=J_eq, J_ax=J_ax, mu=0, connectivity=connectivity)
     heisenberg_one_body = heisenberg.generate_one_body_integral(basis='spatial basis', dense=True)
-    
+
     hpp = HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=np.zeros((2, 2)), charges=None, sym=None, u_onsite=u_onsite)
     hpp_one_body = hpp.generate_one_body_integral(basis='spatial basis', dense=True)
-    
+
     # Assert that the TJUV one-body integral is close to the sum of Heisenberg and PPP one-body integrals
     assert_allclose(tjuv_one_body, heisenberg_one_body + hpp_one_body)
-    
+
 def test_tjuv_consistency_two_body():
     r"""
     Checking consistency of TJUV model
@@ -117,19 +117,19 @@ def test_tjuv_consistency_two_body():
                                sym=sym,
                                J_eq=J_eq,
                                J_ax=J_ax,)
-    
+
     # Generate the one-body integral
     tjuv_one_body = tjuv_hamiltonian.generate_two_body_integral(basis='spinorbital basis', dense=True)
-    
+
     heisenberg = HamHeisenberg(J_eq=J_eq, J_ax=J_ax, mu=0, connectivity=connectivity)
     heisenberg_one_body = heisenberg.generate_two_body_integral(basis='spinorbital basis', dense=True)
-    
+
     hpp = HamPPP(connectivity=connectivity, alpha=alpha, beta=beta, gamma=None, charges=None, sym=None, u_onsite=u_onsite)
     hpp_one_body = hpp.generate_two_body_integral(basis='spinorbital basis', dense=True)
-    
+
     # Assert that the TJUV one-body integral is close to the sum of Heisenberg and PPP one-body integrals
     assert_allclose(tjuv_one_body, heisenberg_one_body + hpp_one_body)
-    
+
 def test_tjuv_energy_spectrum():
     # Define parameters for a simple 1D chain
     N = 4
@@ -178,4 +178,4 @@ def test_tjuv_energy_spectrum():
     # Assert that the numerical and analytical energies are close
     np.testing.assert_allclose(energies_sorted, analytical_energies_sorted, atol=1e-8)
 
-    
+
