@@ -6,7 +6,7 @@ This utility generates 1- and 2-electron integrals corresponding to various mode
 ## Installation
 
 ```
-python3 -m pip install -e .
+python3 -m pip install .
 ```
 
 ### Subversions of the ModelHamiltonian
