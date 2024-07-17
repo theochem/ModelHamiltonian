@@ -559,9 +559,9 @@ class HamHeisenberg(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self,
-                                   sym=1,
+                                   basis='spinorbital basis',
                                    dense=False,
-                                   basis='spinorbital basis'):
+                                   sym=1):
         r"""Generate two body integral in spatial or spinorbital basis.
 
         Parameters
@@ -732,13 +732,10 @@ class HamTJUV(HamPPP, HamHeisenberg):
 
         Parameters
         ----------
-        connectivity_ppp: Union[list, np.ndarray]
+        connectivity: Union[list, np.ndarray]
             List of tuples specifying sites and bonds
             np.ndarray of shape (n_sites, n_sites)
-            between sites for the PPP model.
-        connectivity_heisenberg: np.ndarray
-            Numpy array that specifies the connectivity beetwen sites
-            Heisenberg model.
+            between sites for the TJUV model.
         alpha: float
             Specifies the site energy if all sites are equivalent.
             Default value is the 2p-pi orbital of Carbon.
@@ -871,6 +868,6 @@ class HamTJUV(HamPPP, HamHeisenberg):
         two_body_ppp = self.ocupation_part.generate_two_body_integral(
             basis, dense, sym)
         two_body_heisenberg = self.spin_part.generate_two_body_integral(
-            sym, dense, basis)
+            basis, dense, sym)
         self.two_body = two_body_ppp + two_body_heisenberg
         return self.two_body
