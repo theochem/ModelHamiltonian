@@ -143,7 +143,7 @@ def assign_rauk_parameters(
             bond_dictionary[bond_key] = bond_value
             # Ensure symmetry
             bond_dictionary[','.join([atom2_name, atom1_name])] = bond_value
-            
+
     else:
         # Ensure symmetry in the bond dictionary
         for key in list(bond_dictionary.keys()):
