@@ -357,7 +357,7 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
         affinity_path = Path(__file__).parent / "affinity.json"
         affinity_dictionary = json.load(open(affinity_path, "rb"))
 
-    unique_atoms = set([atom for tpl in connectivity for atom in tpl[:2]])
+    unique_atoms = {atom for tpl in connectivity for atom in tpl[:2]}
     num_sites = len(unique_atoms)
 
     u_onsite = []
