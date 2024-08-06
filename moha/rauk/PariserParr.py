@@ -11,7 +11,7 @@ import json
 
 from moha.rauk.rauk import build_one_body
 
-from moha.rauk.utils import get_atom_type
+from moha.rauk.utils import get_atom_type, get_atoms_list
 
 import numpy as np
 from scipy.special import gamma
@@ -274,7 +274,8 @@ def compute_overlap(
     return one_body
 
 
-def compute_gamma(u_onsite, Rxy_list, connectivity):
+def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
+                  atom_dictionary=None, affinity_dct=None, adjacency=None):
     r"""
     Calculate the gamma values for each pair of sites.
 
@@ -292,7 +293,13 @@ def compute_gamma(u_onsite, Rxy_list, connectivity):
     np.ndarray: A matrix of computed gamma values for each pair.
                 Non-connected pairs have a gamma value of zero.
     """
-    num_sites = len(u_onsite)
+    if Rxy_matrix is None and U_xy is None:
+        U_xy, Rxy_matrix = compute_u(
+            connectivity, atom_dictionary, affinity_dct)
+    elif Rxy_matrix is None:
+        _, Rxy_matrix = compute_u(
+            connectivity, atom_dictionary, affinity_dct)
+    num_sites = len(U_xy)
     gamma_matrix = np.zeros((num_sites, num_sites))
 
     for tpl in connectivity:
@@ -301,14 +308,15 @@ def compute_gamma(u_onsite, Rxy_list, connectivity):
         atom2_name, site2 = get_atom_type(atom2)
         # Get_atom_type returns site index starting from 1
         # So we need to subtract 1 to get the correct index
-        site1, site2 = site1-1, site2-1
-        Ux = u_onsite[site1]
-        Uy = u_onsite[site2]
-        Rxy = Rxy_list[site1]
+        site1, site2 = site1 - 1, site2 - 1
+        Ux = U_xy[site1]
+        Uy = U_xy[site2]
+        Rxy = Rxy_matrix[site1][site2]
         Uxy_bar = 0.5 * (Ux + Uy)
         gamma = Uxy_bar / \
             (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
         gamma_matrix[site1][site2] = gamma
+        gamma_matrix[site2][site1] = gamma  # Ensure symmetry
 
     return gamma_matrix
 
@@ -349,19 +357,38 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
         affinity_path = Path(__file__).parent / "affinity.json"
         affinity_dictionary = json.load(open(affinity_path, "rb"))
 
-    u_onsite = []
-    Rxy_list = []
+    unique_atoms = set([atom for tpl in connectivity for atom in tpl[:2]])
+    num_sites = len(unique_atoms)
 
+    u_onsite = []
+    Rxy_matrix = np.zeros((num_sites, num_sites))
+
+    i = 0
     for tpl in connectivity:
         atom1, atom2, dist = tpl[0], tpl[1], tpl[2]
-        atom1_name, _ = get_atom_type(atom1)
-        atom2_name, _ = get_atom_type(atom2)
+        atom1_name, site1 = get_atom_type(atom1)
+        atom2_name, site2 = get_atom_type(atom2)
+        # Get_atom_type returns site index starting from 1
+        # So we need to subtract 1 to get the correct index
+        site1, site2 = site1 - 1, site2 - 1
 
         ionization = atom_dictionary[atom1_name]
         affinity = affinity_dictionary[atom1_name]
         U_x = ionization - affinity
 
         u_onsite.append(U_x)
-        Rxy_list.append(dist)
 
-    return u_onsite, Rxy_list
+        Rxy_matrix[site1][site2] = dist
+        Rxy_matrix[site2][site1] = dist  # Ensure symmetry
+    atoms_sites_lst = get_atoms_list(connectivity)
+    max_site = max([site for _, site in atoms_sites_lst])
+    if len(connectivity) != max_site:
+        tpl = connectivity[-1]
+        atom_name, _ = get_atom_type(tpl[1])
+        ionization = atom_dictionary[atom_name]
+        affinity = affinity_dictionary[atom_name]
+        U_x = ionization - affinity
+
+        u_onsite.append(U_x)
+
+    return u_onsite, Rxy_matrix

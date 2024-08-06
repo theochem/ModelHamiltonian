@@ -3,6 +3,7 @@
 import numpy as np
 from moha import *
 from numpy.testing import assert_allclose
+from moha.rauk.PariserParr import compute_gamma
 
 
 def test_tjuv_consistency_zero_body():
@@ -19,14 +20,14 @@ def test_tjuv_consistency_zero_body():
     alpha = 0.0
     beta = -1.0
     u_onsite = np.array([1, 1, 1, 1, 1, 1])
-    gamma = None
+    gamma = compute_gamma(connectivity, alpha, beta)
     charges = 1
     sym = 8
     J_eq = 1
     J_ax = 1
 
     # Initialize the HamTJUV object
-    tjuv_hamiltonian = HamTJUV(connectivity=connectivity,
+    tjuv_hamiltonian = HamTJUV(adjacency=connectivity,
                                alpha=alpha,
                                beta=beta,
                                u_onsite=u_onsite,
@@ -47,7 +48,7 @@ def test_tjuv_consistency_zero_body():
     heisenberg_zero = heisenberg.generate_zero_body_integral()
 
     hpp = HamPPP(
-        connectivity=connectivity,
+        adjacency=connectivity,
         alpha=alpha,
         beta=beta,
         gamma=None,
@@ -73,14 +74,14 @@ def test_tjuv_consistency_one_body():
     alpha = 0.0
     beta = -1.0
     u_onsite = np.array([1, 1, 1, 1, 1, 1])
-    gamma = None
+    gamma = compute_gamma(connectivity, alpha, beta)
     charges = 1
     sym = 8
     J_eq = 1
     J_ax = 1
 
     # Initialize the HamTJUV object
-    tjuv_hamiltonian = HamTJUV(connectivity=connectivity,
+    tjuv_hamiltonian = HamTJUV(adjacency=connectivity,
                                alpha=alpha,
                                beta=beta,
                                u_onsite=u_onsite,
@@ -103,7 +104,7 @@ def test_tjuv_consistency_one_body():
         basis='spatial basis', dense=True)
 
     hpp = HamPPP(
-        connectivity=connectivity,
+        adjacency=connectivity,
         alpha=alpha,
         beta=beta,
         gamma=np.zeros(
@@ -134,7 +135,7 @@ def test_tjuv_consistency_two_body():
     alpha = 0.0
     beta = -1.0
     u_onsite = np.array([1, 1, 1, 1, 1, 1])
-    gamma = None
+    gamma = compute_gamma(connectivity, alpha, beta)
     charges = 1
     sym = 8  # Use an integer value for symmetry
 
@@ -142,7 +143,7 @@ def test_tjuv_consistency_two_body():
     J_ax = 1
 
     # Initialize the HamTJUV object
-    tjuv_hamiltonian = HamTJUV(connectivity=connectivity,
+    tjuv_hamiltonian = HamTJUV(adjacency=connectivity,
                                alpha=alpha,
                                beta=beta,
                                u_onsite=u_onsite,
@@ -165,7 +166,7 @@ def test_tjuv_consistency_two_body():
         basis='spatial basis', dense=True, sym=sym)
 
     hpp = HamPPP(
-        connectivity=connectivity,
+        adjacency=connectivity,
         alpha=alpha,
         beta=beta,
         gamma=None,

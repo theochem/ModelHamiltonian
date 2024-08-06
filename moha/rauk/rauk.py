@@ -1,7 +1,8 @@
 r"""Rauk Module."""
 import numpy as np
 
-from moha.rauk.utils import get_atom_type, get_atoms_list
+from moha.rauk.utils import get_atom_type, get_atoms_list, get_atom_type
+
 
 from pathlib import Path
 

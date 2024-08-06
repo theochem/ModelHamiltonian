@@ -3,6 +3,7 @@
 import numpy as np
 from moha import *
 from numpy.testing import assert_allclose, assert_equal
+from moha.rauk.PariserParr import compute_gamma
 
 
 def test_hub2():
@@ -12,7 +13,8 @@ def test_hub2():
     Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812
     """
-    hubbard = HamHub([("C1", "C2", 1)],
+    system = [("C1", "C2", 1)]
+    hubbard = HamHub(system,
                      alpha=0, beta=-1, u_onsite=np.array([1, 1]), sym=1)
 
     ecore = hubbard.generate_zero_body_integral()
@@ -114,12 +116,13 @@ def test_4():
     """
     a = -5
     b = -0.5
-    hubbard = HamPPP([("C1", "C2", 1),
-                      ("C2", "C3", 1),
-                      ("C3", "C4", 1),
-                      ("C4", "C1", 1)],
+    system = [("C1", "C2", 1),
+              ("C2", "C3", 1),
+              ("C3", "C4", 1),
+              ("C4", "C1", 1)]
+    gamma = compute_gamma(system)
+    hubbard = HamPPP(system, gamma=gamma,
                      alpha=a, beta=b)
-    atoms_sites_lst, _ = hubbard.generate_connectivity_matrix()
 
     ecore = hubbard.generate_zero_body_integral()
     h = hubbard.generate_one_body_integral(basis='spatial basis', dense=True)
@@ -174,8 +177,13 @@ def test_api_input():
     g_matrix = np.arange(36).reshape((norb, norb))
     charges = np.ones(norb)
 
-    ham = HamPPP(connectivity, alpha=0., beta=-2.5, u_onsite=u_matrix,
-                 gamma=g_matrix, charges=charges)
+    ham = HamPPP(
+        adjacency=connectivity,
+        alpha=0.,
+        beta=-2.5,
+        u_onsite=u_matrix,
+        gamma=g_matrix,
+        charges=charges)
     h = ham.generate_one_body_integral(basis='spinorbital basis', dense=True)
     v = ham.generate_two_body_integral(sym=1,
                                        basis='spinorbital basis',
@@ -198,7 +206,11 @@ def test_spin_spatial_conversion():
     u_matrix = np.ones(norb)
 
     beta = -2.5
-    ham = HamHub(connectivity, alpha=0., beta=beta, u_onsite=u_matrix)
+    ham = HamHub(
+        adjacency=connectivity,
+        alpha=0.,
+        beta=beta,
+        u_onsite=u_matrix)
     h = ham.generate_one_body_integral(basis='spinorbital basis', dense=True)
     v = ham.generate_two_body_integral(sym=4,
                                        basis='spinorbital basis',
