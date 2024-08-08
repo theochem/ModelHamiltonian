@@ -26,15 +26,6 @@ def parse_connectivity(system, atom_types=None):
             the either distance matrix,
             or adjacency matrix.
     """
-    '''# check if self.connectivity is a matrix
-    # if so, put assign it to self.connectivity_matrix
-    # and set the atom_types to None
-    if isinstance(system, np.ndarray):
-        system_array = csr_matrix(system)
-        self.atom_types = None
-        self.n_sites = self.connectivity_matrix.shape[0]
-
-        return None, self.connectivity_matrix'''
     atoms_sites_lst = get_atoms_list(system)
     max_site = max([site for _, site in atoms_sites_lst])
     n_sites = max_site
