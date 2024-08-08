@@ -1,6 +1,58 @@
 r"""Utils for Rauk Module."""
 
 import re
+import numpy as np
+from scipy.sparse import csr_matrix
+
+
+def parse_connectivity(system, atom_types=None):
+    r"""
+
+    Parse the connectivity of the system given as list of tuples.
+
+    Parameters
+    ----------
+    system: list
+            list of tuples that specifies sites and bonds between them
+        For example, for a linear chain of 4 sites, the connectivity
+        can be specified as [(C1, C2, 1), (C2, C3, 1), (C3, C4, 1)]
+
+    Returns
+    -------
+    tuple: (list np.ndarray)
+            First element is a list of atoms in the order
+            they apperar in the lattice,
+            second element is matrix that corresponds to
+            the either distance matrix,
+            or adjacency matrix.
+    """
+    atoms_sites_lst = get_atoms_list(system)
+    max_site = max([site for _, site in atoms_sites_lst])
+    n_sites = max_site
+
+    # how to deal with atom_types
+
+    if atom_types is None:
+        # Initialize atom_types with None, and adjust size for 0-based
+        # indexing
+        atom_types = [None] * max_site
+        for atom, site in atoms_sites_lst:
+            # Adjust site index for 0-based array index
+            atom_types[site - 1] = atom
+        atom_types = atom_types
+    connectivity_mtrx = np.zeros((max_site, max_site))
+    atoms_dist = []
+    for tpl in system:
+        atom1, atom2, bond = tpl[0], tpl[1], tpl[2]
+        atom1_name, site1 = get_atom_type(atom1)
+        atom2_name, site2 = get_atom_type(atom2)
+        atoms_dist.append((atom1_name, atom2_name, bond))
+        connectivity_mtrx[site1 - 1, site2 - 1] = bond
+        # numbering of sites starts from 1
+    atoms_dist = atoms_dist
+    connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
+    connectivity_matrix = csr_matrix(connectivity_mtrx)
+    return atoms_sites_lst, connectivity_matrix, n_sites, atom_types
 
 
 def get_atom_type(atom):

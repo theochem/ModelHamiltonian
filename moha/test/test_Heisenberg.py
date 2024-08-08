@@ -8,15 +8,15 @@ def test_heisenberg_0():
     n_sites = 8
     J_xy = np.random.rand()
     J_z = np.random.rand()
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
+    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, adjacency=adjacency)
     e0 = ham.generate_zero_body_integral()
     assert_allclose(e0, J_z/4*n_sites)
 
@@ -26,13 +26,13 @@ def test_heisenberg_1():
     n_sites = 8
     J_xy = np.random.rand()
     J_z = np.random.rand()
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
     h_exact = np.zeros((n_sites, n_sites))
 
@@ -43,7 +43,7 @@ def test_heisenberg_1():
 
         h_exact[i, i] = -J_z/2
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
+    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, adjacency=adjacency)
     h = ham.generate_one_body_integral(basis='spatial basis', dense=True)
     assert_allclose(h, h_exact)
 
@@ -53,13 +53,13 @@ def test_heisenberg_2():
     n_sites = 8
     J_xy = np.random.rand()
     J_z = np.random.rand()
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
     v_exact = np.zeros((n_sites, n_sites, n_sites, n_sites))
     for i in range(n_sites):
@@ -73,7 +73,7 @@ def test_heisenberg_2():
         v_exact[j, i, j, i] = J_xy/2
         v_exact[i, j, i, j] = J_xy/2
 
-    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, connectivity=connectivity)
+    ham = HamHeisenberg(J_eq=J_xy, J_ax=J_z, mu=0, adjacency=adjacency)
     v = ham.generate_two_body_integral(basis='spatial basis',
                                        dense=True,
                                        sym=4)
@@ -87,13 +87,13 @@ def test_heisenberg_2_spin():
     n_sites = 8
     J_xy = np.random.rand()
     J_z = np.random.rand()
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
     v_exact = np.zeros((2*n_sites, 2*n_sites, 2*n_sites, 2*n_sites))
     for i in range(n_sites):
@@ -124,7 +124,7 @@ def test_heisenberg_2_spin():
     ham = HamHeisenberg(J_eq=J_xy,
                         J_ax=J_z,
                         mu=0,
-                        connectivity=connectivity)
+                        adjacency=adjacency)
     v = ham.generate_two_body_integral(basis='spinorbital basis',
                                        dense=True,
                                        sym=4)
@@ -139,13 +139,13 @@ def test_Ising():
     n_sites = 8
     J_xy = 0
     J_z = np.random.rand()
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
     v_exact = np.zeros((n_sites, n_sites, n_sites, n_sites))
     for i in range(n_sites):
@@ -159,7 +159,7 @@ def test_Ising():
         v_exact[j, i, j, i] = J_xy/2
         v_exact[i, j, i, j] = J_xy/2
 
-    ham = HamIsing(J_ax=J_z, mu=0, connectivity=connectivity)
+    ham = HamIsing(J_ax=J_z, mu=0, adjacency=adjacency)
     v = ham.generate_two_body_integral(basis='spatial basis',
                                        dense=True,
                                        sym=4)
@@ -172,13 +172,13 @@ def test_RG():
     n_sites = 8
     J_xy = np.random.rand()
     J_z = 0
-    connectivity = np.zeros((n_sites, n_sites))
+    adjacency = np.zeros((n_sites, n_sites))
     for i in range(n_sites):
         j = i+1
         if j == n_sites:
             j = 0
-        connectivity[i, j] = 1
-        connectivity[j, i] = 1
+        adjacency[i, j] = 1
+        adjacency[j, i] = 1
 
     v_exact = np.zeros((n_sites, n_sites, n_sites, n_sites))
     for i in range(n_sites):
@@ -192,7 +192,7 @@ def test_RG():
         v_exact[j, i, j, i] = J_xy/2
         v_exact[i, j, i, j] = J_xy/2
 
-    ham = HamRG(J_eq=J_xy, mu=0, connectivity=connectivity)
+    ham = HamRG(J_eq=J_xy, mu=0, adjacency=adjacency)
     v = ham.generate_two_body_integral(basis='spatial basis',
                                        dense=True,
                                        sym=4)
