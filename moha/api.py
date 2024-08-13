@@ -10,8 +10,6 @@ from scipy.sparse import csr_matrix, lil_matrix, diags
 
 from .utils import convert_indices
 
-from moha.rauk.utils import get_atom_type, get_atoms_list
-
 
 from typing import Union
 
@@ -22,52 +20,6 @@ __all__ = [
 
 class HamiltonianAPI(ABC):
     r"""Hamiltonian abstract base class."""
-
-    def generate_connectivity_matrix(self):
-        r"""
-
-        Generate connectivity matrix.
-
-        Returns
-        -------
-        tuple
-            (dictionary, np.ndarray)
-        """
-        # check if self.connectivity is a matrix
-        # if so, put assign it to self.connectivity_matrix
-        # and set the atom_types to None
-        if isinstance(self.connectivity, np.ndarray):
-            self.connectivity_matrix = csr_matrix(self.connectivity)
-            self.atom_types = None
-            self.n_sites = self.connectivity_matrix.shape[0]
-
-            return None, self.connectivity_matrix
-
-        atoms_sites_lst = get_atoms_list(self.connectivity)
-        max_site = max([site for _, site in atoms_sites_lst])
-        self.n_sites = max_site
-
-        if self.atom_types is None:
-            # Initialize atom_types with None, and adjust size for 0-based
-            # indexing
-            atom_types = [None] * max_site
-            for atom, site in atoms_sites_lst:
-                # Adjust site index for 0-based array index
-                atom_types[site - 1] = atom
-            self.atom_types = atom_types
-        connectivity_mtrx = np.zeros((max_site, max_site))
-        atoms_dist = []
-        for tpl in self.connectivity:
-            atom1, atom2, bond = tpl[0], tpl[1], tpl[2]
-            atom1_name, site1 = get_atom_type(atom1)
-            atom2_name, site2 = get_atom_type(atom2)
-            atoms_dist.append((atom1_name, atom2_name, bond))
-            connectivity_mtrx[site1 - 1, site2 - 1] = bond
-            # numbering of sites starts from 1
-        self.atoms_dist = atoms_dist
-        connectivity_mtrx = np.maximum(connectivity_mtrx, connectivity_mtrx.T)
-        self.connectivity_matrix = csr_matrix(connectivity_mtrx)
-        return atoms_sites_lst, self.connectivity_matrix
 
     @abstractmethod
     def generate_zero_body_integral(self):
