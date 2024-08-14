@@ -30,8 +30,6 @@ def parse_connectivity(system, atom_types=None):
     max_site = max([site for _, site in atoms_sites_lst])
     n_sites = max_site
 
-    # how to deal with atom_types
-
     if atom_types is None:
         # Initialize atom_types with None, and adjust size for 0-based
         # indexing

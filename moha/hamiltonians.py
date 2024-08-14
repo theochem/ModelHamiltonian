@@ -43,7 +43,8 @@ class HamPPP(HamiltonianAPI):
             bond_dictionary=None,
             orbital_overlap=None,
             affinity_dct=None,
-            Rxy_matrix=None
+            Rxy_matrix=None,
+            atom_types=None,
     ):
         r"""
         Initialize Pariser-Parr-Pople Hamiltonian.
@@ -100,7 +101,7 @@ class HamPPP(HamiltonianAPI):
         else:
             self.gamma = gamma
         self.charges = charges
-        self.atom_types = None
+        self.atom_types = atom_types
         self.atoms_dist = None
         self.zero_energy = None
         self.one_body = None
@@ -248,7 +249,8 @@ class HamPPP(HamiltonianAPI):
         v = lil_matrix((Nv * Nv, Nv * Nv))
         if self.u_onsite is None:
             self.u_onsite, self.Rxy_matrix = compute_u(
-                self.connectivity, self.atom_dictionary, self.affinity_dct)
+                self.connectivity, self.atom_dictionary,
+                self.affinity_dct, self.atom_types)
 
         if self.u_onsite is not None:
             for p in range(n_sp):
@@ -384,6 +386,7 @@ class HamHuck(HamHub):
             sym=1,
             atom_dictionary=None,
             bond_dictionary=None,
+            atom_types=None,
     ):
         r"""
         Huckel hamiltonian.
@@ -421,11 +424,13 @@ class HamHuck(HamHub):
             alpha=alpha,
             beta=beta,
             u_onsite=None,
-            gamma=None,
+            gamma=np.zeros(adjacency.shape),
             sym=sym,
             atom_dictionary=atom_dictionary,
             bond_dictionary=bond_dictionary,
+            atom_types=atom_types,
         )
+        self.atom_types = atom_types
         self.charges = np.zeros(self.n_sites)
 
 

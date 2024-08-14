@@ -275,7 +275,7 @@ def compute_overlap(
 
 
 def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
-                  atom_dictionary=None, affinity_dct=None, adjacency=None):
+                  atom_dictionary=None, affinity_dct=None, atom_types=None):
     r"""
     Calculate the gamma values for each pair of sites.
 
@@ -287,6 +287,7 @@ def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
                                    sites (atom1, atom2), indicating that a
                                    gamma value should be computed for
                                    this pair.
+    atom_types (list of str): List of atom types in the lattice.
 
     Returns
     ----------
@@ -295,10 +296,10 @@ def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
     """
     if Rxy_matrix is None and U_xy is None:
         U_xy, Rxy_matrix = compute_u(
-            connectivity, atom_dictionary, affinity_dct)
+            connectivity, atom_dictionary, affinity_dct, atom_types)
     elif Rxy_matrix is None:
         _, Rxy_matrix = compute_u(
-            connectivity, atom_dictionary, affinity_dct)
+            connectivity, atom_dictionary, affinity_dct, atom_types)
     num_sites = len(U_xy)
     gamma_matrix = np.zeros((num_sites, num_sites))
 
@@ -321,7 +322,7 @@ def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
     return gamma_matrix
 
 
-def compute_u(connectivity, atom_dictionary, affinity_dictionary):
+def compute_u(connectivity, atom_dictionary, affinity_dictionary, atom_types):
     r"""
     Calculate the onsite potential energy (U) for each site.
 
@@ -333,6 +334,7 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
                             ionization energies.
     affinity_dictionary (dict): Dictionary mapping atom types to their
                             electron affinities.
+    atom_types (list of str): List of atom types in the lattice.
 
     Returns
     ----------
@@ -356,8 +358,20 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
     if affinity_dictionary is None:
         affinity_path = Path(__file__).parent / "affinity.json"
         affinity_dictionary = json.load(open(affinity_path, "rb"))
+    if connectivity is not None:
+        unique_atoms = {atom for tpl in connectivity for atom in tpl[:2]}
+    else:
+        unique_atoms = atom_types
+        u_onsite = []
+        for atom in unique_atoms:
+            if atom in atom_dictionary:
+                ionization = atom_dictionary[atom]
+                affinity = affinity_dictionary[atom]
+                U_x = ionization - affinity
+                u_onsite.append(U_x)
+        Rxy_matrix = np.zeros((len(unique_atoms), len(unique_atoms)))
+        return u_onsite, Rxy_matrix
 
-    unique_atoms = {atom for tpl in connectivity for atom in tpl[:2]}
     num_sites = len(unique_atoms)
 
     u_onsite = []
