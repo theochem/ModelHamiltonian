@@ -421,12 +421,12 @@ class HamHuck(HamHub):
             alpha=alpha,
             beta=beta,
             u_onsite=None,
-            gamma=None,
             sym=sym,
             atom_dictionary=atom_dictionary,
             bond_dictionary=bond_dictionary,
         )
         self.charges = np.zeros(self.n_sites)
+
 
 
 class HamHeisenberg(HamiltonianAPI):
