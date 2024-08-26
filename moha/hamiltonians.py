@@ -616,10 +616,8 @@ class HamIsing(HamHeisenberg):
         The form of the Hamiltonian is given by:
 
         .. math::
-            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
-            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
-            J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
-
+            \hat{H}_{Ising}=\sum_p\mu_p^Z
+            S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z
         """
         if isinstance(J_ax, float):
             J_eq = 0
@@ -659,7 +657,7 @@ class HamRG(HamHeisenberg):
         The form of the Hamiltonian is given by:
 
         .. math::
-            \hat{H}_{X X Z}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
+            \hat{H}_{RG}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right)
             S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
 
         """
