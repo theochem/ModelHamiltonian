@@ -309,7 +309,8 @@ def build_moha(data):
         charge_arr = charge * np.ones(norb)
         u_onsite_arr = u_onsite * np.ones(norb)
         ham = moha.HamPPP(adjacency=adjacency, alpha=alpha, beta=beta,
-                          u_onsite=u_onsite_arr, charges=charge_arr, gamma=np.zeros((norb, norb)))
+                          u_onsite=u_onsite_arr, charges=charge_arr,
+                          gamma=np.zeros((norb, norb)))
         return ham
     # Huckel
     elif data["model"]["hamiltonian"] == "huckel":

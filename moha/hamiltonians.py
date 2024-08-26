@@ -428,7 +428,6 @@ class HamHuck(HamHub):
         self.charges = np.zeros(self.n_sites)
 
 
-
 class HamHeisenberg(HamiltonianAPI):
     r"""XXZ Heisenberg Hamiltonian."""
 
