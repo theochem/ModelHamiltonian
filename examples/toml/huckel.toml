@@ -13,3 +13,6 @@ nelec = 6
 [model]
 hamiltonian = "Huckel"
 basis = "spatial basis"
+alpha = 1.0
+beta = -2.0
+u_onsite = 1.0
