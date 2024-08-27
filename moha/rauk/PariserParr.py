@@ -341,7 +341,9 @@ def compute_u(connectivity, ionization_dictionary, affinity_dictionary):
     if ionization_dictionary is None:
         ionization_dictionary = {}
         ionization_dictionary_path = Path(__file__).parent / "ionization.json"
-        ionization_dictionary = json.load(open(ionization_dictionary_path, "rb"))
+        ionization_dictionary = json.load(
+            open(ionization_dictionary_path, "rb")
+            )
         for key, value in ionization_dictionary.items():
             ionization_dictionary[key] = value
 
