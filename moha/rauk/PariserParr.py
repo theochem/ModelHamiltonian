@@ -274,7 +274,7 @@ def compute_overlap(
     return one_body
 
 
-def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
+def compute_gamma(connectivity, u_onsite=None, Rxy_matrix=None,
                   atom_dictionary=None, affinity_dct=None, adjacency=None):
     r"""
     Calculate the gamma values for each pair of sites.
@@ -293,35 +293,30 @@ def compute_gamma(connectivity, U_xy=None, Rxy_matrix=None,
     np.ndarray: A matrix of computed gamma values for each pair.
                 Non-connected pairs have a gamma value of zero.
     """
-    if Rxy_matrix is None and U_xy is None:
-        U_xy, Rxy_matrix = compute_u(
+    if Rxy_matrix is None and u_onsite is None:
+        u_onsite, Rxy_matrix = compute_u(
             connectivity, atom_dictionary, affinity_dct)
     elif Rxy_matrix is None:
         _, Rxy_matrix = compute_u(
             connectivity, atom_dictionary, affinity_dct)
-    num_sites = len(U_xy)
+    elif u_onsite is None:
+        u_onsite, _ = compute_u(
+            connectivity, atom_dictionary, affinity_dct)
+    num_sites = len(u_onsite)
     gamma_matrix = np.zeros((num_sites, num_sites))
 
-    for tpl in connectivity:
-        atom1, atom2 = tpl[0], tpl[1]
-        atom1_name, site1 = get_atom_type(atom1)
-        atom2_name, site2 = get_atom_type(atom2)
-        # Get_atom_type returns site index starting from 1
-        # So we need to subtract 1 to get the correct index
-        site1, site2 = site1 - 1, site2 - 1
-        Ux = U_xy[site1]
-        Uy = U_xy[site2]
-        Rxy = Rxy_matrix[site1][site2]
-        Uxy_bar = 0.5 * (Ux + Uy)
-        gamma = Uxy_bar / \
-            (Uxy_bar * Rxy + np.exp(-0.5 * Uxy_bar**2 * Rxy**2))
-        gamma_matrix[site1][site2] = gamma
-        gamma_matrix[site2][site1] = gamma  # Ensure symmetry
+    Uxy_bar = np.zeros((num_sites, num_sites))
+    for i, ux in enumerate(u_onsite):
+        for j, uy in enumerate(u_onsite):
+            if i != j:
+                Uxy_bar[i, j] = 0.5 * (ux + uy)
+    gamma_matrix = Uxy_bar / \
+        (Uxy_bar * Rxy_matrix + np.exp(-0.5 * Uxy_bar**2 * Rxy_matrix**2))
 
     return gamma_matrix
 
 
-def compute_u(connectivity, atom_dictionary, affinity_dictionary):
+def compute_u(connectivity, ionization_dictionary, affinity_dictionary):
     r"""
     Calculate the onsite potential energy (U) for each site.
 
@@ -329,10 +324,10 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
     ----------
     connectivity (list of tuples): Each tuple contains indices of two sites
                                 (atom1, atom2) and the distance between them.
-    atom_dictionary (dict): Dictionary mapping atom types to their
-                            ionization energies.
+    ionization_dictionary (dict): Dictionary mapping atom types to their
+                                  ionization energies.
     affinity_dictionary (dict): Dictionary mapping atom types to their
-                            electron affinities.
+                                electron affinities.
 
     Returns
     ----------
@@ -343,15 +338,14 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
            2. List of float: Distances corresponding to each
            connectivity tuple.
     """
-    if atom_dictionary is None:
-        atom_dictionary = {}
-        hx_dictionary_path = Path(__file__).parent / "hx_dictionary.json"
-        hx_dictionary = json.load(open(hx_dictionary_path, "rb"))
-        alpha_c = -0.414  # Value for sp2 orbital of Carbon atom.
-        beta_c = -0.0533  # Value for sp2 orbitals of Carbon atom.
-        for key, value in hx_dictionary.items():
-            hx_value = value * abs(beta_c)
-            atom_dictionary[key] = alpha_c + hx_value
+    if ionization_dictionary is None:
+        ionization_dictionary = {}
+        ionization_dictionary_path = Path(__file__).parent / "ionization.json"
+        ionization_dictionary = json.load(
+            open(ionization_dictionary_path, "rb")
+            )
+        for key, value in ionization_dictionary.items():
+            ionization_dictionary[key] = value
 
     if affinity_dictionary is None:
         affinity_path = Path(__file__).parent / "affinity.json"
@@ -372,7 +366,7 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
         # So we need to subtract 1 to get the correct index
         site1, site2 = site1 - 1, site2 - 1
 
-        ionization = atom_dictionary[atom1_name]
+        ionization = ionization_dictionary[atom1_name]
         affinity = affinity_dictionary[atom1_name]
         U_x = ionization - affinity
 
@@ -385,10 +379,10 @@ def compute_u(connectivity, atom_dictionary, affinity_dictionary):
     if len(connectivity) != max_site:
         tpl = connectivity[-1]
         atom_name, _ = get_atom_type(tpl[1])
-        ionization = atom_dictionary[atom_name]
+        ionization = ionization_dictionary[atom_name]
         affinity = affinity_dictionary[atom_name]
         U_x = ionization - affinity
 
         u_onsite.append(U_x)
 
-    return u_onsite, Rxy_matrix
+    return np.array(u_onsite), Rxy_matrix

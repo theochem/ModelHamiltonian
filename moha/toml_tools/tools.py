@@ -308,33 +308,34 @@ def build_moha(data):
     if data["model"]["hamiltonian"] == "ppp":
         charge_arr = charge * np.ones(norb)
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamPPP(connectivity=adjacency, alpha=alpha, beta=beta,
-                          u_onsite=u_onsite_arr, charges=charge_arr)
+        ham = moha.HamPPP(adjacency=adjacency, alpha=alpha, beta=beta,
+                          u_onsite=u_onsite_arr, charges=charge_arr,
+                          gamma=np.zeros((norb, norb)))
         return ham
     # Huckel
     elif data["model"]["hamiltonian"] == "huckel":
-        ham = moha.HamHuck(connectivity=adjacency, alpha=alpha, beta=beta)
+        ham = moha.HamHuck(adjacency=adjacency, alpha=alpha, beta=beta)
         return ham
     # Hubbard
     elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamHub(connectivity=adjacency,
+        ham = moha.HamHub(adjacency=adjacency,
                           alpha=alpha, beta=beta,
                           u_onsite=u_onsite_arr)
         return ham
     # -- Spin models --#
     # Heisenberg
     elif data["model"]["hamiltonian"] == "heisenberg":
-        ham = moha.HamHeisenberg(connectivity=adjacency,
+        ham = moha.HamHeisenberg(adjacency=adjacency,
                                  mu=mu, J_eq=J_eq, J_ax=J_ax)
         return ham
     # Ising
     elif data["model"]["hamiltonian"] == "ising":
-        ham = moha.HamIsing(connectivity=adjacency, mu=mu, J_ax=J_ax)
+        ham = moha.HamIsing(adjacency=adjacency, mu=mu, J_ax=J_ax)
         return ham
     # Richardson-Gaudin
     elif data["model"]["hamiltonian"] == "rg":
-        ham = moha.HamRG(connectivity=adjacency, mu=mu, J_eq=J_eq)
+        ham = moha.HamRG(adjacency=adjacency, mu=mu, J_eq=J_eq)
         return ham
     else:
         raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] +
