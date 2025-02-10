@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -491,7 +491,7 @@ We will save ouput to fcidump file that will be called <code class="docutils lit
 <p>ChatGPT has generated 1D Huckel model with open boundary conditions. The hamiltonian is saved in the file <code class="docutils literal notranslate"><span class="pre">huckel_1d.fcidump</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moha.gpt</span> <span class="kn">import</span> <span class="n">generate_ham</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moha.gpt</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_ham</span>
 
 <span class="n">ham</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple 1d Huckel model with open boundary condition and t=-1. Set energy of orbitals alpha equal to 0. System has 4 sites and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>
 <span class="s2">                    Save it to the fcidump file called huckel_1d&quot;</span><span class="p">)</span>
@@ -535,7 +535,7 @@ We will convert one-electron integral to dense matrix and print it using the <co
 <p>In this example we will see how to generate a 1D Hubbard model with periodic boundary condtions. We will set the number of electrons to 2, the number of orbitals to 4, the hopping parameter to -1, and the Coulomb repulsion on each site to 0.5. The energy of orbital we set to 0. We can save ouput as .npz file that will be called <code class="docutils literal notranslate"><span class="pre">hubbard_1d</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">hub</span> <span class="o">=</span> <span class="n">generate_ham</span><span class="p">(</span><span class="s2">&quot;Generate a simple  Hubbard model with periodic boundary condition and t=-1, U=0.5.</span><span class="se">\</span>
 <span class="s2">                    Put energy of orbital equal to 0. System has 2 electrons and 4 orbitals. Return ouput in the spatial basis. </span><span class="se">\</span>

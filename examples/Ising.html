@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -474,8 +474,8 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import libraries</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">moha</span> <span class="kn">import</span> <span class="n">HamHeisenberg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHeisenberg</span>
 
 <span class="c1"># Defining the Hamiltonian using connectivity matrix</span>
 <span class="c1"># For example, consider 6x6 lattice with periodic boundary condition</span>
@@ -611,7 +611,7 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Constructing the XXZ Hamiltonian explicitly</span>
-<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">eigh</span>
 
 <span class="c1"># Define Pauli spin matrices</span>
 <span class="n">sigma_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
@@ -620,7 +620,7 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
 <span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 
 <span class="c1"># Define function for Kronecker product with identity</span>
-<span class="k">def</span> <span class="nf">kron_id</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kron_id</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Creates Kronecker product of matrix with identity matrices.</span>
 
@@ -641,7 +641,7 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
   <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">result</span>
 
 <span class="c1"># Define function to create spin operators on Nth site</span>
-<span class="k">def</span> <span class="nf">spin_operator</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">spin_operator</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">L</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Creates a spin operator (Sx, Sy, Sz) on the Nth site.</span>
 
@@ -692,7 +692,7 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">fci</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">fci</span>
 
 <span class="c1"># Constructing the XXZ Hamiltonian using the HamHeisenberg class</span>
 
@@ -731,7 +731,7 @@ To find the spectrum of the constructed hamiltonian matrix, we can use <code cla
 <p>In this part we will constuct 4, 6, and 8 site XXX Heisenberg model for <span class="math notranslate nohighlight">\(J = 1\)</span> and compare the energy of the ground state per site with the theoretical value.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="n">e_inf</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># create figure with 2 plots side by side</span>

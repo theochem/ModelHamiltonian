@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -477,8 +477,8 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import libraries</span>
-<span class="kn">from</span> <span class="nn">moha</span> <span class="kn">import</span> <span class="n">HamHub</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHub</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># First way to define the Hamiltonian</span>
 <span class="c1"># two site Hubbard model</span>
@@ -603,7 +603,7 @@ RDKit will be used to generate the connectivity matrix of the molecule, which wi
 For the Hubbard model, we will set the on-site repulsion to <span class="math notranslate nohighlight">\(10.84 eV\)</span> according to <a class="reference external" href="https://www.degruyter.com/document/doi/10.1524/zpch.1957.13.3_4.140/html?lang=en">Mataga-Nishimoto</a> prescription and <span class="math notranslate nohighlight">\(\beta = -2.5 eV\)</span></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">rdmolops</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolFromSmiles</span><span class="p">,</span> <span class="n">rdmolops</span>
 
 <span class="c1"># generate a molecule from SMILES</span>
 <span class="n">mol</span> <span class="o">=</span> <span class="n">MolFromSmiles</span><span class="p">(</span><span class="s1">&#39;C1=CC=C2C=CC=CC2=C1&#39;</span><span class="p">)</span>
@@ -644,8 +644,8 @@ E_0=-4 N \int_0^{\infty} \frac{J_0(\omega) J_1(\omega)}{\omega\left(1+e^{\omega 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Computing the energy using the Lieb-Wu formula</span>
-<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">U</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">E_LW</span> <span class="o">=</span> <span class="p">[]</span>
@@ -671,9 +671,9 @@ Error of integration:  8.67591249968029e-11
 <h2>Building hamiltonians with ModelHamiltonian Package and solving the Schrödinger equation with Full CI algorithm<a class="headerlink" href="#building-hamiltonians-with-modelhamiltonian-package-and-solving-the-schrodinger-equation-with-full-ci-algorithm" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">pyscf</span> <span class="kn">import</span> <span class="n">fci</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">fci</span>
 
 
 
