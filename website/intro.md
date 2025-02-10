@@ -45,4 +45,25 @@ The Model Hamiltonian Package includes a user-friendly graphical user interface 
 
 Get Started with ModelHamiltonian Today!
 Join the QC-Devs community and elevate your research endeavors.
+
+## Citation
+If you use this code, please cite the following publication:
+
+```bibtex
+@article{10.1063/5.0219015,
+    author = {Chuiko, Valerii and Richards, Addison D. S. and Sánchez-Díaz, Gabriela and Martínez-González, Marco and Sanchez, Wesley and B. Da Rosa, Giovanni and Richer, Michelle and Zhao, Yilin and Adams, William and Johnson, Paul A. and Heidar-Zadeh, Farnaz and Ayers, Paul W.},
+    title = {ModelHamiltonian: A Python-scriptable library for generating 0-, 1-, and 2-electron integrals},
+    journal = {The Journal of Chemical Physics},
+    volume = {161},
+    number = {13},
+    pages = {132503},
+    year = {2024},
+    month = {10},
+    issn = {0021-9606},
+    doi = {10.1063/5.0219015},
+    url = {https://doi.org/10.1063/5.0219015},
+    eprint = {https://pubs.aip.org/aip/jcp/article-pdf/doi/10.1063/5.0219015/20195032/132503\_1\_5.0219015.pdf},
+}
+```
+
 <!-- #endregion -->
