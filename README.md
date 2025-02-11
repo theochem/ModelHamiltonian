@@ -43,7 +43,7 @@ To set up these hooks, install [https://pre-commit.com/](https://pre-commit.com)
 
 ## Citation
 
-If you use this code, please cite the following publication:
+If you use this code, please cite the following [publication](https://doi.org/10.1063/5.0219015):
 
 ```bibtex
 @article{10.1063/5.0219015,
