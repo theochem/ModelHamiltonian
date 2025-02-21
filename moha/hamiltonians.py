@@ -521,8 +521,14 @@ class HamHeisenberg(HamiltonianAPI):
             else:
                 raise TypeError("mu array has wrong basis")
 
+        # sum of J_ax_ij for j>i
+        sum_Jij = (np.sum(J_ax, axis=1) - np.diag(J_ax)) / 2
+        # if only two sites are present, then no need to devide by 2 two avoid double counting
+        if sum_Jij.shape[0] == 2:
+            sum_Jij *= 2
+
         one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
-                                    (np.sum(J_ax, axis=1) - np.diag(J_ax)) / 2,
+                                    sum_Jij,
                                     format="csr")
 
         self.one_body = one_body_term
