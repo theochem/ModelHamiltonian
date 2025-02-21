@@ -523,9 +523,10 @@ class HamHeisenberg(HamiltonianAPI):
 
         # sum of J_ax_ij for j>i
         sum_J_ax_ij = (np.sum(J_ax, axis=1) - np.diag(J_ax)) / 2
-        # if only two sites are present, then no need to devide by 2 two avoid double counting
-        if sum_J_axij.shape[0] == 2:
-            sum_J_axij *= 2
+        # if only two sites are present,
+        # then no need to devide by 2 two avoid double counting
+        if sum_J_ax_ij.shape[0] == 2:
+            sum_J_ax_ij *= 2
 
         one_body_term = 0.5 * diags(mu - np.diag(J_eq) -
                                     sum_J_ax_ij,
