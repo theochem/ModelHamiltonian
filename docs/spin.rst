@@ -21,7 +21,7 @@ The **XXZ Heisenberg Model** describes quantum spin interactions between sites.
 **Example Usage:**
 This example initializes a **3-site Heisenberg Hamiltonian** with specified interaction terms and prints the one-body integral matrix.
 
-```python
+.. code-block:: python
 from moha import HamHeisenberg
 import numpy as np
 
@@ -59,7 +59,7 @@ The **Ising Model** is a simplified case of the Heisenberg model with only axial
 **Example Usage:**
 This example initializes a **3-site Ising Hamiltonian** and prints the one-body integral matrix.
 
-```python
+.. code-block:: python
 from moha import HamIsing
 import numpy as np
 
@@ -92,7 +92,7 @@ The **Richardson-Gaudin Model** is an exactly solvable quantum many-body system.
 **Example Usage:**
 This example initializes a **3-site Richardson-Gaudin Hamiltonian** and prints the one-body integral matrix.
 
-```python
+.. code-block:: python
 from moha import HamRG
 import numpy as np
 
