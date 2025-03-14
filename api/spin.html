@@ -391,19 +391,28 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.__init__"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_one_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_two_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heisenberg-hamiltonian">Heisenberg Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.__init__"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_one_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_two_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ising-hamiltonian">Ising Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#richardson-gaudin-hamiltonian">Richardson-Gaudin Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -419,12 +428,21 @@ document.write(`
                   
   <section id="spin-based-hamiltonians">
 <h1>Spin-based Hamiltonians<a class="headerlink" href="#spin-based-hamiltonians" title="Link to this heading">#</a></h1>
+<p>This section covers Hamiltonians used to describe spin systems in quantum mechanics.</p>
+<ul class="simple">
+<li><p><strong>Heisenberg Model</strong>: Models spin interactions with exchange coupling.</p></li>
+<li><p><strong>Ising Model</strong>: A simplified version where only Z-axis interactions matter.</p></li>
+<li><p><strong>Richardson-Gaudin Model</strong>: Used in exactly solvable quantum many-body problems.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="heisenberg-hamiltonian">
+<h2>Heisenberg Hamiltonian<a class="headerlink" href="#heisenberg-hamiltonian" title="Link to this heading">#</a></h2>
+<p>The <strong>XXZ Heisenberg Model</strong> describes quantum spin interactions between sites.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamHeisenberg">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamHeisenberg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHeisenberg" title="Link to this definition">#</a></dt>
 <dd><p>XXZ Heisenberg Hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamHeisenberg.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHeisenberg.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize XXZ Heisenberg Hamiltonian.</p>
@@ -446,7 +464,6 @@ S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z+\sum_{p q}
 J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 </dd></dl>
 
-</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.HamHeisenberg.generate_one_body_integral">
 <span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spinorbital</span> <span class="pre">basis'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHeisenberg.generate_one_body_integral" title="Link to this definition">#</a></dt>
@@ -498,12 +515,41 @@ J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 
 </dd></dl>
 
+<p><strong>Example Usage:</strong>
+This example initializes a <strong>3-site Heisenberg Hamiltonian</strong> with specified interaction terms and prints the one-body integral matrix.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHeisenberg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Define spin interaction parameters</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<span class="n">J_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="p">])</span>
+<span class="n">J_ax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="c1"># Create Heisenberg model instance</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">HamHeisenberg</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="n">J_eq</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="n">J_ax</span><span class="p">)</span>
+
+<span class="c1"># Print the one-body integral matrix</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="ising-hamiltonian">
+<h2>Ising Hamiltonian<a class="headerlink" href="#ising-hamiltonian" title="Link to this heading">#</a></h2>
+<p>The <strong>Ising Model</strong> is a simplified case of the Heisenberg model with only axial interactions.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamIsing">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamIsing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamIsing" title="Link to this definition">#</a></dt>
 <dd><p>Ising Hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamIsing.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamIsing.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize XXZ Heisenberg Hamiltonian.</p>
@@ -523,15 +569,38 @@ J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z\]</div>
 </dd></dl>
 
-</div></blockquote>
 </dd></dl>
 
+<p><strong>Example Usage:</strong>
+This example initializes a <strong>3-site Ising Hamiltonian</strong> and prints the one-body integral matrix.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamIsing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Define spin interaction parameters</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<span class="n">J_ax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="c1"># Create Ising model instance</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">HamIsing</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">J_ax</span><span class="o">=</span><span class="n">J_ax</span><span class="p">)</span>
+
+<span class="c1"># Print the one-body integral matrix</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="richardson-gaudin-hamiltonian">
+<h2>Richardson-Gaudin Hamiltonian<a class="headerlink" href="#richardson-gaudin-hamiltonian" title="Link to this heading">#</a></h2>
+<p>The <strong>Richardson-Gaudin Model</strong> is an exactly solvable quantum many-body system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamRG">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamRG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamRG" title="Link to this definition">#</a></dt>
 <dd><p>Richardson-Gaudin Hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamRG.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J_eq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamRG.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize XXZ Heisenberg Hamiltonian.</p>
@@ -551,9 +620,29 @@ S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z\]</div>
 S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
 </dd></dl>
 
-</div></blockquote>
 </dd></dl>
 
+<p><strong>Example Usage:</strong>
+This example initializes a <strong>3-site Richardson-Gaudin Hamiltonian</strong> and prints the one-body integral matrix.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamRG</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Define interaction parameters</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<span class="n">J_eq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+    <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+<span class="p">])</span>
+
+<span class="c1"># Create Richardson-Gaudin model instance</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">HamRG</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">J_eq</span><span class="o">=</span><span class="n">J_eq</span><span class="p">)</span>
+
+<span class="c1"># Print the one-body integral matrix</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -611,19 +700,28 @@ S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}\]</div>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.__init__"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_one_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_two_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#heisenberg-hamiltonian">Heisenberg Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.__init__"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_one_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_two_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHeisenberg.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamHeisenberg.generate_zero_body_integral()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ising-hamiltonian">Ising Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing"><code class="docutils literal notranslate"><span class="pre">HamIsing</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamIsing.__init__"><code class="docutils literal notranslate"><span class="pre">HamIsing.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#richardson-gaudin-hamiltonian">Richardson-Gaudin Hamiltonian</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG"><code class="docutils literal notranslate"><span class="pre">HamRG</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamRG.__init__"><code class="docutils literal notranslate"><span class="pre">HamRG.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
