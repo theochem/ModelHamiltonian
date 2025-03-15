@@ -27,7 +27,7 @@ $$ R_p = S_p^Z + g\sum_{q\neq p}\frac{S_p^+ S_q^- - S_p^- S_q^+}{\mu_p^Z - \mu_q
 ### Bethe Ansatz Solution
 The eigenvalues are given by:
 $$ E = \sum_{p=1}^M E_p $$
-where $E_p$ satisfy the Richardson equations:
+where $E_p satisfy the Richardson equations:
 $$ \frac{2}{g} + \sum_{q=1}^N \frac{1}{\mu_q^Z - E_p} - \sum_{q\neq p} \frac{2}{E_q - E_p} = 0 $$
 
 The pairing correlation is:
@@ -71,7 +71,7 @@ level_spacing = 1.0
 g = 0.5
 
 mu = np.arange(n_sites) * level_spacing
-ham = HamRG(mu=mu, J_eq=g)
+ham = HamRG(mu=mu, J_eq=np.full((n_sites, n_sites), g))
 
 h = ham.generate_one_body_integral(dense=True)
 v = ham.generate_two_body_integral(dense=True)
