@@ -23,7 +23,7 @@ def test_antisymmetrization():
                           eri_antisym.transpose(1, 0, 3, 2)
 
     assert np.allclose(antisymmetric_check, 0), "Antisymmetrization failed!"
-    
+
 
 
 def test_hermitian_symmetry():

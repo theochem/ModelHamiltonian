@@ -145,7 +145,7 @@ def expand_sym(sym, integral, nbody):
                 integral[ps, rq] = integral[rs, pq]
                 integral[sp, qr] = integral[qp, sr]
                 integral[qr, sp] = integral[sr, qp]
-        integral = integral.tocsr()    
+        integral = integral.tocsr()
     return integral
 
 
@@ -193,8 +193,8 @@ def enforce_trs_symmetry(eri: np.ndarray) -> np.ndarray:
     return 0.5 * (eri + eri.transpose(2, 3, 0, 1).conj())
 
 def antisymmetrize_two_electron_integrals(
-    eri: np.ndarray, 
-    enforce_pg_symmetry: bool = False, 
+    eri: np.ndarray,
+    enforce_pg_symmetry: bool = False,
     enforce_hermitian: bool = False,
     enforce_spin_symmetry_func = None,
     enforce_permutational_symmetry: bool = False,

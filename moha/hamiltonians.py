@@ -563,7 +563,7 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        
+
         if basis == 'spatial basis':
             if self.J_ax.shape != (self.n_sites, self.n_sites):
                 raise TypeError("J_ax matrix has wrong basis")
@@ -637,7 +637,7 @@ class HamHeisenberg(HamiltonianAPI):
         -------
         scipy.sparse.csr_matrix or np.ndarray
         """
-        
+
         n_sp = self.n_sites
         Nv = 2 * n_sp
         v = lil_matrix((Nv * Nv, Nv * Nv))
@@ -714,7 +714,7 @@ class HamIsing(HamHeisenberg):
             S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z
         """
         if isinstance(connectivity, csr_matrix):  #
-            connectivity = connectivity.tolil()  
+            connectivity = connectivity.tolil()
         if isinstance(J_ax, float):
             J_eq = 0
         elif isinstance(J_ax, np.ndarray):

@@ -134,7 +134,7 @@ def test_heisenberg_2_spin():
     for i, j, k, l in zip(*inds):
         print(i, j, k, l, v[i, j, k, l], v_exact[i, j, k, l])
     print("DEBUG: v type in test_heisenberg_2_spin:", type(v))
-    
+
     assert_allclose(v, v_exact)
 
 
