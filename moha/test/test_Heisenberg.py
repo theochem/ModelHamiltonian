@@ -3,6 +3,7 @@ from numpy.testing import assert_allclose, assert_equal
 from moha import *
 
 
+
 def test_heisenberg_0():
     r"""Test the Heisenberg model 0 electron integral."""
     n_sites = 8
@@ -132,6 +133,8 @@ def test_heisenberg_2_spin():
     inds = np.nonzero(v)
     for i, j, k, l in zip(*inds):
         print(i, j, k, l, v[i, j, k, l], v_exact[i, j, k, l])
+    print("DEBUG: v type in test_heisenberg_2_spin:", type(v))
+    
     assert_allclose(v, v_exact)
 
 

@@ -2,9 +2,11 @@ r"""MoHa utilities submodule."""
 
 import numpy as np
 
-from scipy.sparse import diags
+from scipy.sparse import diags, csr_matrix, issparse
 
 import re
+
+import scipy.sparse as sp
 
 __all__ = [
     "convert_indices",
@@ -117,6 +119,7 @@ def expand_sym(sym, integral, nbody):
         integral = integral + integral.T - h_ii
     else:
         # getting nonzero elements from the 2d _sparse_ array
+        integral = integral.tolil()
         pq_array, rs_array = integral.nonzero()
         n = int(np.sqrt(integral.shape[0]))
 
@@ -142,6 +145,7 @@ def expand_sym(sym, integral, nbody):
                 integral[ps, rq] = integral[rs, pq]
                 integral[sp, qr] = integral[qp, sr]
                 integral[qr, sp] = integral[sr, qp]
+        integral = integral.tocsr()    
     return integral
 
 
@@ -165,3 +169,87 @@ def fill_o2(o2):
         o2[j, i, l, k] = o2[i, j, k, l]
         o2[i, j, l, k] = -o2[i, j, k, l]
     return o2
+
+
+
+
+def enforce_pg_symmetry(eri: np.ndarray) -> np.ndarray:
+    """Enforces point-group symmetry."""
+    return 0.5 * (eri + eri.transpose(2, 3, 0, 1))
+
+def enforce_hermitian_symmetry(eri: np.ndarray) -> np.ndarray:
+    """Enforces Hermitian symmetry."""
+    return 0.5 * (eri + eri.transpose(2, 3, 0, 1).conj())
+
+def apply_permutational_symmetry(eri: np.ndarray) -> np.ndarray:
+    """Enforces permutational symmetry."""
+    eri = 0.5 * (eri + eri.transpose(1, 0, 3, 2))
+    eri = 0.5 * (eri + eri.transpose(2, 3, 0, 1))
+    eri = 0.5 * (eri + eri.transpose(3, 2, 1, 0))
+    return eri
+
+def enforce_trs_symmetry(eri: np.ndarray) -> np.ndarray:
+    """Enforces time-reversal symmetry."""
+    return 0.5 * (eri + eri.transpose(2, 3, 0, 1).conj())
+
+def antisymmetrize_two_electron_integrals(
+    eri: np.ndarray, 
+    enforce_pg_symmetry: bool = False, 
+    enforce_hermitian: bool = False,
+    enforce_spin_symmetry_func = None,
+    enforce_permutational_symmetry: bool = False,
+    enforce_trs: bool = False,
+    n_spin_orbitals: int = None
+) -> np.ndarray:
+    """
+    Antisymmetrizes two-electron integrals with optional symmetries.
+
+    Args:
+        eri: Two-electron integrals, either as a dense array or sparse matrix.
+        enforce_pg_symmetry: Enforce point-group symmetry.
+        enforce_hermitian: Enforce Hermitian symmetry.
+        enforce_spin_symmetry_func: Function to enforce spin symmetry.
+        enforce_permutational_symmetry: Enforce permutational symmetry.
+        enforce_trs: Enforce time-reversal symmetry.
+        n_spin_orbitals: Number of spin orbitals (required for spin symmetry).
+
+    Returns:
+        Antisymmetrized two-electron integrals as a dense array.
+    """
+
+    # Convert sparse matrix to dense if necessary
+    if sp.issparse(eri):
+        eri = eri.toarray()
+
+    assert isinstance(eri, np.ndarray), f"ERI should be a NumPy array, but got {type(eri)}"
+
+    # Reshape if necessary
+    if eri.ndim == 2:
+        n_orbitals = int(np.sqrt(eri.shape[0]))
+        if n_orbitals ** 2 != eri.shape[0]:
+            raise ValueError(f"Cannot reshape ERI of shape {eri.shape} into (n, n, n, n).")
+        eri = eri.reshape(n_orbitals, n_orbitals, n_orbitals, n_orbitals)
+    elif eri.ndim != 4:
+        raise ValueError(f"ERI must be a 4D array or a 2D array that can be reshaped into 4D, but got shape {eri.shape}.")
+
+    # Antisymmetrization (Pauli exclusion principle)
+    antisymmetrized_eri = 0.5 * (eri - eri.transpose(1, 0, 2, 3))
+    antisymmetrized_eri -= 0.5 * (eri.transpose(0, 1, 3, 2) - eri.transpose(1, 0, 3, 2))
+
+    # Apply optional symmetries
+    if enforce_pg_symmetry:
+        antisymmetrized_eri = enforce_pg_symmetry(antisymmetrized_eri)
+
+    if enforce_hermitian:
+        antisymmetrized_eri = enforce_hermitian_symmetry(antisymmetrized_eri)
+
+    if enforce_permutational_symmetry:
+        antisymmetrized_eri = apply_permutational_symmetry(antisymmetrized_eri)
+
+    if enforce_trs:
+        antisymmetrized_eri = enforce_trs_symmetry(antisymmetrized_eri)
+
+    if enforce_spin_symmetry_func and n_spin_orbitals:
+        antisymmetrized_eri = enforce_spin_symmetry_func(antisymmetrized_eri, n_spin_orbitals)
+
+    return antisymmetrized_eri
