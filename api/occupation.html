@@ -392,19 +392,28 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP"><code class="docutils literal notranslate"><span class="pre">HamPPP</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.__init__"><code class="docutils literal notranslate"><span class="pre">HamPPP.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_one_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_two_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_zero_body_integral()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pariser-parr-pople-ppp-hamiltonian-model">Pariser-Parr-Pople(PPP) Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP"><code class="docutils literal notranslate"><span class="pre">HamPPP</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.__init__"><code class="docutils literal notranslate"><span class="pre">HamPPP.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_one_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_two_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_zero_body_integral()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub"><code class="docutils literal notranslate"><span class="pre">HamHub</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub.__init__"><code class="docutils literal notranslate"><span class="pre">HamHub.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck"><code class="docutils literal notranslate"><span class="pre">HamHuck</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck.__init__"><code class="docutils literal notranslate"><span class="pre">HamHuck.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hubbard-hamiltonian-model">Hubbard Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub"><code class="docutils literal notranslate"><span class="pre">HamHub</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub.__init__"><code class="docutils literal notranslate"><span class="pre">HamHub.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#huckel-hamiltonian-model">Huckel Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck"><code class="docutils literal notranslate"><span class="pre">HamHuck</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck.__init__"><code class="docutils literal notranslate"><span class="pre">HamHuck.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -420,12 +429,14 @@ document.write(`
                   
   <section id="occupation-based-hamiltonians">
 <h1>Occupation-based Hamiltonians<a class="headerlink" href="#occupation-based-hamiltonians" title="Link to this heading">#</a></h1>
+<section id="pariser-parr-pople-ppp-hamiltonian-model">
+<h2>Pariser-Parr-Pople(PPP) Hamiltonian model<a class="headerlink" href="#pariser-parr-pople-ppp-hamiltonian-model" title="Link to this heading">#</a></h2>
+<p>This model is used to describe molecules with π orbitals.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamPPP">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamPPP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP" title="Link to this definition">#</a></dt>
 <dd><p>Pariser-Parr-Pople Hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamPPP.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize Pariser-Parr-Pople Hamiltonian.</p>
@@ -463,7 +474,6 @@ The default value is appropriate for a pi-bond between Carbon atoms</p></li>
 \end{align}\end{split}\]</div>
 </dd></dl>
 
-</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="moha.HamPPP.generate_one_body_integral">
 <span class="sig-name descname"><span class="pre">generate_one_body_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamPPP.generate_one_body_integral" title="Link to this definition">#</a></dt>
@@ -512,14 +522,36 @@ The default value is appropriate for a pi-bond between Carbon atoms</p></li>
 
 </dd></dl>
 
+<p><strong>Example Usage:</strong>
+The example shown below is a linear chain of 4 carbon atoms (butadiene).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamPPP</span>
+
+<span class="c1"># Define connectivity as a list of tuples: (site1, site2, bond_type)</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="mf">1.92</span><span class="p">,</span> <span class="mf">1.00</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">,</span> <span class="mf">0.41</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">1.00</span><span class="p">,</span> <span class="mf">1.92</span><span class="p">,</span> <span class="mf">0.91</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.60</span><span class="p">,</span> <span class="mf">0.91</span><span class="p">,</span> <span class="mf">1.92</span><span class="p">,</span> <span class="mf">1.00</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.41</span><span class="p">,</span> <span class="mf">0.60</span><span class="p">,</span> <span class="mf">1.00</span><span class="p">,</span> <span class="mf">1.92</span><span class="p">]])</span>
+<span class="n">charges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ppp</span> <span class="o">=</span> <span class="n">HamPPP</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">charges</span><span class="o">=</span><span class="n">charges</span><span class="p">,</span> <span class="n">u_onsite</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">ppp</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix of Pariser-Parr-Pople Hamiltonian model:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="hubbard-hamiltonian-model">
+<h2>Hubbard Hamiltonian model<a class="headerlink" href="#hubbard-hamiltonian-model" title="Link to this heading">#</a></h2>
+<p>The Hubbard model is a simplified version of the PPP model with gamma being 0.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamHub">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamHub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHub" title="Link to this definition">#</a></dt>
 <dd><p>Hubbard Hamiltonian.</p>
 <p>The Hubbard model corresponds to choosing $gamma_{pq} = 0$
 It can be invoked by choosing gamma = 0 from PPP hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamHub.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_onsite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbital_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHub.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Hubbard Hamiltonian.</p>
@@ -549,16 +581,29 @@ The default value is appropriate for a pi-bond between Carbon atoms</p></li>
 + \sum_{p} U_{p} \hat{n}_{p \alpha} \hat{n}_{p\beta}\]</div>
 </dd></dl>
 
-</div></blockquote>
 </dd></dl>
 
+<p><strong>Example Usage:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHub</span>
+
+<span class="n">connectivity</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">hub</span> <span class="o">=</span> <span class="n">HamHub</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">,</span> <span class="n">u_onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix of Hubbard Hamiltonian model:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="huckel-hamiltonian-model">
+<h2>Huckel Hamiltonian model<a class="headerlink" href="#huckel-hamiltonian-model" title="Link to this heading">#</a></h2>
+<p>The Huckel model is another simplified Hamiltonian model with U_onsite and gamma both being 0.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="moha.HamHuck">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HamHuck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHuck" title="Link to this definition">#</a></dt>
 <dd><p>Huckel Hamiltonian.</p>
 <p>It can be invoked by choosing u_onsite = None from Hubbard hamiltonian.</p>
-<blockquote>
-<div><dl class="py method">
+<dl class="py method">
 <dt class="sig sig-object py" id="moha.HamHuck.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.414</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.0533</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sym</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bond_dictionary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#moha.HamHuck.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Huckel hamiltonian.</p>
@@ -586,9 +631,20 @@ The default value is appropriate for a pi-bond between Carbon atoms</p></li>
 \sum_{pq}h_{pq} a_{p}^{\dagger}a_{q}\]</div>
 </dd></dl>
 
-</div></blockquote>
 </dd></dl>
 
+<p><strong>Example Usage:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHuck</span>
+
+<span class="n">connectivity</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">huckel</span> <span class="o">=</span> <span class="n">HamHuck</span><span class="p">(</span><span class="n">connectivity</span><span class="o">=</span><span class="n">connectivity</span><span class="p">)</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">huckel</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;One-body Integral Matrix of Huckel Hamiltonian model:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -655,19 +711,28 @@ The default value is appropriate for a pi-bond between Carbon atoms</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP"><code class="docutils literal notranslate"><span class="pre">HamPPP</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.__init__"><code class="docutils literal notranslate"><span class="pre">HamPPP.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_one_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_two_body_integral()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_zero_body_integral()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pariser-parr-pople-ppp-hamiltonian-model">Pariser-Parr-Pople(PPP) Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP"><code class="docutils literal notranslate"><span class="pre">HamPPP</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.__init__"><code class="docutils literal notranslate"><span class="pre">HamPPP.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_one_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_one_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_two_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_two_body_integral()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamPPP.generate_zero_body_integral"><code class="docutils literal notranslate"><span class="pre">HamPPP.generate_zero_body_integral()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub"><code class="docutils literal notranslate"><span class="pre">HamHub</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub.__init__"><code class="docutils literal notranslate"><span class="pre">HamHub.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck"><code class="docutils literal notranslate"><span class="pre">HamHuck</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck.__init__"><code class="docutils literal notranslate"><span class="pre">HamHuck.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hubbard-hamiltonian-model">Hubbard Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub"><code class="docutils literal notranslate"><span class="pre">HamHub</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHub.__init__"><code class="docutils literal notranslate"><span class="pre">HamHub.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#huckel-hamiltonian-model">Huckel Hamiltonian model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck"><code class="docutils literal notranslate"><span class="pre">HamHuck</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#moha.HamHuck.__init__"><code class="docutils literal notranslate"><span class="pre">HamHuck.__init__()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
