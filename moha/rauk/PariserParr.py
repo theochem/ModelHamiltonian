@@ -285,7 +285,5 @@ def calculate_gamma(Uxy_bar, Rxy):
     ----------
     float: Computed gamma value based on the given parameters.
     """
-    # Example formula, needs actual formula to be replaced here
-    # This is just a placeholder formula
     gamma = Uxy_bar / (Uxy_bar * Rxy + np.exp(-1 / 2 * Uxy_bar**2 * Rxy ** 2))
     return gamma
