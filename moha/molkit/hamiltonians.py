@@ -4,9 +4,15 @@ from .utils.spinops import spinize_H, antisymmetrize_two_body, get_spin_blocks
 
 
 class MolHam:
+    """
+    Hamiltonian class for molecular systems.
+
+    Class handles handles molecular Hamiltonian
+    in the form of one- and two-electron integrals.
+    """
+
     def __init__(self, one_body, two_body):
-        """
-        Initialize MolHam with one and two electron integrals.
+        """Initialize MolHam with one and two electron integrals.
 
         Parameters
         ----------
@@ -14,6 +20,7 @@ class MolHam:
             One-electron integrals in spatial orbital basis
         two_body : np.ndarray
             Two-electron integrals in spatial orbital basis
+
         """
         self.one_body = one_body
         self.two_body = two_body
@@ -23,6 +30,8 @@ class MolHam:
 
     def spinize(self) -> None:
         """
+        Spinize the Hamiltonian.
+
         Convert the stored spatial-orbital integrals to the spin-orbital
         basis and cache them in `self.one_body_spin` / `self.two_body_spin`.
 
@@ -32,17 +41,17 @@ class MolHam:
         )
 
     def antisymmetrize(self):
-        """Apply proper antisymmetrization to two-electron integrals"""
+        """Apply proper antisymmetrization to two-electron integrals."""
         self.two_body = antisymmetrize_two_body(self.two_body, inplace=True)
 
     def get_spin_blocks(self):
-        """
-        Return the main spin blocks of the two-body spin-orbital tensor.
+        """Return the main spin blocks of the two-body spin-orbital tensor.
 
         Returns
         -------
         dict
             Dictionary with spin blocks: 'aaaa', 'bbbb', 'abab'
+
         """
         if not hasattr(self, "two_body_spin"):
             raise RuntimeError(
@@ -51,5 +60,5 @@ class MolHam:
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
 
     def build_reduced(self):
-        """Build the reduced hamiltonian form"""
+        """Build the reduced hamiltonian form."""
         pass

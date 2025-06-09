@@ -1,10 +1,11 @@
+r"""Utilities for spin operations on molecular Hamiltonians."""
+
 import numpy as np
 
 
 def spinize_H(one_body: np.ndarray,
               two_body: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Convert the one_body and two_body terms from spatial to spin-orbital basis.
+    r"""Convert the one/two body terms from spatial to spin-orbital basis.
 
     Parameters
     ----------
@@ -32,6 +33,7 @@ def spinize_H(one_body: np.ndarray,
                  V_{pqrs}^{\\alpha \\beta \\alpha \\beta}=\\
                  V_{pqrs}^{\\beta \\alpha \\beta \\alpha}=\\
                  V_{pqrs}^{\\text{spatial}}`
+
     """
     one_body = np.asarray(one_body)
     two_body = np.asarray(two_body)
@@ -64,8 +66,7 @@ def antisymmetrize_two_body(
         tensor: np.ndarray,
         *,
         inplace: bool = True) -> np.ndarray:
-    """
-    Antisymmetrize a two-electron integral tensor in **spin-orbital** basis.
+    r"""Antisymmetrize a two-electron integral tensor in spin-orbital basis.
 
     Parameters
     ----------
@@ -101,6 +102,7 @@ def antisymmetrize_two_body(
 
     for ``σ = α`` and ``σ = β``.  All other spin sectors are returned
     untouched.
+
     """
     if not inplace:
         tensor = tensor.copy()
@@ -125,8 +127,7 @@ def antisymmetrize_two_body(
 
 
 def get_spin_blocks(two_body_spin, n_spatial):
-    """
-    Return the main spin blocks of a two-body spin-orbital tensor.
+    """Return the main spin blocks of a two-body spin-orbital tensor.
 
     Parameters
     ----------
@@ -142,6 +143,7 @@ def get_spin_blocks(two_body_spin, n_spatial):
         - 'aaaa': alpha-alpha-alpha-alpha
         - 'bbbb': beta-beta-beta-beta
         - 'abab': alpha-beta-alpha-beta
+
     """
     return {
         "aaaa": two_body_spin[:n_spatial, :n_spatial, :n_spatial, :n_spatial],
