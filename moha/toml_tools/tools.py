@@ -80,7 +80,7 @@ def build_connectivity_1d(data):
     else:
         raise ValueError(
             "System parameter 'bc' must be set to either 'open' or 'periodic'"
-            )
+        )
 
     if data["system"]["bc"] == "periodic":
         adjacency[0, -1] = 1
@@ -140,7 +140,7 @@ def build_connectivity_2d(data):
             raise ValueError(
                 "System parameter 'bc' must be set to either 'open' "
                 "or 'periodic'"
-                )
+            )
 
     adjacency += adjacency.T
 

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def spinize_H(one_body: np.ndarray,
               two_body: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
@@ -16,14 +17,15 @@ def spinize_H(one_body: np.ndarray,
     -------
     one_body_spin : np.ndarray
         One-body term in spin-orbital basis in physics notation
-    two_body_spin : np.ndarray 
+    two_body_spin : np.ndarray
         Two-body term in spin-orbital basis in physics notation
 
     Notes
     -----
     Rules for the conversion:
     - The one-body term is converted as follows:
-        - :math:`h_{pq}^{\\alpha \\alpha}=h_{pq}^{\\beta \\beta}=h_{pq}^{\\text{spatial}}`
+        - :math:`h_{pq}^{\\alpha \\alpha}=h_{pq}^{\\beta \\beta}
+        =h_{pq}^{\\text{spatial}}`
         - :math:`h_{pq}^{\\alpha \\beta}=h_{pq}^{\\beta \\alpha}=0`
     - The two-body term is converted as follows:
         - :math:`V_{pqrs}^{\\alpha \\alpha \\alpha \\alpha}=\\
@@ -58,7 +60,10 @@ def spinize_H(one_body: np.ndarray,
     return one_body_spin, two_body_spin
 
 
-def antisymmetrize_two_body(tensor: np.ndarray, *, inplace: bool = True) -> np.ndarray:
+def antisymmetrize_two_body(
+        tensor: np.ndarray,
+        *,
+        inplace: bool = True) -> np.ndarray:
     """
     Antisymmetrize a two-electron integral tensor in **spin-orbital** basis.
 
@@ -78,9 +83,10 @@ def antisymmetrize_two_body(tensor: np.ndarray, *, inplace: bool = True) -> np.n
         .. math::
 
            V_{pqrs} = -V_{pqsr} = -V_{qprs} = V_{qpsr},
-  
+
         Mixed-spin blocks (αβ αβ and βα βα) are left unchanged because the
-        exchange integral between opposite spins vanishes :contentReference[oaicite:1]{index=1}.
+        exchange integral between opposite spins vanishes :
+        contentReference[oaicite:1]{index=1}.
 
     Notes
     -----
@@ -89,7 +95,7 @@ def antisymmetrize_two_body(tensor: np.ndarray, *, inplace: bool = True) -> np.n
     .. math::
 
         V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
-            \\;\;\\leftarrow\\;\\;
+            \\;\\;\\leftarrow\\;\\;
             \\tfrac12\\,\\bigl(V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
                               -V^{\\sigma\\sigma\\sigma\\sigma}_{pqsr}\\bigr),
 
@@ -114,8 +120,9 @@ def antisymmetrize_two_body(tensor: np.ndarray, *, inplace: bool = True) -> np.n
     bb = tensor[n:, n:, n:, n:]
     bb -= np.swapaxes(bb, 2, 3)
     bb *= 0.5
-    
+
     return tensor
+
 
 def get_spin_blocks(two_body_spin, n_spatial):
     """
@@ -124,7 +131,7 @@ def get_spin_blocks(two_body_spin, n_spatial):
     Parameters
     ----------
     two_body_spin : np.ndarray
-        A (2n, 2n, 2n, 2n) array of two-electron integrals in spin-orbital basis.
+        (2n, 2n, 2n, 2n) array of two-electron integrals in spin-orbital basis.
     n_spatial : int
         Number of spatial orbitals (n), where spin-orbitals = 2 * n.
 
@@ -141,4 +148,3 @@ def get_spin_blocks(two_body_spin, n_spatial):
         "bbbb": two_body_spin[n_spatial:, n_spatial:, n_spatial:, n_spatial:],
         "abab": two_body_spin[:n_spatial, n_spatial:, :n_spatial, n_spatial:],
     }
-

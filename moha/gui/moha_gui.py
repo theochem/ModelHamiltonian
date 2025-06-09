@@ -71,7 +71,7 @@ def build_molecule(ents):
         new_mol = new_mol.GetMol()
 
         # Get the size of the mol frame
-        mol_frame_width = mol_frame.winfo_width()-14
+        mol_frame_width = mol_frame.winfo_width() - 14
         mol_frame_height = mol_frame.winfo_height()
 
         # Create mol image
@@ -317,7 +317,7 @@ def make_model_form(frame, widgets, ents):
         "Heisenberg",
         "Ising",
         "RG"
-        ]
+    ]
 
     # Set the prompt text
     ham_dropdown_prompt_text = "Select Hamiltonian"
@@ -477,7 +477,7 @@ def make_save_quit_buttons(frame):
 
 if __name__ == '__main__':
     required_default_paramfile = Path(__file__).parent.\
-        parent/"toml_tools"/"defaults.toml"
+        parent / "toml_tools" / "defaults.toml"
     state_data = toml.load(required_default_paramfile)
 
     root = tk.Tk()
