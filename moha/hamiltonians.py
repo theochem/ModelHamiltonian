@@ -42,8 +42,7 @@ class HamPPP(HamiltonianAPI):
             bond_dictionary=None,
             orbital_overlap=None
     ):
-        r"""
-        Initialize Pariser-Parr-Pople Hamiltonian.
+        r"""Initialize Pariser-Parr-Pople Hamiltonian.
 
         Parameters
         ----------
@@ -110,6 +109,7 @@ class HamPPP(HamiltonianAPI):
         Returns
         -------
         float
+
         """
         if self.charges is None or self.gamma is None:
             self.zero_energy = 0
@@ -119,8 +119,7 @@ class HamPPP(HamiltonianAPI):
         return self.zero_energy
 
     def generate_one_body_integral(self, basis: str, dense: bool):
-        r"""
-        Generate one body integral in spatial or spin orbital basis.
+        r"""Generate one body integral in spatial or spin orbital basis.
 
         Parameters
         ----------
@@ -132,6 +131,7 @@ class HamPPP(HamiltonianAPI):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         # check if connectivity matrix is adjacency
         if isinstance(self.connectivity, np.ndarray):
@@ -197,8 +197,7 @@ class HamPPP(HamiltonianAPI):
         return self.one_body.todense() if dense else self.one_body
 
     def generate_two_body_integral(self, basis: str, dense: bool, sym=1):
-        r"""
-        Generate two body integral in spatial or spinorbital basis.
+        r"""Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
@@ -212,6 +211,7 @@ class HamPPP(HamiltonianAPI):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         n_sp = self.n_sites
         Nv = 2 * n_sp
@@ -262,8 +262,7 @@ class HamPPP(HamiltonianAPI):
 
 
 class HamHub(HamPPP):
-    r"""
-    Hubbard Hamiltonian.
+    r"""Hubbard Hamiltonian.
 
     The Hubbard model corresponds to choosing $\gamma_{pq} = 0$
     It can be invoked by choosing gamma = 0 from PPP hamiltonian.
@@ -284,8 +283,7 @@ class HamHub(HamPPP):
             Bz=None,
             gamma=None,
     ):
-        r"""
-        Hubbard Hamiltonian.
+        r"""Hubbard Hamiltonian.
 
         Parameters
         ----------
@@ -333,8 +331,7 @@ class HamHub(HamPPP):
 
 
 class HamHuck(HamHub):
-    r"""
-    Huckel Hamiltonian.
+    r"""Huckel Hamiltonian.
 
     It can be invoked by choosing u_onsite = None from Hubbard hamiltonian.
     """
@@ -348,8 +345,7 @@ class HamHuck(HamHub):
             atom_dictionary=None,
             bond_dictionary=None,
     ):
-        r"""
-        Huckel hamiltonian.
+        r"""Huckel hamiltonian.
 
         Parameters
         ----------
@@ -455,12 +451,12 @@ class HamHeisenberg(HamiltonianAPI):
         self._sym = 1
 
     def generate_zero_body_integral(self):
-        """
-        Generate zero body term.
+        """Generate zero body term.
 
         Returns
         -------
         zero_energy: float
+
         """
         zero_energy = -0.5 * np.sum(self.mu - np.diag(self.J_eq)) \
             + 0.25 * np.sum(self.J_ax) / 2  # divide by 2 to avoid double counting # noqa: E501
@@ -480,6 +476,7 @@ class HamHeisenberg(HamiltonianAPI):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         if basis == 'spatial basis':
             if self.J_ax.shape != (self.n_sites, self.n_sites):
@@ -553,6 +550,7 @@ class HamHeisenberg(HamiltonianAPI):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         n_sp = self.n_sites
         Nv = 2 * n_sp
@@ -625,6 +623,7 @@ class HamIsing(HamHeisenberg):
         .. math::
             \hat{H}_{Ising}=\sum_p\mu_p^Z
             S_p^Z+\sum_{p q} J_{p q}^{\mathrm{ax}} S_p^Z S_q^Z
+
         """
         if isinstance(J_ax, float):
             J_eq = 0

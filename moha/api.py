@@ -24,14 +24,13 @@ class HamiltonianAPI(ABC):
     r"""Hamiltonian abstract base class."""
 
     def generate_connectivity_matrix(self):
-        r"""
-
-        Generate connectivity matrix.
+        r"""Generate connectivity matrix.
 
         Returns
         -------
         tuple
             (dictionary, np.ndarray)
+
         """
         # check if self.connectivity is a matrix
         # if so, put assign it to self.connectivity_matrix
@@ -76,8 +75,7 @@ class HamiltonianAPI(ABC):
 
     @abstractmethod
     def generate_one_body_integral(self, dense: bool, basis: str):
-        r"""
-        Generate one body integral in spatial or spin orbital basis.
+        r"""Generate one body integral in spatial or spin orbital basis.
 
         Parameters
         ----------
@@ -89,13 +87,13 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         pass
 
     @abstractmethod
     def generate_two_body_integral(self, sym: int, basis: str, dense: bool):
-        r"""
-        Generate two body integral in spatial or spinorbital basis.
+        r"""Generate two body integral in spatial or spinorbital basis.
 
         Parameters
         ----------
@@ -109,12 +107,12 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         scipy.sparse.csr_matrix or np.ndarray
+
         """
         pass
 
     def to_sparse(self, Md):
-        r"""
-        Convert dense array of integrals to sparse array in scipy csr format.
+        r"""Convert dense array of integrals to sparse array in scipy csr.
 
         Parameters
         ----------
@@ -124,6 +122,7 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         scipy.sparse.csr_matrix
+
         """
         # Finding indices for non-zero elements and shape of Md.
         indices = np.array(np.where(Md != 0)).astype(int).T
@@ -156,8 +155,7 @@ class HamiltonianAPI(ABC):
             return
 
     def to_dense(self, Ms, dim=2):
-        r"""
-        Convert to dense matrix.
+        r"""Convert to dense matrix.
 
         Convert sparse array of integrals
         in scipy csr format to dense numpy array.
@@ -171,6 +169,7 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         np.ndarray
+
         """
         # return dense 2D array (default).
         if dim == 2:
@@ -190,8 +189,7 @@ class HamiltonianAPI(ABC):
             raise ValueError("Target output dimension must be either 2 or 4.")
 
     def to_spatial(self, sym: int, dense: bool, nbody: int):
-        r"""
-        Convert one-/two- integral matrix from spin-orbital to spatial basis.
+        r"""Convert one/two integral matrix from spin-orbital to spatial basis.
 
         Parameters
         ----------
@@ -229,6 +227,7 @@ class HamiltonianAPI(ABC):
         Assuming that :math:`v_{pqrs}^{abab} = v_{pqrs}^{baba}` and
         :math:`v_{pqrs}^{aaaa} = v_{pqrs}^{bbbb}`
         :math:`v_{pqrs} = 0.5*(v_{pqrs}^{aaaa} + v_{pqrs}^{abab})`
+
         """
         # Assumption: spatial components of alpha and beta
         # spin-orbitals are equivalent
@@ -275,8 +274,7 @@ class HamiltonianAPI(ABC):
         return spatial_int
 
     def to_spinorbital(self, integral: np.ndarray, sym=1, dense=False):
-        r"""
-        Convert one-/two- integral matrix from spatial to spin-orbital basis.
+        r"""Convert one/two integral matrix from spatial to spin-orbital basis.
 
         Parameters
         ----------
@@ -290,12 +288,12 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         None
+
         """
         pass
 
     def save_fcidump(self, f: Union[TextIO, str], nelec=0, spinpol=0):
-        r"""
-        Save all parts of hamiltonian in fcidump format.
+        r"""Save all parts of hamiltonian in fcidump format.
 
         Parameters
         ----------
@@ -313,6 +311,7 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         None
+
         """
         # Open file if it is a string
         if isinstance(f, str):
@@ -358,8 +357,7 @@ class HamiltonianAPI(ABC):
             print(f"{core_energy:23.16e} {0:4d} {0:4d} {0:4d} {0:4d}", file=f)
 
     def save_triqs(self, fname: str, integral):
-        r"""
-        Save matrix in triqc format.
+        r"""Save matrix in triqc format.
 
         Parameters
         ----------
@@ -371,6 +369,7 @@ class HamiltonianAPI(ABC):
         Returns
         -------
         None
+
         """
         pass
 
@@ -392,6 +391,7 @@ class HamiltonianAPI(ABC):
         ```
         open("file.npz", "wb") as f:
         ```
+
         """
         if self.zero_energy is not None:
             e0 = self.zero_energy
@@ -412,8 +412,7 @@ class HamiltonianAPI(ABC):
 
 
 def expand_sym(sym, integral, nbody):
-    r"""
-    Restore permutational symmetry of one- and two-body terms.
+    r"""Restore permutational symmetry of one- and two-body terms.
 
     Parameters
     ----------
@@ -459,6 +458,7 @@ def expand_sym(sym, integral, nbody):
         permutations considered can be
         found in [this site]
         (http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
+
     """
     if sym not in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")

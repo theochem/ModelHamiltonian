@@ -14,8 +14,7 @@ __all__ = [
 
 
 def convert_indices(N, *args):
-    r"""
-    Convert indices from 4d array to 2d numpy array and vice-versa.
+    r"""Convert indices from 4d array to 2d numpy array and vice-versa.
 
     :param N: size of corresponding _4d_ matrix: int
     :param args: indices i, j, k, l or p,q: int
@@ -53,8 +52,7 @@ def convert_indices(N, *args):
 
 
 def expand_sym(sym, integral, nbody):
-    r"""
-    Restore permutational symmetry of one- and two-body terms.
+    r"""Restore permutational symmetry of one- and two-body terms.
 
     Parameters
     ----------
@@ -100,6 +98,7 @@ def expand_sym(sym, integral, nbody):
         permutations considered can be
         found in [this site]
         (http://vergil.chemistry.gatech.edu/notes/permsymm/permsymm.html).
+
     """
     if sym not in [1, 2, 4, 8]:
         raise ValueError("Wrong input symmetry")
@@ -146,8 +145,7 @@ def expand_sym(sym, integral, nbody):
 
 
 def fill_o2(o2):
-    """
-    Fill the 2-body matrix with the missing elements.
+    """Fill the 2-body matrix with the missing elements.
 
     Parameters
     ----------
@@ -158,6 +156,7 @@ def fill_o2(o2):
     -------
     o2: np.ndarray
         4d array with the symmetry 1
+
     """
     # loop over nonzero elements
     for i, j, k, l in np.nonzero(o2):

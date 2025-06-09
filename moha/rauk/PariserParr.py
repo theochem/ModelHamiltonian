@@ -26,8 +26,7 @@ def populate_PP_dct(
         ionization,
         Sxy=None,
         bond_type='sigma'):
-    r"""
-    Calculate the beta for a bond based on atomic ionization and distance.
+    r"""Calculate the beta for a bond based on atomic ionization and distance.
 
     Parameters
     ----------
@@ -44,6 +43,7 @@ def populate_PP_dct(
     -------
     float
         Calculated beta parameter for the bond.
+
     """
     ev_H = constants.value('electron volt-hartree relationship')
     alpha_x = float(-ionization[atom1_name]) * ev_H
@@ -63,8 +63,7 @@ def populate_PP_dct(
 
 
 def an(n, x):
-    r"""
-    Compute the nth term of series 'a' based on x.
+    r"""Compute the nth term of series 'a' based on x.
 
     Parameters
     ----------
@@ -77,6 +76,7 @@ def an(n, x):
     -------
     float
         Value of the nth term of series 'a'.
+
     """
     sum = 0
     for k in range(1, n + 2):
@@ -86,8 +86,7 @@ def an(n, x):
 
 
 def bn(n, x):
-    r"""
-    Compute the nth term of series 'b' based on x.
+    r"""Compute the nth term of series 'b' based on x.
 
     Parameters
     ----------
@@ -100,6 +99,7 @@ def bn(n, x):
     -------
     float
         Value of the nth term of series 'b'.
+
     """
     sum = 0
     for k in range(1, n + 2):
@@ -109,8 +109,7 @@ def bn(n, x):
 
 
 def Bn(n, t, p):
-    r"""
-    Calculate the nth B parameter in the overlap integral formula.
+    r"""Calculate the nth B parameter in the overlap integral formula.
 
     Parameters
     ----------
@@ -125,6 +124,7 @@ def Bn(n, t, p):
     -------
     float
         Calculated Bn value.
+
     """
     if t == 0:
         return 2 / (n + 1)
@@ -132,8 +132,7 @@ def Bn(n, t, p):
 
 
 def An(n, p):
-    r"""
-    Calculate the nth A parameter in the overlap integral formula.
+    r"""Calculate the nth A parameter in the overlap integral formula.
 
     Parameters
     ----------
@@ -146,13 +145,13 @@ def An(n, p):
     -------
     float
         Calculated An value.
+
     """
     return np.exp(-p) * an(n, p)
 
 
 def Sxy_sigma(t, p):
-    r"""
-    Calculate the overlap integral Sxy for a sigma bond.
+    r"""Calculate the overlap integral Sxy for a sigma bond.
 
     Parameters
     ----------
@@ -165,6 +164,7 @@ def Sxy_sigma(t, p):
     -------
     float
         Calculated Sxy value.
+
     """
     if t == 0:
         return np.exp(-p) * (1 + p + (1 / 3) * p**2)
@@ -177,8 +177,7 @@ def Sxy_sigma(t, p):
 
 
 def Sxy_pi(t, p):
-    r"""
-    Calculate the overlap integral Sxy for a pi bond.
+    r"""Calculate the overlap integral Sxy for a pi bond.
 
     Parameters
     ----------
@@ -191,6 +190,7 @@ def Sxy_pi(t, p):
     -------
     float
         Calculated Sxy value.
+
     """
     if t == 0:
         return np.exp(-p) * (1 + p + (2 / 5) * p**2 + (1 / 15) * (p**3))
@@ -207,8 +207,7 @@ def Sxy_pi(t, p):
 def compute_overlap(
         connectivity, atom_dictionary,
         bond_dictionary, orbital_overlap):
-    r"""
-    Compute the parameterized distance overlap matrix for a set of atoms.
+    r"""Compute the parameterized distance overlap matrix for a set of atoms.
 
     Parameters
     ----------
@@ -225,6 +224,7 @@ def compute_overlap(
     -------
     scipy.sparse.csr_matrix
         The one-body matrix constructed based on the above parameters.
+
     """
     if atom_dictionary is None:
         ionization_path = Path(__file__).parent / "ionization.json"
@@ -273,8 +273,7 @@ def compute_overlap(
 
 
 def calculate_gamma(Uxy_bar, Rxy):
-    """
-    Calculate the gamma value based on Uxy and Rxy.
+    """Calculate the gamma value based on Uxy and Rxy.
 
     Parameters
     ----------
@@ -282,10 +281,9 @@ def calculate_gamma(Uxy_bar, Rxy):
     Rxy (float): Represents the distance or a related measure.
 
     Returns
-    ----------
+    -------
     float: Computed gamma value based on the given parameters.
+
     """
-    # Example formula, needs actual formula to be replaced here
-    # This is just a placeholder formula
     gamma = Uxy_bar / (Uxy_bar * Rxy + np.exp(-1 / 2 * Uxy_bar**2 * Rxy ** 2))
     return gamma

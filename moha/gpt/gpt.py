@@ -10,18 +10,18 @@ from pathlib import Path
 
 
 def map_to_toml(funcs):
-    """
-    Functin that maps the dictionary to the toml-like dictionary.
+    """Functin that maps the dictionary to the toml-like dictionary.
 
     Parmaeters:
     -----------
     funcs: dict
         The dictionary that contains the function arguments
 
-    Returns:
-    --------
+    Returns
+    -------
     toml_dict: dict
         The dictionary that contains the toml-like arguments
+
     """
     toml_dict = {}
     toml_dict["control"] = {}
@@ -64,15 +64,15 @@ def map_to_toml(funcs):
 
 
 def load_config():
-    """
-    Load OpenAI API key and model type from config.txt file.
+    """Load OpenAI API key and model type from config.txt file.
 
-    Returns:
-    --------
+    Returns
+    -------
     OPENAI_API_KEY : str
         OpenAI API key
     GPT_MODEL : str
         GPT model type
+
     """
     config_path = Path(__file__).parent / "config.toml"
     config = toml.load(config_path)
@@ -87,11 +87,10 @@ def load_config():
 def chat_completion_request(messages, model, client,
                             tools=None,
                             tool_choice=None):
-    """
-    Request ChatCompletion from OpenAI API.
+    """Request ChatCompletion from OpenAI API.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     messages : list
         List of messages
     model : str
@@ -103,10 +102,11 @@ def chat_completion_request(messages, model, client,
     tool_choice : dict
         Tool choice dictionary
 
-    Returns:
-    --------
+    Returns
+    -------
     response : dict
         ChatCompletion response
+
     """
     try:
         response = client.chat.completions.create(
@@ -123,31 +123,31 @@ def chat_completion_request(messages, model, client,
 
 
 def read_promt():
-    """
-    Read prompt from user.
+    """Read prompt from user.
 
-    Returns:
-    --------
+    Returns
+    -------
     prompt : str
         User input prompt
+
     """
     prompt = input("Describe Hamiltonian that needs to be generated: ")
     return prompt
 
 
 def generate_ham(prompt):
-    """
-    Generate Hamiltonian from prompt.
+    """Generate Hamiltonian from prompt.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     prompt : str
         User input prompt
 
-    Returns:
-    --------
+    Returns
+    -------
     ham : dict
         Model Hamiltonian
+
     """
     # get api key and model type
     OPENAI_API_KEY, GPT_MODEL = load_config()

@@ -14,8 +14,7 @@ def build_one_body(
         connectivity,
         atom_dictionary,
         bond_dictionary):
-    r"""
-    Construct the one-body matrix for a compound.
+    r"""Construct the one-body matrix for a compound.
 
     Parameters
     ----------
@@ -30,6 +29,7 @@ def build_one_body(
     -------
     scipy.sparse.csr_matrix
         One-body matrix.
+
     """
     # Populate diagonal and non-diagonal matrix elements
     # Create a sparse diagonal matrix
@@ -79,8 +79,7 @@ def assign_rauk_parameters(
         connectivity,
         atom_dictionary,
         bond_dictionary):
-    r"""
-    Assign Rauk parameters and constructs the one-body matrix.
+    r"""Assign Rauk parameters and constructs the one-body matrix.
 
     It uses a  predefined values and external data
     for specified atom types and connectivity.
@@ -98,6 +97,7 @@ def assign_rauk_parameters(
     -------
     scipy.sparse.csr_matrix
         Matrix representing molecular structure.
+
     """
     if atom_dictionary is None:
         atom_dictionary = {}

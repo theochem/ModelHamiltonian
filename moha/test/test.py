@@ -6,8 +6,7 @@ from numpy.testing import assert_allclose, assert_equal
 
 
 def test_hub2():
-    r"""
-    2 site hubbard model with 2 electrons.
+    r"""2 site hubbard model with 2 electrons.
 
     Should return U=\frac{1}{2}\left[U-\sqrt{U^{2}+16 t^{2}}\right]$
     numerical result is -1.561552812
@@ -31,8 +30,7 @@ def test_hub2():
 
 
 def test_hub4():
-    r"""
-    4 site hubbard model with periodic boundary conditions.
+    r"""4 site hubbard model with periodic boundary conditions.
 
     The exact energy is Lieb-Wu equation:
     $\frac{E(U, d=1)}{t N_{s}}=-4 \int_{0}^{\infty} d x
@@ -66,8 +64,7 @@ def test_hub4():
 
 
 def test_ethylene():
-    r"""
-    Ethylene Huckel model.
+    r"""Ethylene Huckel model.
 
     $E_0 = 2 (\alpha + \beta)$
     """
@@ -99,8 +96,7 @@ def test_ethylene():
 
 
 def test_4():
-    r"""
-    Cyclobutadiene, 4 site Huckel model with periodic boundary conditions.
+    r"""Cyclobutadiene, 4 site Huckel model with periodic boundary conditions.
 
     $E_0 = 2 (\alpha + 2 \beta) + 2 \alpha$
     """

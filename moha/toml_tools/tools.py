@@ -11,8 +11,7 @@ from pathlib import Path
 
 
 def set_defaults(input_data):
-    """
-    Set defaults in the parameter dictionary\
+    """Set defaults in the parameter dictionary\
     loaded from toml input file.
 
     Parameters
@@ -23,6 +22,7 @@ def set_defaults(input_data):
     Returns
     -------
     None
+
     """
     # require that defaults.toml exists
     required_default_paramfile = Path(__file__).parent / "defaults.toml"
@@ -60,8 +60,7 @@ def set_defaults(input_data):
 
 
 def build_connectivity_1d(data):
-    """
-    Build adjacency matrix for 1d moltype.
+    """Build adjacency matrix for 1d moltype.
 
     Parameters
     ----------
@@ -72,6 +71,7 @@ def build_connectivity_1d(data):
     -------
     adjacency: numpy array
         adjacency matrix
+
     """
     norb = data["system"]["norb"]
 
@@ -80,7 +80,7 @@ def build_connectivity_1d(data):
     else:
         raise ValueError(
             "System parameter 'bc' must be set to either 'open' or 'periodic'"
-            )
+        )
 
     if data["system"]["bc"] == "periodic":
         adjacency[0, -1] = 1
@@ -91,8 +91,7 @@ def build_connectivity_1d(data):
 
 
 def build_connectivity_2d(data):
-    """
-    Build adjacency matrix for 2d square-grid moltype.
+    """Build adjacency matrix for 2d square-grid moltype.
 
     Parameters
     ----------
@@ -103,6 +102,7 @@ def build_connectivity_2d(data):
     -------
     adjacency: numpy array
         adjacency matrix
+
     """
     # set Lx and Ly
     if "Lx" not in data["system"].keys():
@@ -140,7 +140,7 @@ def build_connectivity_2d(data):
             raise ValueError(
                 "System parameter 'bc' must be set to either 'open' "
                 "or 'periodic'"
-                )
+            )
 
     adjacency += adjacency.T
 
@@ -148,8 +148,7 @@ def build_connectivity_2d(data):
 
 
 def build_connectivity_molfile(data):
-    """
-    Build adjacency matrix for molfile moltype.
+    """Build adjacency matrix for molfile moltype.
 
     Parameters
     ----------
@@ -165,6 +164,7 @@ def build_connectivity_molfile(data):
     -----
     Hamiltonian bonds should be defined as symbolic
     bonds in the molfile (bondtype = 0).
+
     """
     if "molfile" not in data["system"]:
         raise ValueError(
@@ -221,8 +221,7 @@ def build_connectivity_molfile(data):
 
 
 def build_connectivity_smiles(data):
-    """
-    Build adjacency matrix for smiles moltype.
+    """Build adjacency matrix for smiles moltype.
 
     Parameters
     ----------
@@ -238,6 +237,7 @@ def build_connectivity_smiles(data):
     -----
     Hamiltonian bonds should be defined as symbolic
     bonds in the molfile (bondtype = 0).
+
     """
     if "smiles" not in data["system"]:
         raise ValueError(
@@ -257,8 +257,7 @@ def build_connectivity_smiles(data):
 
 
 def build_moha(data):
-    """
-    Build and return hamiltonian object\
+    """Build and return hamiltonian object\
     specific to the "1d" moltype.
 
     Supported hamiltonians are: PPP, Huckel, \
@@ -275,6 +274,7 @@ def build_moha(data):
     -------
     ham: moha.Ham
         model hamiltonian object.
+
     """
     # build connectivity for moltype
     print("System is:", data["system"]["moltype"])
@@ -343,8 +343,7 @@ def build_moha(data):
 
 
 def dict_to_ham(data):
-    """
-    Generate hamiltonian from dictionary of model data.
+    """Generate hamiltonian from dictionary of model data.
 
     Parameters
     ----------
@@ -356,6 +355,7 @@ def dict_to_ham(data):
     -------
     hamiltonian: moha.Ham
         model hamiltonian object.
+
     """
     # set any missing required values as defaults
     set_defaults(data)
@@ -394,8 +394,7 @@ def dict_to_ham(data):
 
 
 def from_toml(toml_file):
-    """
-    Generate hamiltonian from toml file.
+    """Generate hamiltonian from toml file.
 
     Parameters
     ----------
@@ -405,6 +404,7 @@ def from_toml(toml_file):
     Returns
     -------
     moha.Ham
+
     """
     data = toml.load(toml_file)
     ham = dict_to_ham(data)

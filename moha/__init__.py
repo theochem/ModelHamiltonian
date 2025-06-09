@@ -2,7 +2,7 @@ r"""Model Hamiltonian module."""
 
 
 from .hamiltonians import HamPPP, HamHub, HamHuck, \
-                          HamHeisenberg, HamIsing, HamRG
+    HamHeisenberg, HamIsing, HamRG
 
 
 __all__ = [
