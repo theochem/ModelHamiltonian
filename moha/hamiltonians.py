@@ -562,25 +562,28 @@ class HamHeisenberg(HamiltonianAPI):
             J_eq = self.J_eq
             J_ax = self.J_ax
             for p in range(n_sp):
-                for q in range(p + 1, n_sp):
-                    i, j = convert_indices(Nv, p, q, p, q)
-                    v[i, j] = 0.25 * J_ax[p, q]
-
-                    i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                    v[i, j] = 0.25 * J_ax[p, q]
-
-                    i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                    v[i, j] = 0.25 * J_ax[p, q]
-
-                    i, j = convert_indices(Nv,
-                                           p + n_sp,
-                                           q + n_sp,
-                                           p + n_sp,
-                                           q + n_sp)
-                    v[i, j] = 0.25 * J_ax[p, q]
+                for q in range(p, n_sp):
 
                     i, j = convert_indices(Nv, p, p + n_sp, q, q + n_sp)
                     v[i, j] = J_eq[p, q]
+
+                    if p != q:
+                        # filling the matrix with J_ax
+                        i, j = convert_indices(Nv, p, q, p, q)
+                        v[i, j] = 0.25 * J_ax[p, q]
+
+                        i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
+                        v[i, j] = 0.25 * J_ax[p, q]
+
+                        i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
+                        v[i, j] = 0.25 * J_ax[p, q]
+
+                        i, j = convert_indices(Nv,
+                                               p + n_sp,
+                                               q + n_sp,
+                                               p + n_sp,
+                                               q + n_sp)
+                        v[i, j] = 0.25 * J_ax[p, q]
 
         v = v.tocsr()
 

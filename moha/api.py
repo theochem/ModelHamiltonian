@@ -246,7 +246,7 @@ class HamiltonianAPI(ABC):
                 pp_, pp_ = convert_indices(n,
                                            p, p + self.n_sites,
                                            p, p + self.n_sites)
-                spatial_int[pp, pp] = integral[(pp_, pp_)]
+                spatial_int[pp, pp] = 0.5 * integral[(pp_, pp_)]
                 for q in range(p + 1, self.n_sites):
                     # v_pqpq = 0.5*Gamma_pqpq_aa = 0.5*Gamma_pqpq_bb
                     pq, pq = convert_indices(self.n_sites, p, q, p, q)
