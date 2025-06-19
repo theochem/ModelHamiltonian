@@ -1,6 +1,7 @@
 r"""Molkit Module."""
 
-from .utils.spinops import spinize_H, antisymmetrize_two_body, get_spin_blocks
+from .utils.spinops import antisymmetrize_two_body, get_spin_blocks
+import numpy as np
 
 
 class MolHam:
@@ -28,17 +29,64 @@ class MolHam:
         self.n_spin = 2 * self.n_spatial
         self.reduced_ham = None
 
-    def spinize(self) -> None:
-        """
-        Spinize the Hamiltonian.
+    def spinize_H(one_body: np.ndarray,
+                  two_body: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        r"""Convert the one/two body terms from spatial to spin-orbital basis.
 
-        Convert the stored spatial-orbital integrals to the spin-orbital
-        basis and cache them in `self.one_body_spin` / `self.two_body_spin`.
+        Parameters
+        ----------
+        one_body : np.ndarray
+            One-body term in spatial basis in physics notation
+        two_body : np.ndarray
+            Two-body term in spatial basis in physics notation
+
+        Returns
+        -------
+        one_body_spin : np.ndarray
+            One-body term in spin-orbital basis in physics notation
+        two_body_spin : np.ndarray
+            Two-body term in spin-orbital basis in physics notation
+
+        Notes
+        -----
+        Rules for the conversion:
+        - The one-body term is converted as follows:
+            - :math:`h_{pq}^{\\alpha \\alpha}=h_{pq}^{\\beta \\beta}
+            =h_{pq}^{\\text{spatial}}`
+            - :math:`h_{pq}^{\\alpha \\beta}=h_{pq}^{\\beta \\alpha}=0`
+        - The two-body term is converted as follows:
+            - :math:`V_{pqrs}^{\\alpha \\alpha \\alpha \\alpha}=\\
+                    V_{pqrs}^{\\alpha \\beta \\alpha \\beta}=\\
+                    V_{pqrs}^{\\beta \\alpha \\beta \\alpha}=\\
+                    V_{pqrs}^{\\text{spatial}}`
 
         """
-        self.one_body_spin, self.two_body_spin = spinize_H(
-            self.one_body, self.two_body
-        )
+        one_body = np.asarray(one_body)
+        two_body = np.asarray(two_body)
+
+        if one_body.ndim != 2 or one_body.shape[0] != one_body.shape[1]:
+            raise ValueError("one_body must be square (n, n)")
+        n = one_body.shape[0]
+        if two_body.shape != (n, n, n, n):
+            raise ValueError(
+                "two_body must have shape (n, n, n, n) with same n")
+
+        one_body_spin = np.zeros((2 * n, 2 * n), dtype=one_body.dtype)
+        one_body_spin[:n, :n] = one_body   # αα block
+        one_body_spin[n:, n:] = one_body   # ββ block
+
+        two_body_spin = np.zeros((2 * n, 2 * n, 2 * n, 2 * n),
+                                 dtype=two_body.dtype)
+        # αααα
+        two_body_spin[:n, :n, :n, :n] = two_body
+        # ββββ
+        two_body_spin[n:, n:, n:, n:] = two_body
+        # αβαβ
+        two_body_spin[:n, n:, :n, n:] = two_body
+        # βαβα
+        two_body_spin[n:, :n, n:, :n] = two_body
+
+        return one_body_spin, two_body_spin
 
     def antisymmetrize(self):
         """Apply proper antisymmetrization to two-electron integrals."""
