@@ -4,8 +4,7 @@ import re
 
 
 def get_atom_type(atom):
-    r"""
-    Extract the atom type and position index from the atom string.
+    r"""Extract the atom type and position index from the atom string.
 
     Parameters
     ----------
@@ -18,6 +17,7 @@ def get_atom_type(atom):
     tuple
         A tuple containing the atom type (including site index) as a string and
         the position index as an integer.
+
     """
     # The pattern matches an initial letter sequence for the atom type,
     # followed by a number for the position, and numbers in parentheses for
@@ -44,8 +44,7 @@ def get_atom_type(atom):
 
 
 def get_atoms_list(connectivity, return_nsites=False):
-    r"""
-    Process the connectivity information of a molecular compound.
+    r"""Process the connectivity information of a molecular compound.
 
     Parameters
     ----------
@@ -60,6 +59,7 @@ def get_atoms_list(connectivity, return_nsites=False):
         List with atom types and site indices.
     max_site : int
         Maximum site index in the system.
+
     """
     atoms_sites_lst = []
     max_site = 0
