@@ -5,8 +5,7 @@ import numpy as np
 
 
 class MolHam:
-    """
-    Hamiltonian class for molecular systems.
+    """Hamiltonian class for molecular systems.
 
     Class handles handles molecular Hamiltonian
     in the form of one- and two-electron integrals.
@@ -35,6 +34,7 @@ class MolHam:
         Parameters
         ----------
         None
+
         Returns
         -------
         one_body_spin : np.ndarray
@@ -104,18 +104,13 @@ class MolHam:
 
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
 
-    def to_geminal(two_body, type='rdm2'):
-        r"""
-        Convert the two-body term to the geminal basis.
+    def to_geminal(two_body):
+        r"""Convert the two-body term to the geminal basis.
 
         Parameters
         ----------
         two_body : np.ndarray
             Two-body term in spin-orbital basis in physics notation.
-        type : str
-            ['rdm2', 'h2']. Type of the two-body term.
-            - 'rdm2' : 2 body reduced density matrix
-            - 'h2' : 2 body Hamiltonian
 
         Returns
         -------
@@ -152,19 +147,20 @@ class MolHam:
         """
         n = two_body.shape[0]
         two_body_gem = []
+
         for i in range(n):
             for j in range(i + 1, n):
                 for k in range(n):
                     for ell in range(k + 1, n):
-                        if type == 'rdm2':
-                            val = 0.5 * 4 * two_body[i, j, k, ell]
-                            two_body_gem.append(val)
-                        elif type == 'h2':
-                            two_body_gem.append(0.5 * (two_body[i, j, k, ell] -
-                                                       two_body[j, i, k, ell] -
-                                                       two_body[i, j, ell, k] +
-                                                       two_body[j, i, ell, k]))
-        n_gem = n * (n - 1) // 2  # number of pairs
+                        term = 0.5 * (
+                            two_body[i, j, k, ell]
+                            - two_body[j, i, k, ell]
+                            - two_body[i, j, ell, k]
+                            + two_body[j, i, ell, k]
+                        )
+                        two_body_gem.append(term)
+
+        n_gem = n * (n - 1) // 2
         return np.array(two_body_gem).reshape(n_gem, n_gem)
 
     def build_reduced(self):

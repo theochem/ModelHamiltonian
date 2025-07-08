@@ -1,27 +1,9 @@
 r"""Utilities for molecular Hamiltonians."""
 
-import numpy as np
 
-
-def _build_pair_lut(n_orb):
-    """Return  two arrays  idx2pair[A]=(p,q)  and  pair2idx[p,q]=A."""
-    n_gem = n_orb * (n_orb - 1) // 2
-    idx2pair = np.empty((n_gem, 2), dtype=int)
-    pair2idx = -np.ones((n_orb, n_orb), dtype=int)
-
-    A = 0
-    for p in range(n_orb):
-        for q in range(p + 1, n_orb):
-            idx2pair[A] = (p, q)
-            pair2idx[p, q] = A
-            pair2idx[q, p] = A    #
-            A += 1
-    return idx2pair, pair2idx
-
-
-def from_geminal(two_body_gem, n_orb, type='rdm2'):
+def from_geminal(two_body_gem, n_orb):
     """
-    Inverse of to_geminal().
+    Inverse of MolHam.to_geminal().
 
     Parameters
     ----------
@@ -29,43 +11,32 @@ def from_geminal(two_body_gem, n_orb, type='rdm2'):
         Matrix in the geminal basis.
     n_orb : int
         Number of spin orbitals.
-    type : {'rdm2', 'h2'}
-        Must match the `type` used in to_geminal().
 
     Returns
     -------
     V : (n_orb, n_orb, n_orb, n_orb) ndarray
-        Two-electron tensor in spin-orbital physics notation,
-        fully antisymmetrised:  V_{ijkl} = -V_{jikl} = -V_{ijlk} = V_{jilk}
+        Fully antisymmetrised two-electron tensor V_{ijkl}.
     """
     n_gem = n_orb * (n_orb - 1) // 2
     if two_body_gem.shape != (n_gem, n_gem):
-        raise ValueError("geminal tensor shape mismatch: " f"got {
-                         two_body_gem.shape}, expected {(n_gem, n_gem)}")
+        raise ValueError(f"Shape mismatch: got {two_body_gem.shape}")
 
-    idx2pair, pair2idx = _build_pair_lut(n_orb)
-
+    # Generate flattened pair list exactly like to_geminal
+    pairs = [(i, j) for i in range(n_orb) for j in range(i + 1, n_orb)]
     V = np.zeros((n_orb, n_orb, n_orb, n_orb))
 
-    for A in range(n_gem):
-        p, q = idx2pair[A]
-        for B in range(n_gem):
-            r, s = idx2pair[B]
-            val = two_body_gem[A, B]
+    for A, (i, j) in enumerate(pairs):
+        for B, (k, l) in enumerate(pairs):
+            val = 0.25 * two_body_gem[A, B]  # undo the factor 0.5 * 4 = 2
 
-            if type == 'rdm2':
-                # to_geminal used factor 2 = 0.5*4  → divide by 2 to invert
-                val *= 0.5
-            # type == 'h2' : no scaling (it was a sum/diff already)
-
-            # fill the 8 permutations required by antisymmetry
-            V[p, q, r, s] = val
-            V[q, p, r, s] = -val
-            V[p, q, s, r] = -val
-            V[q, p, s, r] = val
-            V[r, s, p, q] = val
-            V[s, r, p, q] = -val
-            V[r, s, q, p] = -val
-            V[s, r, q, p] = val
+            # Apply antisymmetric filling
+            V[i, j, k, l] = val
+            V[j, i, k, l] = -val
+            V[i, j, l, k] = -val
+            V[j, i, l, k] = val
+            V[k, l, i, j] = val
+            V[l, k, i, j] = -val
+            V[k, l, j, i] = -val
+            V[l, k, j, i] = val
 
     return V
