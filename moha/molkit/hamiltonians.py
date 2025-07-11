@@ -119,33 +119,36 @@ class MolHam:
 
         Notes
         -----
-        Assuming that rdm2 obeys the following permutation rules:
-        - :math:`\Gamma_{p q r s} = -\Gamma_{q p r s} = -\Gamma_{p q s r}
-        = \Gamma_{q p s r}`
-
+        Assuming that rdm2 obbey the following permutation rules:
+        - :math:`\Gamma_{p q r s}=-\Gamma_{q p r s}=-\Gamma_{p q s r}
+        =\Gamma_{q p s r}`
         we can convert the two-body term to the geminal basis
-        using the following formula:
+        by the following formula:
 
         .. math::
 
-            \Gamma_{A B}
-            = \frac{1}{2} \left(
-                V_{p q r s} - V_{q p r s}
-                - V_{p q s r} + V_{q p s r}
-            \right)
+            \Gamma_{p q}=0.5 * 4 \Gamma_{p q r s}
 
         where:
-        - :math:`\Gamma_{A B}` is the two-body term in the geminal basis
-        - :math:`V_{p q r s}` is the two-body term in the spin-orbital basis
+        - :math:`\Gamma_{p q}` is the two-body term in the geminal basis
+        - :math:`\Gamma_{p q r s}` is the two-body term in the spin-orbital
+        Hamiltonian in the geminal basis is obtained by the following formula:
 
-        This formula is used because the Hamiltonian object
-        returned from formats like FCIDUMP (converted to physics notation)
-        may not automatically obey these permutation rules,
-        so full antisymmetrization is applied explicitly.
+        .. math::
+
+        V_{A B}
+        =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)
+
+        This is coming from the fact, that the Hamiltonian object
+        retured from the fcidump (converted to the physics notation)
+        doesn't obbey the permutation rules.
+        Thus, the full formula has to be used.
+
         """
         n = two_body.shape[0]
         two_body_gem = []
 
+        # i,j,k,l -> pqrs
         for p in range(n):
             for q in range(p + 1, n):
                 for r in range(n):
