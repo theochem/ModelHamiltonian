@@ -22,8 +22,8 @@ def test_hub2():
 
     # constructing the exact two body integral
     v_true = np.zeros((2, 2, 2, 2,))
-    v_true[0, 0, 0, 0] = 1
-    v_true[1, 1, 1, 1] = 1
+    v_true[0, 0, 0, 0] = 0.5
+    v_true[1, 1, 1, 1] = 0.5
 
     assert_equal(h, np.array([[0., -1.],
                               [-1., 0.]]))
@@ -61,7 +61,7 @@ def test_hub4():
         # constructing the exact two body integral
         v_true = np.zeros((nsite, nsite, nsite, nsite))
         for i in range(nsite):
-            v_true[i, i, i, i] = 1
+            v_true[i, i, i, i] = 0.5
         assert_equal(v, v_true)
 
 
@@ -205,6 +205,6 @@ def test_spin_spatial_conversion():
                    [beta, 0., beta, 0.]])
     h2 = np.zeros((4, 4, 4, 4))
     for i in range(4):
-        h2[i, i, i, i] = 1
+        h2[i, i, i, i] = 0.5
     np.testing.assert_allclose(h, h1)
     np.testing.assert_allclose(v, h2)
