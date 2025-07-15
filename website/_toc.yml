@@ -11,7 +11,8 @@ parts:
       - file: examples/Ising.ipynb
       - file: examples/mohagpt.ipynb
       - file: examples/gui.ipynb
-
+      - file: examples/RG.ipynb
+      
     - caption: API
       chapters:
       - file: api/api.rst
