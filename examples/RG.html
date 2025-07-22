@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial for the Richardson-Gaudin model &#8212; Ayers Lab</title>
+    <title>Tutorial: Richardson-Gaudin model &#8212; Ayers Lab</title>
   
   
   
@@ -191,7 +191,7 @@
 
 <li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Richardson-Gaudin model</a></li>
 
 
 
@@ -435,7 +435,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Tutorial for the Richardson-Gaudin model</h1>
+    <h1>Tutorial: Richardson-Gaudin model</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -445,7 +445,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial: Richardson-Gaudin model</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#match-the-definition">1. Match the definition</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#provided-data">2. Provided data</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
@@ -461,8 +461,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-for-the-richardson-gaudin-model">
-<h1>Tutorial for the Richardson-Gaudin model<a class="headerlink" href="#tutorial-for-the-richardson-gaudin-model" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-richardson-gaudin-model">
+<h1>Tutorial: Richardson-Gaudin model<a class="headerlink" href="#tutorial-richardson-gaudin-model" title="Link to this heading">#</a></h1>
 <p>This tutorial demonstrates how to use the Richardson-Gaudin model with the ModelHamiltonian package.
 Specifically, it shows how to set up the connectivity matrix and perform the FCI calculation using the pyscf library.</p>
 <p>The primary focus of this tutorial, however, it to demostrate the flexibility behind the Model Hamiltonin package. To do so, we will show how to use this library to build a Richardson Model that’s given by:</p>
@@ -474,10 +474,11 @@ Specifically, it shows how to set up the connectivity matrix and perform the FCI
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="match-the-definition">
 <h1>1. Match the definition<a class="headerlink" href="#match-the-definition" title="Link to this heading">#</a></h1>
-<p>In our case, we define the Richardson model as follows:
-$<span class="math notranslate nohighlight">\(
+<p>In our case, we define the Richardson model as follows:</p>
+<div class="math notranslate nohighlight">
+\[
 \hat{H}_{R G}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
-\)</span>$</p>
+\]</div>
 <p>To match the above definition we need to move around some of the terms. Skipping the details, we can match the definition by setting the following parameters:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -689,7 +690,7 @@ J_{p q}^{\mathrm{eq}} &amp;= -\frac{g}{2} \\
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial: Richardson-Gaudin model</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#match-the-definition">1. Match the definition</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#provided-data">2. Provided data</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
