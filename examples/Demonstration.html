@@ -191,6 +191,10 @@
 
 <li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gui.html">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RG.html">Tutorial for the Richardson-Gaudin model</a></li>
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
@@ -707,7 +711,7 @@ Error of integration:  8.67591249968029e-11
         <span class="n">h2</span> <span class="o">=</span> <span class="n">hubbard</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
         
         <span class="c1">### calculating spectrum</span>
-        <span class="n">e</span><span class="p">,</span> <span class="n">fcivec</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin1</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">nelec</span><span class="p">,</span> <span class="n">nroots</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">,</span> <span class="n">fcivec</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin1</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">h2</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">nelec</span><span class="p">,</span> <span class="n">nroots</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
                                             <span class="n">max_space</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">max_cycle</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
         <span class="n">U</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ui</span><span class="p">)</span>
         <span class="n">E_tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>

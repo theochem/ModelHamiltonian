@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial: Graphical User Interface (GUI) with ModelHamiltonian &#8212; Ayers Lab</title>
+    <title>Tutorial for the Richardson-Gaudin model &#8212; Ayers Lab</title>
   
   
   
@@ -59,12 +59,12 @@
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/gui';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/RG';</script>
     <link rel="icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial for the Richardson-Gaudin model" href="RG.html" />
-    <link rel="prev" title="Tutorial: Easy Quantum System Setup with ChatGPT" href="mohagpt.html" />
+    <link rel="next" title="Hamiltonian API" href="../api/api.html" />
+    <link rel="prev" title="Tutorial: Graphical User Interface (GUI) with ModelHamiltonian" href="gui.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -190,8 +190,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Ising.html">Tutorial: Spin-based Hamiltonians</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RG.html">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial for the Richardson-Gaudin model</a></li>
 
 
 
@@ -255,7 +255,7 @@
       
       
       
-      <li><a href="https://colab.research.google.com/github/theochem/ModelHamiltonian/blob/main/website/examples/gui.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/theochem/ModelHamiltonian/blob/main/website/examples/RG.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Colab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -321,7 +321,7 @@
       
       
       
-      <li><a href="https://github.com/theochem/ModelHamiltonian/issues/new?title=Issue%20on%20page%20%2Fexamples/gui.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/theochem/ModelHamiltonian/issues/new?title=Issue%20on%20page%20%2Fexamples/RG.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -351,7 +351,7 @@
       
       
       
-      <li><a href="../_sources/examples/gui.ipynb" target="_blank"
+      <li><a href="../_sources/examples/RG.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -435,7 +435,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</h1>
+    <h1>Tutorial for the Richardson-Gaudin model</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -445,9 +445,12 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-hubbard-model-from-a-smiles-string">Example: Hubbard model from a SMILES string</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-ising-model-from-a-molfile">Example: Ising model from a MOLFILE</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#match-the-definition">1. Match the definition</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#provided-data">2. Provided data</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
 </ul>
+
             </nav>
         </div>
     </div>
@@ -458,100 +461,168 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-graphical-user-interface-gui-with-modelhamiltonian">
-<h1>Tutorial: Graphical User Interface (GUI) with ModelHamiltonian<a class="headerlink" href="#tutorial-graphical-user-interface-gui-with-modelhamiltonian" title="Link to this heading">#</a></h1>
-<p>In this tutorial, we will learn how to use the GUI of the <code class="docutils literal notranslate"><span class="pre">ModelHamiltonian</span></code> package. The GUI is a graphical interface that allows you to interact with the package without having to write any code. First, we have to install the gui-subversion of package. To do this, we will use the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/theochem/ModelHamiltonian.git
-<span class="nb">cd</span><span class="w"> </span>ModelHamiltonian
-python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>gui<span class="o">]</span>
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-for-the-richardson-gaudin-model">
+<h1>Tutorial for the Richardson-Gaudin model<a class="headerlink" href="#tutorial-for-the-richardson-gaudin-model" title="Link to this heading">#</a></h1>
+<p>This tutorial demonstrates how to use the Richardson-Gaudin model with the ModelHamiltonian package.
+Specifically, it shows how to set up the connectivity matrix and perform the FCI calculation using the pyscf library.</p>
+<p>The primary focus of this tutorial, however, it to demostrate the flexibility behind the Model Hamiltonin package. To do so, we will show how to use this library to build a Richardson Model that’s given by:</p>
+<div class="math notranslate nohighlight">
+\[
+\hat{H}_{B C S}=\frac{1}{2} \sum_{i=1}^N \varepsilon_i\left(a_{i \uparrow}^{\dagger} a_{1 \uparrow}+a_{i \downarrow}^{\dagger} a_{i \downarrow}\right)-\frac{g}{2} \sum_{i, j=1}^N a_{i \uparrow}^{\dagger} a_{i \downarrow}^{\dagger} a_{j \downarrow} a_{j \uparrow}
+\]</div>
+<p>This definition is given in a <a class="reference external" href="https://arxiv.org/pdf/2506.09379">paper</a> and can be used to validate numerical results that were kindly provided by <a class="reference external" href="https://paul-a-johnson.fsg.ulaval.ca/en">Paul Johnson</a>.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="match-the-definition">
+<h1>1. Match the definition<a class="headerlink" href="#match-the-definition" title="Link to this heading">#</a></h1>
+<p>In our case, we define the Richardson model as follows:
+$<span class="math notranslate nohighlight">\(
+\hat{H}_{R G}=\sum_p\left(\mu_p^Z-J_{p p}^{\mathrm{eq}}\right) S_p^Z+\sum_{p q} J_{p q}^{\mathrm{eq}} S_p^{+} S_q^{-}
+\)</span>$</p>
+<p>To match the above definition we need to move around some of the terms. Skipping the details, we can match the definition by setting the following parameters:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mu_p &amp;= \varepsilon_p + J_{p p}^{\mathrm{eq}} \\
+J_{p q}^{\mathrm{eq}} &amp;= -\frac{g}{2} \\
+\end{align*}
+\end{split}\]</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="provided-data">
+<h1>2. Provided data<a class="headerlink" href="#provided-data" title="Link to this heading">#</a></h1>
+<p>For the values of <span class="math notranslate nohighlight">\(\varepsilon_i\)</span> = [0, 1, 2, 3, 4, 5] and ground state energy of 6 electron system, the following data was provided by the author:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>g (unitless)</p></th>
+<th class="head"><p>Energy (unitless)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3.536</p></td>
+<td><p>-14.20687553</p></td>
+</tr>
+<tr class="row-odd"><td><p>460.5454545454545</p></td>
+<td><p>-2755.77652711</p></td>
+</tr>
+<tr class="row-even"><td><p>120.8888888888889</p></td>
+<td><p>-717.84780933</p></td>
+</tr>
+<tr class="row-odd"><td><p>8.182</p></td>
+<td><p>-41.80555486</p></td>
+</tr>
+<tr class="row-even"><td><p>6.869</p></td>
+<td><p>-33.96821191</p></td>
+</tr>
+<tr class="row-odd"><td><p>480.5252525252525</p></td>
+<td><p>-2875.655157</p></td>
+</tr>
+<tr class="row-even"><td><p>5.556</p></td>
+<td><p>-26.14992638</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.011</p></td>
+<td><p>-0.14612126</p></td>
+</tr>
+<tr class="row-even"><td><p>6.263</p></td>
+<td><p>-30.35668599</p></td>
+</tr>
+<tr class="row-odd"><td><p>4.849</p></td>
+<td><p>-21.95332479</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="calculation">
+<h1>Calculation<a class="headerlink" href="#calculation" title="Link to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha.hamiltonians</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamRG</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">fci</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
+
+<span class="c1"># Define the connectivity matrix assuming a fully connected system</span>
+<span class="n">connectivity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">g_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mf">3.536</span><span class="p">,</span>
+    <span class="mf">460.5454545454545</span><span class="p">,</span>
+    <span class="mf">120.88888888888889</span><span class="p">,</span>
+    <span class="mf">8.182</span><span class="p">,</span>
+    <span class="mf">6.869000000000001</span><span class="p">,</span>
+    <span class="mf">480.52525252525254</span><span class="p">,</span>
+    <span class="mf">5.556000000000001</span><span class="p">,</span>
+    <span class="mf">1.011</span><span class="p">,</span>
+    <span class="mf">6.263000000000001</span><span class="p">,</span>
+    <span class="mf">4.849000000000001</span>
+<span class="p">]</span>
+
+<span class="n">energy_values</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">-</span><span class="mf">14.20687553</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">2755.77652711</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">717.84780933</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">41.80555486</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">33.96821191</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">2875.655157</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">26.14992638</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">0.14612126</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">30.35668599</span><span class="p">,</span>
+    <span class="o">-</span><span class="mf">21.95332479</span>
+<span class="p">]</span>
+<span class="n">energy_computed</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="c1"># Create the Richardson-Gaudin Hamiltonian</span>
+<span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">g_values</span><span class="p">:</span>
+    <span class="c1"># convert parameters to match the definition</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="o">-</span><span class="n">g</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">+</span> <span class="n">J</span>   
+
+    <span class="c1"># Create the Hamiltonian</span>
+    <span class="n">ham</span> <span class="o">=</span> <span class="n">HamRG</span><span class="p">(</span><span class="n">J_eq</span> <span class="o">=</span> <span class="n">J</span><span class="o">*</span><span class="n">connectivity</span><span class="p">,</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span><span class="p">)</span>
+    <span class="n">e0</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_zero_body_integral</span><span class="p">()</span>
+
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_one_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">)</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="n">ham</span><span class="o">.</span><span class="n">generate_two_body_integral</span><span class="p">(</span><span class="n">dense</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s1">&#39;spatial basis&#39;</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># convert to chemists notation</span>
+    <span class="n">h2_ch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ijkl-&gt;ikjl&#39;</span><span class="p">,</span> <span class="n">h2</span><span class="p">)</span>
+
+
+    <span class="n">n_sites</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">occ</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_sites</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_sites</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Solve the FCI problem</span>
+    <span class="n">e</span><span class="p">,</span> <span class="n">ci</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin0</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">h1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">h2_ch</span><span class="p">,</span> <span class="n">nelec</span><span class="o">=</span><span class="n">occ</span><span class="p">,</span> <span class="n">norb</span><span class="o">=</span><span class="n">n_sites</span><span class="p">,</span> <span class="n">nroots</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">ecore</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">energy_computed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Print the results in a table format</span>
+
+<span class="n">table_data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">computed</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g_values</span><span class="p">,</span> <span class="n">energy_values</span><span class="p">,</span> <span class="n">energy_computed</span><span class="p">):</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">computed</span> <span class="o">-</span> <span class="n">energy</span><span class="p">)</span>
+    <span class="n">table_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">g</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">computed</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">,</span> <span class="s2">&quot;Computed&quot;</span><span class="p">,</span> <span class="s2">&quot;Error&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table_data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;github&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Once the installation is complete, we can run the GUI by executing the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>moha/gui/moha_gui.py<span class="w"> </span>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>|       g |       Energy |     Computed |   Error |
+|---------|--------------|--------------|---------|
+|   3.536 |   -14.2069   |   -14.2069   |       0 |
+| 460.545 | -2755.78     | -2755.78     |       0 |
+| 120.889 |  -717.848    |  -717.848    |       0 |
+|   8.182 |   -41.8056   |   -41.8056   |       0 |
+|   6.869 |   -33.9682   |   -33.9682   |       0 |
+| 480.525 | -2875.66     | -2875.66     |       0 |
+|   5.556 |   -26.1499   |   -26.1499   |       0 |
+|   1.011 |    -0.146121 |    -0.146121 |       0 |
+|   6.263 |   -30.3567   |   -30.3567   |       0 |
+|   4.849 |   -21.9533   |   -21.9533   |       0 |
 </pre></div>
 </div>
-<p>The window shown below will appear:
-<img alt="img1" src="../_images/gui_1.png" /></p>
-<p>This window has three main sections: the input section, the output section, and the control section. The input section is where you can input the parameters of the calculation. The output section is where the results of the calculation will be displayed. The control section is where you can start the calculation and save the results.</p>
-<p>In the input section <code class="docutils literal notranslate"><span class="pre">Molecule</span></code>, you can define the system with:</p>
-<ul class="simple">
-<li><p>MOLFILE: The path to the molfile of the molecule.</p></li>
-<li><p>SMILES: The SMILES representation of the molecule.</p></li>
-</ul>
-<p>In the control section <code class="docutils literal notranslate"><span class="pre">Model</span></code>, you can choose a model. Available options are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">PPP</span></code>: Pariser-Parr-Pople model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Hubbard</span></code>: Hubbard model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Huckel</span></code>: Huckel model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Heisenberg</span></code>: XXZ Heisenberg model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Ising</span></code>: Ising model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">RG</span></code>: Richardson-Gaudin model.</p></li>
-</ul>
-<p>In the output section, you can save the results of the calculation by clicking the <code class="docutils literal notranslate"><span class="pre">Save</span></code> button.</p>
-<p>Output file formats are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">FCIDUMP</span></code>: The FCIDUMP file format is a standard file format for storing the Hamiltonian matrix of a quantum chemistry calculation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">npz</span></code>: The npz file format is a standard file format for storing the Hamiltonian matrix of a quantum chemistry calculation.</p></li>
-</ul>
-<p>Results will be saved in the <code class="docutils literal notranslate"><span class="pre">outdir</span></code> directory under the name <code class="docutils literal notranslate"><span class="pre">prefix</span></code>.</p>
-<section id="example-hubbard-model-from-a-smiles-string">
-<h2>Example: Hubbard model from a SMILES string<a class="headerlink" href="#example-hubbard-model-from-a-smiles-string" title="Link to this heading">#</a></h2>
-<p>In this example, we will calculate the Hubbard model of a molecule using the SMILES string. We will use the SMILES string <code class="docutils literal notranslate"><span class="pre">C1=CC=CC=C1</span></code> to define the molecule. We will set the parameters of the Hubbard model as follows:</p>
-<ul class="simple">
-<li><p>U = 1.0 Hartree</p></li>
-<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> = -0.414 Hartree</p></li>
-<li><p><span class="math notranslate nohighlight">\(\beta\)</span> = -0.0533 Hartree</p></li>
-</ul>
-<p>To do this, we will follow these steps:</p>
-<ol class="arabic simple">
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">SMILES</span></code> field to <code class="docutils literal notranslate"><span class="pre">C1=CC=CC=C1</span></code>.</p></li>
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Model</span></code> section, select the <code class="docutils literal notranslate"><span class="pre">Hubbard</span></code> model.</p></li>
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Hubbard</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">U</span></code> field to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, the <code class="docutils literal notranslate"><span class="pre">alpha</span></code> field to <code class="docutils literal notranslate"><span class="pre">-0.414</span></code>, and the <code class="docutils literal notranslate"><span class="pre">beta</span></code> field to <code class="docutils literal notranslate"><span class="pre">-0.0533</span></code>.</p></li>
-<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">Molecule</span></code> button to build the molecule.</p></li>
-</ol>
-<p>After following these steps, the output section will display the built system. You should see the following output:
-<img alt="img2" src="../_images/gui_2.png" /></p>
-<p>Now, let’s save ouput in the <code class="docutils literal notranslate"><span class="pre">FCIDUMP</span></code> format under a file name <code class="docutils literal notranslate"><span class="pre">hubbard_1.fcidump</span></code>. We can choose the output directory to be <code class="docutils literal notranslate"><span class="pre">results</span></code>.
-To do this, we will follow these steps:</p>
-<ol class="arabic simple">
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Output</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">Format</span></code> field to <code class="docutils literal notranslate"><span class="pre">FCIDUMP</span></code>.</p></li>
-<li><p>In the prefix field, set the prefix to <code class="docutils literal notranslate"><span class="pre">Hubbard_1</span></code>. Note that prefix isn’t case sensitive. File name will be <code class="docutils literal notranslate"><span class="pre">hubbard_1.fcidump</span></code>.</p></li>
-<li><p>In the outdir field, set the outdir to <code class="docutils literal notranslate"><span class="pre">results</span></code>.</p></li>
-</ol>
-<p>After following these steps, the output section will display the build system. You should see the following output:
-<img alt="img3" src="../_images/gui_3.png" /></p>
-<p>To save the results, click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">integrals</span></code> button. The results will be saved in the <code class="docutils literal notranslate"><span class="pre">results</span></code> directory under the name <code class="docutils literal notranslate"><span class="pre">hubbard_1.fcidump</span></code>.
-In order to quit the GUI, click the <code class="docutils literal notranslate"><span class="pre">Quit</span></code> button.</p>
-</section>
-<section id="example-ising-model-from-a-molfile">
-<h2>Example: Ising model from a MOLFILE<a class="headerlink" href="#example-ising-model-from-a-molfile" title="Link to this heading">#</a></h2>
-<p>In this example, we will calculate the XXZ Heisenberg model of a molecule using the MOLFILE. We will use the MOLFILE <code class="docutils literal notranslate"><span class="pre">examples/mol/Fe8S7.mol</span></code> to define a system. This system has been used in the <a class="reference external" href="https://arxiv.org/abs/2203.15291">paper</a> to study simulations of challenging correlated molecules and materials on the Sycamore quantum processor. We will set the parameters of the Ising model as follows:</p>
-<ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(J_{ax}\)</span> = 1.0 Hartree</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mu\)</span> = -1.0 Hartree</p></li>
-</ul>
-<p>NOTE: Connectivity information from the MOLFILE is taked from the symbolic bonds in the MOLFILE.</p>
-<p>To do this, we will follow these steps:</p>
-<ol class="arabic simple">
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Molecule</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">MOFILE</span></code> field to <code class="docutils literal notranslate"><span class="pre">examples/mol/Fe8S7.mol</span></code>.</p></li>
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Model</span></code> section, select the <code class="docutils literal notranslate"><span class="pre">Ising</span></code> model.</p></li>
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Ising</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">J_ax</span></code> field to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, and the <code class="docutils literal notranslate"><span class="pre">mu</span></code> field to <code class="docutils literal notranslate"><span class="pre">-1.0</span></code>.</p></li>
-<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">Molecule</span></code> button to build the molecule.</p></li>
-</ol>
-<p>After following these steps, the output section will display the built system. You should see the following output:
-<img alt="img4" src="../_images/gui_4.png" /></p>
-<p>Now, let’s save ouput in the <code class="docutils literal notranslate"><span class="pre">npz</span></code> format under a file name <code class="docutils literal notranslate"><span class="pre">ising_1.npz</span></code>. We can choose the output directory to be <code class="docutils literal notranslate"><span class="pre">results</span></code>.
-To do this, we will follow these steps:</p>
-<ol class="arabic simple">
-<li><p>In the <code class="docutils literal notranslate"><span class="pre">Output</span></code> section, set the <code class="docutils literal notranslate"><span class="pre">Format</span></code> field to <code class="docutils literal notranslate"><span class="pre">npz</span></code>.</p></li>
-<li><p>In the prefix field, set the prefix to <code class="docutils literal notranslate"><span class="pre">Ising_1</span></code>. Note that prefix isn’t case sensitive. File name will be <code class="docutils literal notranslate"><span class="pre">ising_1.npz</span></code>.</p></li>
-<li><p>In the outdir field, set the outdir to <code class="docutils literal notranslate"><span class="pre">results</span></code>.</p></li>
-</ol>
-<p>After following these steps, the output section will display the build system. You should see the following output:
-<img alt="img5" src="../_images/gui_5.png" /></p>
-<p>To save the results, click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">integrals</span></code> button. The results will be saved in the <code class="docutils literal notranslate"><span class="pre">results</span></code> directory under the name <code class="docutils literal notranslate"><span class="pre">ising_1.npz</span></code>.
-In order to quit the GUI, click the <code class="docutils literal notranslate"><span class="pre">Quit</span></code> button.</p>
-</section>
+</div>
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -585,20 +656,20 @@ In order to quit the GUI, click the <code class="docutils literal notranslate"><
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mohagpt.html"
+       href="gui.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Tutorial: Easy Quantum System Setup with ChatGPT</p>
+        <p class="prev-next-title">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</p>
       </div>
     </a>
     <a class="right-next"
-       href="RG.html"
+       href="../api/api.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Tutorial for the Richardson-Gaudin model</p>
+        <p class="prev-next-title">Hamiltonian API</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -618,9 +689,12 @@ In order to quit the GUI, click the <code class="docutils literal notranslate"><
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-hubbard-model-from-a-smiles-string">Example: Hubbard model from a SMILES string</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-ising-model-from-a-molfile">Example: Ising model from a MOLFILE</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial for the Richardson-Gaudin model</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#match-the-definition">1. Match the definition</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#provided-data">2. Provided data</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#calculation">Calculation</a></li>
 </ul>
+
   </nav></div>
 
 </div></div>
