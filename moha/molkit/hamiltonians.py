@@ -32,8 +32,6 @@ class MolHam:
         self.n_spin = 2 * self.n_spatial
         self.reduced_ham = None
 
-    
-
     def antisymmetrize(self):
         """Apply proper antisymmetrization to two-electron integrals."""
         self.two_body = antisymmetrize_two_body(self.two_body, inplace=True)
@@ -53,13 +51,18 @@ class MolHam:
 
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
 
-    def to_geminal(two_body):
-        r"""Convert the two-body term to the geminal basis.
+    def to_geminal(self, two_body=None, type='h2'):
+        r"""
+        Convert the two-body term to the geminal basis.
 
         Parameters
         ----------
         two_body : np.ndarray
             Two-body term in spin-orbital basis in physics notation.
+        type : str
+            ['rdm2', 'h2']. Type of the two-body term.
+            - 'rdm2' : 2 body reduced density matrix
+            - 'h2' : 2 body Hamiltonian
 
         Returns
         -------
@@ -88,11 +91,6 @@ class MolHam:
         V_{A B}
         =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)
 
-        This is coming from the fact, that the Hamiltonian object
-        retured from the fcidump (converted to the physics notation)
-        doesn't obbey the permutation rules.
-        Thus, the full formula has to be used.
-
         """
         n = two_body.shape[0]
         two_body_gem = []
@@ -102,13 +100,19 @@ class MolHam:
             for q in range(p + 1, n):
                 for r in range(n):
                     for s in range(r + 1, n):
-                        term = 0.5 * (
-                            two_body[p, q, r, s]
-                            - two_body[q, p, r, s]
-                            - two_body[p, q, s, r]
-                            + two_body[q, p, s, r]
-                        )
-                        two_body_gem.append(term)
+                        if type == 'rdm2':
+                            two_body_gem.append(
+                                0.5 * 4 * two_body[p, q, r, s]
+                            )
+                        elif type == 'h2':
+                            two_body_gem.append(
+                                0.5 * (
+                                    two_body[p, q, r, s]
+                                    - two_body[q, p, r, s]
+                                    - two_body[p, q, s, r]
+                                    + two_body[q, p, s, r]
+                                )
+                            )
 
         n_gem = n * (n - 1) // 2
         return np.array(two_body_gem).reshape(n_gem, n_gem)
@@ -160,7 +164,7 @@ class MolHam:
         one_body_spin[n:, n:] = one_body   # ββ block
 
         two_body_spin = np.zeros((2 * n, 2 * n, 2 * n, 2 * n),
-                                    dtype=two_body.dtype)
+                                 dtype=two_body.dtype)
         # αααα
         two_body_spin[:n, :n, :n, :n] = two_body
         # ββββ
@@ -203,9 +207,8 @@ class MolHam:
         ``MolHam`` instance.
         """
         h_spin, V_spin = self.spinize_H()
-    
+
         h_upscaled = upscale_one_body(h_spin, n_elec)
 
         k = h_upscaled + 0.5 * V_spin
         return k
-

@@ -52,7 +52,7 @@ def antisymmetrize_two_body(
     if nspin % 2:
         raise ValueError("spin-orbital tensor size must be even (2 n)")
 
-    n = nspin // 2                       # number of spatial orbitals
+    n = nspin // 2      # number of spatial orbitals
 
     # αααα block
     aa = tensor[:n, :n, :n, :n]
@@ -92,9 +92,11 @@ def get_spin_blocks(two_body_spin, n_spatial):
         "abab": two_body_spin[:n_spatial, n_spatial:, :n_spatial, n_spatial:],
     }
 
+
 def upscale_one_body(one_body, n_elec):
-    """
+    r"""
     Upscale the 1 body term to the 2 body term.
+
     Specifically, the one-body term is upscaled to a 4-dimensional tensor.
 
     Parameters
@@ -115,10 +117,11 @@ def upscale_one_body(one_body, n_elec):
 
     .. math::
 
-        \\frac{1}{2 (n-1)}(\\mathbf{h}_{pq}\\delta_{rs} + \\mathbf{h}_{rs}\\delta_{pq})
+        \\frac{1}{2 (n-1)}(\\mathbf{h}_{pq}\\delta_{rs} +
+        \\mathbf{h}_{rs}\\delta_{pq})
 
     where:
-    - :math:`\\mathbf{h}_{pq}` and :math:`\\mathbf{h}_{rs}` are elements of the one-body term
+    - :math:`\\mathbf{h}_{pq}` and :math:`\\mathbf{h}_{rs}` are the one-body
     - :math:`\\delta_{rs}` and :math:`\\delta_{pq}` are Kronecker deltas
     - :math:`n` is the number of electrons in the system
 
@@ -127,6 +130,7 @@ def upscale_one_body(one_body, n_elec):
     """
     n = one_body.shape[0]
     eye = np.eye(n)
-    one_body_up = 0.5 * (np.kron(one_body, eye) + np.kron(eye, one_body)) / (n_elec - 1)
-    
+    one_body_up = 0.5 * (np.kron(one_body, eye) +
+                         np.kron(eye, one_body)) / (n_elec - 1)
+
     return one_body_up.reshape(n, n, n, n)

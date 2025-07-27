@@ -1,3 +1,4 @@
+import moha
 import tomllib
 import numpy as np
 from os.path import exists
@@ -5,7 +6,7 @@ from os.path import join
 from os import makedirs
 import sys
 sys.path.insert(0, '../')
-import moha
+
 
 def set_defaults(input_data):
     '''
@@ -26,11 +27,11 @@ def set_defaults(input_data):
     required_default_paramfile = "defaults.toml"
     if not exists(required_default_paramfile):
         raise Exception("Default input file 'defaults.toml' is required.")
-    
+
     # load defaults.toml data into default_data
     default_data = tomllib.load(
-                       open(required_default_paramfile, "rb")
-            )
+        open(required_default_paramfile, "rb")
+    )
 
     # set defaults in input_data
     for param_type in default_data.keys():
@@ -53,7 +54,6 @@ def set_defaults(input_data):
                 input_data[param_type][param] = data_value.lower()
 
 
-
 def build_moha_moltype_1d(data):
     '''
     Function that builds and returns hamiltonian object 
@@ -73,14 +73,14 @@ def build_moha_moltype_1d(data):
         moha.Ham
     '''
     # define parameters for 1d model
-    norb      = data["system"]["norb"]
-    charge    = data["model"]["charge"]
-    alpha     = data["model"]["alpha"]
-    beta      = data["model"]["beta"]
-    u_onsite  = data["model"]["u_onsite"]
-    mu        = data["model"]["mu"]
-    J_eq      = data["model"]["J_eq"]
-    J_ax      = data["model"]["J_ax"]
+    norb = data["system"]["norb"]
+    charge = data["model"]["charge"]
+    alpha = data["model"]["alpha"]
+    beta = data["model"]["beta"]
+    u_onsite = data["model"]["u_onsite"]
+    mu = data["model"]["mu"]
+    J_eq = data["model"]["J_eq"]
+    J_ax = data["model"]["J_ax"]
 
     # build connectivity
     connectivity = [(f"C{i}", f"C{i + 1}", 1) for i in range(1, norb)]
@@ -90,10 +90,10 @@ def build_moha_moltype_1d(data):
     # build connectivity for spin models
     spin_connectivity = np.array(np.eye(norb, k=1) + np.eye(norb, k=-1))
     if data["system"]["bc"] == "periodic":
-        spin_connectivity[(0,-1)] = spin_connectivity[(-1,0)] = 1
+        spin_connectivity[(0, -1)] = spin_connectivity[(-1, 0)] = 1
 
     # create and return hamiltonian object ham
-    #-- Fermion models --#
+    # -- Fermion models --#
     # PPP
     if data["model"]["hamiltonian"] == "ppp":
         charge_arr = charge * np.ones(norb)
@@ -108,12 +108,14 @@ def build_moha_moltype_1d(data):
     # Hubbard
     elif data["model"]["hamiltonian"] == "hubbard":
         u_onsite_arr = u_onsite * np.ones(norb)
-        ham = moha.HamHub(connectivity=connectivity, alpha=alpha, beta=beta, u_onsite=u_onsite_arr)
+        ham = moha.HamHub(connectivity=connectivity,
+                          alpha=alpha, beta=beta, u_onsite=u_onsite_arr)
         return ham
-    #-- Spin models --#
+    # -- Spin models --#
     # Heisenberg
     elif data["model"]["hamiltonian"] == "heisenberg":
-        ham = moha.HamHeisenberg(connectivity=spin_connectivity, mu=mu, J_eq=J_eq, J_ax=J_ax)
+        ham = moha.HamHeisenberg(
+            connectivity=spin_connectivity, mu=mu, J_eq=J_eq, J_ax=J_ax)
         return ham
     # Ising
     elif data["model"]["hamiltonian"] == "ising":
@@ -124,8 +126,9 @@ def build_moha_moltype_1d(data):
         ham = moha.HamRG(connectivity=spin_connectivity, mu=mu, J_eq=J_eq)
         return ham
     else:
-        raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] + 
+        raise ValueError("Model hamiltonian " + data["model"]["hamiltonian"] +
                          " not supported for moltype " + data["system"]["moltype"] + ".")
+
 
 def dict_to_ham(data):
     '''
@@ -150,7 +153,8 @@ def dict_to_ham(data):
     if data["system"]["moltype"] == "1d":
         ham = build_moha_moltype_1d(data)
     else:
-        raise ValueError("moltype " + data["system"]["moltype"] + " not supported.")
+        raise ValueError(
+            "moltype " + data["system"]["moltype"] + " not supported.")
 
     # get symmetry of two-electron integrals
     sym = data["system"]["symmetry"]
@@ -175,9 +179,11 @@ def dict_to_ham(data):
         elif data["control"]["integral_format"] == "npz":
             ham.savez(out_file)
         else:
-            raise ValueError("Integral output format " + data["control"]["integral_format"] + " not supported.")
+            raise ValueError("Integral output format " +
+                             data["control"]["integral_format"] + " not supported.")
 
     return ham
+
 
 if __name__ == '__main__':
     toml_file = sys.argv[1]

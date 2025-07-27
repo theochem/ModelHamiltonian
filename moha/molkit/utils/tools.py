@@ -2,6 +2,7 @@ r"""Utilities for molecular Hamiltonians."""
 
 import numpy as np
 
+
 def from_geminal(two_body_gem, n_orb):
     """
     Inverse of MolHam.to_geminal().
