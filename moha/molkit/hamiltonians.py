@@ -47,7 +47,7 @@ class MolHam:
         """
         if not hasattr(self, "two_body_spin"):
             raise RuntimeError(
-                "Call .spinize() first to compute spin-orbital form.")
+                "Call .spinize_H() first to compute spin-orbital form.")
 
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
 
@@ -173,6 +173,9 @@ class MolHam:
         two_body_spin[:n, n:, :n, n:] = two_body
         # βαβα
         two_body_spin[n:, :n, n:, :n] = two_body
+
+        self.one_body_spin = one_body_spin
+        self.two_body_spin = two_body_spin
 
         return one_body_spin, two_body_spin
 
