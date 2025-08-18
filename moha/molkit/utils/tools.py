@@ -115,7 +115,7 @@ def set_four_index_element(
     four_index_object, i0, i1, i2, i3, value
 ):
     """
-    This function is adapted from IOData library. 
+    This function is adapted from IOData library.
     https://iodata.readthedocs.io/en/latest/index.html
 
     Assign values to a four index object, account for 8-fold index symmetry.

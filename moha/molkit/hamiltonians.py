@@ -161,7 +161,7 @@ class MolHam:
 
         k = h_upscaled + 0.5 * V_spin
         return k
-    
+
     def from_fcidump(self, path):
         """
         Assign the hamiltonian parameters
@@ -176,11 +176,11 @@ class MolHam:
         -------
         None
         """
-        data = load_fcidump(open(path, 'r'))
+        data = load_fcidump(open(path))
         self.one_body = data['one_ints']
         self.two_body = data['two_ints']
         self.zero_body = data['core_energy']
         self.n_spatial = self.one_body.shape[0]
         self.n_spin = 2 * self.n_spatial
 
-       
+
