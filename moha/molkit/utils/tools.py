@@ -5,70 +5,70 @@ from warnings import warn
 
 
 def to_geminal(two_body=None, type='h2'):
-        r"""
-        Convert the two-body term to the geminal basis.
+    r"""
+    Convert the two-body term to the geminal basis.
 
-        Parameters
-        ----------
-        two_body : np.ndarray
-            Two-body term in spin-orbital basis in physics notation.
-        type : str
-            ['rdm2', 'h2']. Type of the two-body term.
-            - 'rdm2' : 2 body reduced density matrix
-            - 'h2' : 2 body Hamiltonian
+    Parameters
+    ----------
+    two_body : np.ndarray
+        Two-body term in spin-orbital basis in physics notation.
+    type : str
+        ['rdm2', 'h2']. Type of the two-body term.
+        - 'rdm2' : 2 body reduced density matrix
+        - 'h2' : 2 body Hamiltonian
 
-        Returns
-        -------
-        two_body_gem : np.ndarray
-            Two-body term in the geminal basis
+    Returns
+    -------
+    two_body_gem : np.ndarray
+        Two-body term in the geminal basis
 
-        Notes
-        -----
-        Assuming that rdm2 obbey the following permutation rules:
-        - :math:`\Gamma_{p q r s}=-\Gamma_{q p r s}=-\Gamma_{p q s r}
-        =\Gamma_{q p s r}`
-        we can convert the two-body term to the geminal basis
-        by the following formula:
+    Notes
+    -----
+    Assuming that rdm2 obbey the following permutation rules:
+    - :math:`\Gamma_{p q r s}=-\Gamma_{q p r s}=-\Gamma_{p q s r}
+    =\Gamma_{q p s r}`
+    we can convert the two-body term to the geminal basis
+    by the following formula:
 
-        .. math::
+    .. math::
 
-            \Gamma_{p q}=0.5 * 4 \Gamma_{p q r s}
+        \Gamma_{p q}=0.5 * 4 \Gamma_{p q r s}
 
-        where:
-        - :math:`\Gamma_{p q}` is the two-body term in the geminal basis
-        - :math:`\Gamma_{p q r s}` is the two-body term in the spin-orbital
-        Hamiltonian in the geminal basis is obtained by the following formula:
+    where:
+    - :math:`\Gamma_{p q}` is the two-body term in the geminal basis
+    - :math:`\Gamma_{p q r s}` is the two-body term in the spin-orbital
+    Hamiltonian in the geminal basis is obtained by the following formula:
 
-        .. math::
+    .. math::
 
-        V_{A B}
-        =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)
+    V_{A B}
+    =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)
 
-        """
-        n = two_body.shape[0]
-        two_body_gem = []
+    """
+    n = two_body.shape[0]
+    two_body_gem = []
 
-        # i,j,k,l -> pqrs
-        for p in range(n):
-            for q in range(p + 1, n):
-                for r in range(n):
-                    for s in range(r + 1, n):
-                        if type == 'rdm2':
-                            two_body_gem.append(
-                                0.5 * 4 * two_body[p, q, r, s]
+    # i,j,k,l -> pqrs
+    for p in range(n):
+        for q in range(p + 1, n):
+            for r in range(n):
+                for s in range(r + 1, n):
+                    if type == 'rdm2':
+                        two_body_gem.append(
+                            0.5 * 4 * two_body[p, q, r, s]
+                        )
+                    elif type == 'h2':
+                        two_body_gem.append(
+                            0.5 * (
+                                two_body[p, q, r, s]
+                                - two_body[q, p, r, s]
+                                - two_body[p, q, s, r]
+                                + two_body[q, p, s, r]
                             )
-                        elif type == 'h2':
-                            two_body_gem.append(
-                                0.5 * (
-                                    two_body[p, q, r, s]
-                                    - two_body[q, p, r, s]
-                                    - two_body[p, q, s, r]
-                                    + two_body[q, p, s, r]
-                                )
-                            )
+                        )
 
-        n_gem = n * (n - 1) // 2
-        return np.array(two_body_gem).reshape(n_gem, n_gem)
+    n_gem = n * (n - 1) // 2
+    return np.array(two_body_gem).reshape(n_gem, n_gem)
 
 
 def from_geminal(two_body_gem, n_orb):
@@ -111,27 +111,26 @@ def from_geminal(two_body_gem, n_orb):
 
     return V
 
-def set_four_index_element(
-    four_index_object, i0, i1, i2, i3, value
-):
-    """
-    This function is adapted from IOData library.
+
+def set_four_index_element(four_index_object, i0, i1, i2, i3, value):
+    """Assign a value to a four-index tensor with 8-fold symmetry.
+
+    Adapted from the IOData library:
     https://iodata.readthedocs.io/en/latest/index.html
 
-    Assign values to a four index object, account for 8-fold index symmetry.
-
+    Assign values to a four-index object, accounting for
+    8‑fold index symmetry.
     This function assumes physicists' notation.
 
     Parameters
     ----------
-    four_index_object
-        The four-index object. It will be written to.
-        shape=(nbasis, nbasis, nbasis, nbasis), dtype=float
-    i0, i1, i2, i3
-        The indices to assign to.
-    value
-        The value of the matrix element to store.
-
+    four_index_object : np.ndarray
+        Four-index tensor to modify
+        (shape=(nbasis, nbasis, nbasis, nbasis)).
+    i0, i1, i2, i3 : int
+        Indices of the element to assign.
+    value : float
+        Value of the matrix element to store.
     """
     four_index_object[i0, i1, i2, i3] = value
     four_index_object[i1, i0, i3, i2] = value
@@ -144,22 +143,31 @@ def set_four_index_element(
 
 
 def load_fcidump(lit) -> dict:
-    """ This function is adapted from IOData module.
+    """Load integrals from an FCIDUMP file.
+
+    Adapted from the IOData module:
     https://iodata.readthedocs.io/en/latest/index.html
 
-    Molpro 2012 FCIDUMP file format.
-
+    Parse the Molpro 2012 FCIDUMP format (restricted wave functions).
 
     Parameters
     ----------
-    lit: LineIterator
+    lit : LineIterator
+        Iterator over lines of the FCIDUMP file.
+
+    Returns
+    -------
+    dict
+        Dictionary with one- and two-electron integrals and core energy.
+        Keys: 'nelec', 'spinpol', 'one_ints', 'two_ints', 'core_energy'.
 
     Notes
     -----
-    1. This function works only for restricted wave-functions.
-    2. One- and two-electron integrals are stored in chemists' notation in an FCIDUMP file,
-    while IOData and MoHa internally uses physicists' notation.
-    3. Keep in mind that the FCIDUMP format changed in MOLPRO 2012, so files generated with
+    1. This function works only for restricted wave functions.
+    2. One- and two-electron integrals are stored in chemists' notation
+       in an FCIDUMP file, while IOData and MoHa internally use
+       physicists' notation.
+    3. The FCIDUMP format changed in MOLPRO 2012;
     older versions are not supported.
     """
     # check header
@@ -193,7 +201,9 @@ def load_fcidump(lit) -> dict:
         words = line.split()
         if len(words) != 5:
             raise (
-                f"Expecting 5 fields on each data line in FCIDUMP, got {len(words)}.", lit
+                f"Expecting 5 fields on each data line in FCIDUMP, "
+                f"got {len(words)}.",
+                lit,
             )
         value = float(words[0])
         if words[3] != "0":
@@ -222,4 +232,3 @@ def load_fcidump(lit) -> dict:
         "two_ints": two_mo,
         "core_energy": core_energy,
     }
-

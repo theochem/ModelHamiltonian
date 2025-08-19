@@ -5,10 +5,7 @@ from .utils.spinops import (
     get_spin_blocks,
     upscale_one_body
 )
-from .utils.tools import (
-    load_fcidump,
-    to_geminal
-)
+from .utils.tools import load_fcidump
 import numpy as np
 
 
@@ -61,7 +58,6 @@ class MolHam:
                 "Call .spinize_H() first to compute spin-orbital form.")
 
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
-
 
     def spinize_H(self) -> tuple[np.ndarray, np.ndarray]:
         r"""Convert the one/two body terms from spatial to spin-orbital basis.
@@ -163,14 +159,12 @@ class MolHam:
         return k
 
     def from_fcidump(self, path):
-        """
-        Assign the hamiltonian parameters
-        from the FCIDUMP file.
+        """Assign Hamiltonian parameters from an FCIDUMP file.
 
         Parameters
         ----------
-        path: str
-            path to file
+        path : str
+            Path to the FCIDUMP file.
 
         Returns
         -------
@@ -182,5 +176,3 @@ class MolHam:
         self.zero_body = data['core_energy']
         self.n_spatial = self.one_body.shape[0]
         self.n_spin = 2 * self.n_spatial
-
-
