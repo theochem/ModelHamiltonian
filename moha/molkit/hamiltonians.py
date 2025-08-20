@@ -5,6 +5,7 @@ from .utils.spinops import (
     get_spin_blocks,
     upscale_one_body
 )
+from .utils.tools import load_fcidump
 import numpy as np
 
 
@@ -15,7 +16,7 @@ class MolHam:
     in the form of one- and two-electron integrals.
     """
 
-    def __init__(self, one_body, two_body):
+    def __init__(self, one_body=None, two_body=None, zero_body=0):
         """Initialize MolHam with one and two electron integrals.
 
         Parameters
@@ -24,12 +25,19 @@ class MolHam:
             One-electron integrals in spatial orbital basis
         two_body : np.ndarray
             Two-electron integrals in spatial orbital basis
+        zero_body: float
+            Core energy
 
         """
+        self.zero_body = zero_body
         self.one_body = one_body
         self.two_body = two_body
-        self.n_spatial = one_body.shape[0]
-        self.n_spin = 2 * self.n_spatial
+        if self.one_body is not None:
+            self.n_spatial = one_body.shape[0]
+            self.n_spin = 2 * self.n_spatial
+        else:
+            self.n_spatial = None
+            self.n_spin = None
         self.reduced_ham = None
 
     def antisymmetrize(self):
@@ -47,75 +55,9 @@ class MolHam:
         """
         if not hasattr(self, "two_body_spin"):
             raise RuntimeError(
-                "Call .spinize() first to compute spin-orbital form.")
+                "Call .spinize_H() first to compute spin-orbital form.")
 
         return get_spin_blocks(self.two_body_spin, self.n_spatial)
-
-    def to_geminal(self, two_body=None, type='h2'):
-        r"""
-        Convert the two-body term to the geminal basis.
-
-        Parameters
-        ----------
-        two_body : np.ndarray
-            Two-body term in spin-orbital basis in physics notation.
-        type : str
-            ['rdm2', 'h2']. Type of the two-body term.
-            - 'rdm2' : 2 body reduced density matrix
-            - 'h2' : 2 body Hamiltonian
-
-        Returns
-        -------
-        two_body_gem : np.ndarray
-            Two-body term in the geminal basis
-
-        Notes
-        -----
-        Assuming that rdm2 obbey the following permutation rules:
-        - :math:`\Gamma_{p q r s}=-\Gamma_{q p r s}=-\Gamma_{p q s r}
-        =\Gamma_{q p s r}`
-        we can convert the two-body term to the geminal basis
-        by the following formula:
-
-        .. math::
-
-            \Gamma_{p q}=0.5 * 4 \Gamma_{p q r s}
-
-        where:
-        - :math:`\Gamma_{p q}` is the two-body term in the geminal basis
-        - :math:`\Gamma_{p q r s}` is the two-body term in the spin-orbital
-        Hamiltonian in the geminal basis is obtained by the following formula:
-
-        .. math::
-
-        V_{A B}
-        =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)
-
-        """
-        n = two_body.shape[0]
-        two_body_gem = []
-
-        # i,j,k,l -> pqrs
-        for p in range(n):
-            for q in range(p + 1, n):
-                for r in range(n):
-                    for s in range(r + 1, n):
-                        if type == 'rdm2':
-                            two_body_gem.append(
-                                0.5 * 4 * two_body[p, q, r, s]
-                            )
-                        elif type == 'h2':
-                            two_body_gem.append(
-                                0.5 * (
-                                    two_body[p, q, r, s]
-                                    - two_body[q, p, r, s]
-                                    - two_body[p, q, s, r]
-                                    + two_body[q, p, s, r]
-                                )
-                            )
-
-        n_gem = n * (n - 1) // 2
-        return np.array(two_body_gem).reshape(n_gem, n_gem)
 
     def spinize_H(self) -> tuple[np.ndarray, np.ndarray]:
         r"""Convert the one/two body terms from spatial to spin-orbital basis.
@@ -174,6 +116,9 @@ class MolHam:
         # βαβα
         two_body_spin[n:, :n, n:, :n] = two_body
 
+        self.one_body_spin = one_body_spin
+        self.two_body_spin = two_body_spin
+
         return one_body_spin, two_body_spin
 
     def to_reduced(self, n_elec):
@@ -212,3 +157,22 @@ class MolHam:
 
         k = h_upscaled + 0.5 * V_spin
         return k
+
+    def from_fcidump(self, path):
+        """Assign Hamiltonian parameters from an FCIDUMP file.
+
+        Parameters
+        ----------
+        path : str
+            Path to the FCIDUMP file.
+
+        Returns
+        -------
+        None
+        """
+        data = load_fcidump(open(path))
+        self.one_body = data['one_ints']
+        self.two_body = data['two_ints']
+        self.zero_body = data['core_energy']
+        self.n_spatial = self.one_body.shape[0]
+        self.n_spin = 2 * self.n_spatial
