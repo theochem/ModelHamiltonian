@@ -55,14 +55,20 @@ def antisymmetrize_two_body(
     n = nspin // 2      # number of spatial orbitals
 
     # αααα block
-    aa = tensor[:n, :n, :n, :n]
-    aa -= np.swapaxes(aa, 2, 3)
-    aa *= 0.5
+    aa = tensor[:n, :n, :n, :n].copy()
+    aa = aa - np.einsum('pqrs->qprs', aa) - np.einsum('pqrs->pqsr', aa) +\
+             np.einsum('pqrs->rspq', aa) - np.einsum('pqrs->srpq', aa) - np.einsum('pqrs->rsqp', aa) +\
+             np.einsum('pqrs->qpsr', aa) + np.einsum('pqrs->srqp', aa)
 
     # ββββ block
-    bb = tensor[n:, n:, n:, n:]
-    bb -= np.swapaxes(bb, 2, 3)
-    bb *= 0.5
+    bb = tensor[n:, n:, n:, n:].copy()
+    bb = bb - np.einsum('pqrs->qprs', bb) - np.einsum('pqrs->pqsr', bb) +\
+                np.einsum('pqrs->rspq', bb) - np.einsum('pqrs->srpq', bb) - np.einsum('pqrs->rsqp', bb) +\
+                np.einsum('pqrs->qpsr', bb) + np.einsum('pqrs->srqp', bb)
+
+
+    tensor[:n, :n, :n, :n] = aa / 8
+    tensor[n:, n:, n:, n:] = bb / 8
 
     return tensor
 

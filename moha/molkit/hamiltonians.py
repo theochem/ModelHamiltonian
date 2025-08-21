@@ -42,7 +42,10 @@ class MolHam:
 
     def antisymmetrize(self):
         """Apply proper antisymmetrization to two-electron integrals."""
-        self.two_body = antisymmetrize_two_body(self.two_body, inplace=True)
+        if not hasattr(self, "two_body_spin"):
+            raise RuntimeError(
+                "Call .spinize_H() first to compute spin-orbital form.")
+        self.two_body_spin = antisymmetrize_two_body(self.two_body_spin, inplace=True)
 
     def get_spin_blocks(self):
         """Return the main spin blocks of the two-body spin-orbital tensor.
@@ -152,6 +155,7 @@ class MolHam:
         ``MolHam`` instance.
         """
         h_spin, V_spin = self.spinize_H()
+        self.antisymmetrize()
 
         h_upscaled = upscale_one_body(h_spin, n_elec)
 
