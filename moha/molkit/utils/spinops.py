@@ -20,7 +20,7 @@ def antisymmetrize_two_body(
     Returns
     -------
     np.ndarray
-        Antisymmetrised tensor obeying
+        Antisymmetrised tensor obeys
 
         .. math::
 
@@ -32,18 +32,27 @@ def antisymmetrize_two_body(
 
     Notes
     -----
-    The operation applied is
+    https://vergil.chemistry.gatech.edu/static/content/permsymm.pdf
+
+    The input tensor obbeys the following 8-fold symmetry
 
     .. math::
 
-        V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
-            \\;\\;\\leftarrow\\;\\;
-            \\tfrac12\\,\\bigl(V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
-                              -V^{\\sigma\\sigma\\sigma\\sigma}_{pqsr}\\bigr),
+        V_{ijkl} = V_{jilk}
+                 = V_{klij}
+                 = V_{lkji}
+                 = V_{kjjl}
+                 = V_{lijk}
+                 = V_{ilkj}
+                 = V_{jklj}
 
-    for ``σ = α`` and ``σ = β``.  All other spin sectors are returned
-    untouched.
+    The operation applied is
 
+    .. math::
+        \langle i j \| k l\rangle=\langle i j \mid k l\rangle-\langle i j \mid l k\rangle
+
+    Keep in mind, that such operation produces terms of the form
+    abba, baab, that are not present in the original tensor.
     """
     if not inplace:
         tensor = tensor.copy()
@@ -54,21 +63,7 @@ def antisymmetrize_two_body(
 
     n = nspin // 2      # number of spatial orbitals
 
-    # αααα block
-    aa = tensor[:n, :n, :n, :n].copy()
-    aa = aa - np.einsum('pqrs->qprs', aa) - np.einsum('pqrs->pqsr', aa) +\
-             np.einsum('pqrs->rspq', aa) - np.einsum('pqrs->srpq', aa) - np.einsum('pqrs->rsqp', aa) +\
-             np.einsum('pqrs->qpsr', aa) + np.einsum('pqrs->srqp', aa)
-
-    # ββββ block
-    bb = tensor[n:, n:, n:, n:].copy()
-    bb = bb - np.einsum('pqrs->qprs', bb) - np.einsum('pqrs->pqsr', bb) +\
-                np.einsum('pqrs->rspq', bb) - np.einsum('pqrs->srpq', bb) - np.einsum('pqrs->rsqp', bb) +\
-                np.einsum('pqrs->qpsr', bb) + np.einsum('pqrs->srqp', bb)
-
-
-    tensor[:n, :n, :n, :n] = aa / 8
-    tensor[n:, n:, n:, n:] = bb / 8
+    tensor = tensor - np.einsum('pqrs->pqsr', tensor)
 
     return tensor
 

@@ -12,6 +12,7 @@ parts:
       - file: examples/mohagpt.ipynb
       - file: examples/gui.ipynb
       - file: examples/RG.ipynb
+      - file: examples/molkit.ipynb
       
     - caption: API
       chapters:

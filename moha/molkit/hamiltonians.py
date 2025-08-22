@@ -155,7 +155,6 @@ class MolHam:
         ``MolHam`` instance.
         """
         h_spin, V_spin = self.spinize_H()
-        self.antisymmetrize()
 
         h_upscaled = upscale_one_body(h_spin, n_elec)
 
