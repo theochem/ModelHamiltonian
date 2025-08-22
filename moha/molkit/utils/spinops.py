@@ -49,7 +49,8 @@ def antisymmetrize_two_body(
     The operation applied is
 
     .. math::
-        \langle i j \| k l\rangle=\langle i j \mid k l\rangle-\langle i j \mid l k\rangle
+        \langle ij\| kl\rangle=
+        \langle ij\mid kl\rangle-\langle ij\mid lk\rangle
 
     Keep in mind, that such operation produces terms of the form
     abba, baab, that are not present in the original tensor.

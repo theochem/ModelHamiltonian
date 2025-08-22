@@ -25,6 +25,7 @@ def test_antisymmetrize():
 
     assert_allclose(mol_ham.two_body[:2, :2, :2, :2], expected_two_body_aa)
 
+
 def test_to_geminal():
     """Test conversion to geminal basis."""
     n_orb = 4
@@ -53,12 +54,11 @@ def test_to_reduced_ham():
     mol_ham = MolHam(one_body=one_body, two_body=two_body)
     reduced_ham = mol_ham.to_reduced(n_elec=2)
 
-
     # sum over the spin-orbital indices
     reduced_ham = reduced_ham[:2, :2, :2, :2] +\
-                  reduced_ham[2:, 2:, 2:, 2:] +\
-                  reduced_ham[:2, 2:, :2, 2:] +\
-                  reduced_ham[2:, :2, 2:, :2]
+        reduced_ham[2:, 2:, 2:, 2:] +\
+        reduced_ham[:2, 2:, :2, 2:] +\
+        reduced_ham[2:, :2, 2:, :2]
     reduced_ham *= 0.25
 
     reduced_ham_true = 0.5 * two_body

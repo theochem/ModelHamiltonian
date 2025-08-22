@@ -45,7 +45,8 @@ class MolHam:
         if not hasattr(self, "two_body_spin"):
             raise RuntimeError(
                 "Call .spinize_H() first to compute spin-orbital form.")
-        self.two_body_spin = antisymmetrize_two_body(self.two_body_spin, inplace=True)
+        self.two_body_spin = antisymmetrize_two_body(self.two_body_spin,
+                                                     inplace=True)
 
     def get_spin_blocks(self):
         """Return the main spin blocks of the two-body spin-orbital tensor.
