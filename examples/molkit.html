@@ -1,0 +1,851 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial: Molkit &#8212; Ayers Lab</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/molkit';</script>
+    <link rel="icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hamiltonian API" href="../api/api.html" />
+    <link rel="prev" title="Tutorial: Richardson-Gaudin model" href="RG.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Ayers Lab - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Ayers Lab - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    Welcome to ModelHamiltonian documentation!
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Demonstration.html">Tutorial: Occupation-based Hamiltionians</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ising.html">Tutorial: Spin-based Hamiltonians</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="mohagpt.html">Tutorial: Easy Quantum System Setup with ChatGPT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gui.html">Tutorial: Graphical User Interface (GUI) with ModelHamiltonian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RG.html">Tutorial: Richardson-Gaudin model</a></li>
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Tutorial: Molkit</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../api/api.html">Hamiltonian API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/occupation.html">Occupation-based Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/spin.html">Spin-based Hamiltonians</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/theochem/ModelHamiltonian/blob/main/website/examples/molkit.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/theochem/ModelHamiltonian/issues/new?title=Issue%20on%20page%20%2Fexamples/molkit.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/molkit.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial: Molkit</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiating-a-molecular-hamiltonian">1. Instantiating a Molecular Hamiltonian</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-the-hamiltonian-to-the-spin-orbital-basis">2. Converting the Hamiltonian to the Spin-Orbital Basis</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conversion-rules">Conversion Rules</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#antisymmetrizing-the-two-electron-integrals">3. Antisymmetrizing the Two-Electron Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-the-two-body-term-to-the-geminal-basis">4. Converting the Two-Body Term to the Geminal Basis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constructing-the-reduced-4-index-hamiltonian-tensor">5. Constructing the Reduced 4-Index Hamiltonian Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#formula">Formula</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-spin-blocks-from-the-two-body-spin-orbital-tensor">6. Extracting Spin Blocks from the Two-Body Spin-Orbital Tensor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-energy-of-a-system">7. Computing Energy of a system</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-molkit">
+<h1>Tutorial: Molkit<a class="headerlink" href="#tutorial-molkit" title="Link to this heading">#</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p>This tutorial will be focus in tools available in the new ModelHamiltonian module to manipulate molecular hamiltonians.</p>
+<section id="instantiating-a-molecular-hamiltonian">
+<h3>1. Instantiating a Molecular Hamiltonian<a class="headerlink" href="#instantiating-a-molecular-hamiltonian" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha</span><span class="w"> </span><span class="kn">import</span> <span class="n">HamHeisenberg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha.molkit.hamiltonians</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolHam</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha.molkit.utils.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_geminal</span>
+
+<span class="c1"># load a hamiltonian from the fcidump file</span>
+<span class="n">hami</span> <span class="o">=</span> <span class="n">MolHam</span><span class="p">()</span>
+<span class="n">hami</span><span class="o">.</span><span class="n">from_fcidump</span><span class="p">(</span><span class="s1">&#39;example.fcidump&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">hami</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;moha.molkit.hamiltonians.MolHam object at 0x7f7a91a24130&gt;
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/valeriichuiko/Desktop/projects/ModelHamiltonian/moha/molkit/hamiltonians.py:176: UserWarning: Duplicate entries in the FCIDUMP file are ignored
+  data = load_fcidump(open(path))
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="converting-the-hamiltonian-to-the-spin-orbital-basis">
+<h3>2. Converting the Hamiltonian to the Spin-Orbital Basis<a class="headerlink" href="#converting-the-hamiltonian-to-the-spin-orbital-basis" title="Link to this heading">#</a></h3>
+<p>You can easily perform this conversion by using the <code class="docutils literal notranslate"><span class="pre">spinize_H</span></code> method, which returns the one-body and two-body integrals in the spin-orbital basis.</p>
+<section id="conversion-rules">
+<h4>Conversion Rules<a class="headerlink" href="#conversion-rules" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><em>One-body term:</em></p>
+<ul>
+<li><p>The spatial one-body integral is mapped to the spin-orbital basis as:</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(h_{pq}^{\alpha\alpha} = h_{pq}^{\beta\beta} = h_{pq}^{\text{spatial}}\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(h_{pq}^{\alpha\beta} = h_{pq}^{\beta\alpha} = 0\)</span></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><em>Two-body term:</em></p>
+<ul>
+<li><p>The spatial two-body integral is mapped as:</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(V_{pqrs}^{\alpha\alpha\alpha\alpha} = V_{pqrs}^{\alpha\beta\alpha\beta} = V_{pqrs}^{\beta\alpha\beta\alpha} = V_{pqrs}^{\text{spatial}}\)</span></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">one_body_spin</span><span class="p">,</span> <span class="n">two_body_spin</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">spinize_H</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of one-body integrals (spin basis):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">one_body_spin</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape of two-body integrals (spin basis):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_body_spin</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape of one-body integrals (spin basis):
+ (8, 8)
+Shape of two-body integrals (spin basis):
+ (8, 8, 8, 8)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="antisymmetrizing-the-two-electron-integrals">
+<h3>3. Antisymmetrizing the Two-Electron Integrals<a class="headerlink" href="#antisymmetrizing-the-two-electron-integrals" title="Link to this heading">#</a></h3>
+<p>You can apply proper antisymmetrization to the two-electron integrals using the <code class="docutils literal notranslate"><span class="pre">antisymmetrize</span></code> method.</p>
+<p>This ensures the integrals obey the required permutation symmetry for fermionsm following the rule:
+<span class="math notranslate nohighlight">\(V_{pqrs} = -V_{pqsr} = -V_{qprs} = V_{qpsr}\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hami</span><span class="o">.</span><span class="n">antisymmetrize</span><span class="p">()</span>
+<span class="n">hami</span><span class="o">.</span><span class="n">two_body_spin</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">two_body_aaaa</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">get_spin_blocks</span><span class="p">()[</span><span class="s1">&#39;aaaa&#39;</span><span class="p">]</span>
+<span class="n">two_body_abab</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">get_spin_blocks</span><span class="p">()[</span><span class="s1">&#39;abab&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elements 0, 1, 0, 1 and 1, 0, 0, 1 of aaaa part:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_body_aaaa</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">two_body_aaaa</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elements 0, 1, 0, 1 and 1, 0, 0, 1 of abab part:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_body_abab</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">two_body_abab</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elements 0, 0, 1, 1 for aaaa and abab parts:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">two_body_aaaa</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">two_body_abab</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Elements 0, 1, 0, 1 and 1, 0, 0, 1 of aaaa part:
+ 0.1544687847893533 -0.1544687847893533
+--------------------
+Elements 0, 1, 0, 1 and 1, 0, 0, 1 of abab part:
+ 0.3187342023639616 0.1642654175746083
+--------------------
+Elements 0, 0, 1, 1 for aaaa and abab parts:
+ 0.0 0.1642654175746083
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="converting-the-two-body-term-to-the-geminal-basis">
+<h3>4. Converting the Two-Body Term to the Geminal Basis<a class="headerlink" href="#converting-the-two-body-term-to-the-geminal-basis" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">to_geminal</span></code> function in the utils module converts the two-body term from the spin-orbital basis to the geminal basis.<br />
+You can specify the type of two-body term: <code class="docutils literal notranslate"><span class="pre">'h2'</span></code> (Hamiltonian) ; we also added conversion to the geminal basis for reduced density matrices: <code class="docutils literal notranslate"><span class="pre">'rdm2'</span></code>.</p>
+<p>The Hamiltonian in the geminal basis is obtained by the following formula:
+<span class="math notranslate nohighlight">\(V_{A B} =\frac{1}{2}\left(V_{p q r s}-V_{q p r s}-V_{p q r s}+V_{qprs}\right)\)</span></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geminal</span> <span class="o">=</span> <span class="n">to_geminal</span><span class="p">(</span><span class="n">two_body_spin</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;h2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="constructing-the-reduced-4-index-hamiltonian-tensor">
+<h3>5. Constructing the Reduced 4-Index Hamiltonian Tensor<a class="headerlink" href="#constructing-the-reduced-4-index-hamiltonian-tensor" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">to_reduced</span></code> method returns the reduced 4-index Hamiltonian tensor <span class="math notranslate nohighlight">\(k_{pqrs}\)</span> in the spin-orbital basis, given the number of electrons <span class="math notranslate nohighlight">\(N\)</span>.</p>
+<section id="formula">
+<h4>Formula<a class="headerlink" href="#formula" title="Link to this heading">#</a></h4>
+<div class="math notranslate nohighlight">
+\[
+k_{pqrs} = \frac{1}{2(N-1)} \left( h_{pq} \delta_{rs} + h_{rs} \delta_{pq} \right) + \frac{1}{2} V_{pqrs}
+\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(h_{pq}\)</span>: one-electron integrals (spin-orbital basis)</p></li>
+<li><p><span class="math notranslate nohighlight">\(V_{pqrs}\)</span>: two-electron integrals (spin-orbital basis)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\delta_{pq}\)</span>: Kronecker delta</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reduced</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">to_reduced</span><span class="p">(</span><span class="n">n_elec</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">reduced</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(8, 8, 8, 8)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="extracting-spin-blocks-from-the-two-body-spin-orbital-tensor">
+<h3>6. Extracting Spin Blocks from the Two-Body Spin-Orbital Tensor<a class="headerlink" href="#extracting-spin-blocks-from-the-two-body-spin-orbital-tensor" title="Link to this heading">#</a></h3>
+<p>After converting the Hamiltonian to the spin-orbital basis, you can extract the main spin blocks from the two-body tensor using the <code class="docutils literal notranslate"><span class="pre">get_spin_blocks</span></code> method, by accesing the dictionaries keys: ‘aaaa’, ‘bbbb’, ‘abab’</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spin_blocks</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">get_spin_blocks</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">spin_blocks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;aaaa&#39;, &#39;bbbb&#39;, &#39;abab&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="computing-energy-of-a-system">
+<h3>7. Computing Energy of a system<a class="headerlink" href="#computing-energy-of-a-system" title="Link to this heading">#</a></h3>
+<p>In this section, we will compute the ground-state energy of a toy molecular system using the Full Configuration Interaction (FCI) method using the <code class="docutils literal notranslate"><span class="pre">pyscf</span></code> library.</p>
+<ol class="arabic simple">
+<li><p>Perform an FCI calculation to obtain the wavefunction and reduced density matrices (RDMs).</p></li>
+<li><p>Compute the energy using both spin-orbital and geminal representations to verify consistency.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyscf</span><span class="w"> </span><span class="kn">import</span> <span class="n">fci</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moha.molkit.utils.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_geminal</span>
+
+<span class="c1"># One-electron integrals (spatial orbital basis)</span>
+<span class="n">h1</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">one_body</span>
+<span class="n">h2</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">two_body</span>
+<span class="n">core_energy</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">zero_body</span>
+
+<span class="n">N_ELEC</span><span class="p">,</span> <span class="n">norb</span>  <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">hami</span><span class="o">.</span><span class="n">n_spatial</span>
+
+<span class="c1"># Perform Full CI calculation</span>
+<span class="n">e_fci</span><span class="p">,</span> <span class="n">ci_vec</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin1</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;pqrs -&gt; prqs&#39;</span><span class="p">,</span> <span class="n">h2</span><span class="p">),</span> <span class="n">norb</span><span class="p">,</span> <span class="n">N_ELEC</span><span class="p">,</span> <span class="n">ecore</span><span class="o">=</span><span class="n">core_energy</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+<span class="n">rdm1s</span><span class="p">,</span> <span class="n">rdm2s</span> <span class="o">=</span> <span class="n">fci</span><span class="o">.</span><span class="n">direct_spin1</span><span class="o">.</span><span class="n">make_rdm12s</span><span class="p">(</span><span class="n">ci_vec</span><span class="p">,</span> <span class="n">norb</span><span class="p">,</span> <span class="n">N_ELEC</span><span class="p">)</span>
+
+<span class="c1"># construct 2-rdm</span>
+<span class="n">rdm2s_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="n">rdm2s_new</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdm2s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="c1"># aaaa</span>
+                <span class="n">rdm2s_new</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">k</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">l</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdm2s</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="c1">#bbbb</span>
+                <span class="n">rdm2s_new</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdm2s</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="c1">#abab</span>
+                <span class="n">rdm2s_new</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdm2s</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="c1">#baba</span>
+
+
+
+<span class="c1"># Convert to reduced form</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">hami</span><span class="o">.</span><span class="n">to_reduced</span><span class="p">(</span><span class="n">n_elec</span><span class="o">=</span><span class="n">N_ELEC</span><span class="p">)</span>  <span class="c1"># H = 0.5 * (h \outer h)/(N - 1) + 0.5 * V</span>
+<span class="c1"># Compute the energy in the MO basis</span>
+<span class="n">E_spin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">H</span> <span class="o">*</span> <span class="n">rdm2s_new</span><span class="p">)</span>
+
+<span class="c1"># Convert to geminal form</span>
+<span class="n">H_gem</span> <span class="o">=</span> <span class="n">to_geminal</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;h2&#39;</span><span class="p">)</span>
+<span class="n">rdm_gem</span> <span class="o">=</span> <span class="n">to_geminal</span><span class="p">(</span><span class="n">rdm2s_new</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;rdm2&#39;</span><span class="p">)</span>
+
+<span class="c1"># Energy from geminal formulation</span>
+<span class="n">E_gem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;pq,pq&#39;</span><span class="p">,</span> <span class="n">H_gem</span><span class="p">,</span> <span class="n">rdm_gem</span><span class="p">)</span>
+
+<span class="c1"># Print the energies from all formulations</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;E_spin-orbital :&quot;</span><span class="p">,</span> <span class="n">E_spin</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;E_geminal      :&quot;</span><span class="p">,</span> <span class="n">E_gem</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FCI energy     :&quot;</span><span class="p">,</span> <span class="n">e_fci</span> <span class="o">-</span> <span class="n">core_energy</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">E_spin</span><span class="p">,</span> <span class="n">E_gem</span><span class="p">),</span> <span class="s2">&quot;Energies do not match!&quot;</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">E_spin</span><span class="p">,</span> <span class="n">e_fci</span> <span class="o">-</span> <span class="n">core_energy</span><span class="p">),</span> <span class="s2">&quot;Energies do not match!&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>E_spin-orbital : -3.0622781536522004
+E_geminal      : -3.0622781536522012
+FCI energy     : -3.062278153652201
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "theochem/ModelHamiltonian",
+            ref: "main",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="RG.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial: Richardson-Gaudin model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Hamiltonian API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#instantiating-a-molecular-hamiltonian">1. Instantiating a Molecular Hamiltonian</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-the-hamiltonian-to-the-spin-orbital-basis">2. Converting the Hamiltonian to the Spin-Orbital Basis</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#conversion-rules">Conversion Rules</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#antisymmetrizing-the-two-electron-integrals">3. Antisymmetrizing the Two-Electron Integrals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#converting-the-two-body-term-to-the-geminal-basis">4. Converting the Two-Body Term to the Geminal Basis</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constructing-the-reduced-4-index-hamiltonian-tensor">5. Constructing the Reduced 4-Index Hamiltonian Tensor</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#formula">Formula</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-spin-blocks-from-the-two-body-spin-orbital-tensor">6. Extracting Spin Blocks from the Two-Body Spin-Orbital Tensor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-energy-of-a-system">7. Computing Energy of a system</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The QC-Dev Community with the support of Digital Research Alliance of Canada and The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
