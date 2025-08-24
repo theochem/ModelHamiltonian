@@ -20,7 +20,7 @@ def antisymmetrize_two_body(
     Returns
     -------
     np.ndarray
-        Antisymmetrised tensor obeying
+        Antisymmetrised tensor obeys
 
         .. math::
 
@@ -32,18 +32,28 @@ def antisymmetrize_two_body(
 
     Notes
     -----
-    The operation applied is
+    https://vergil.chemistry.gatech.edu/static/content/permsymm.pdf
+
+    The input tensor obbeys the following 8-fold symmetry
 
     .. math::
 
-        V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
-            \\;\\;\\leftarrow\\;\\;
-            \\tfrac12\\,\\bigl(V^{\\sigma\\sigma\\sigma\\sigma}_{pqrs}
-                              -V^{\\sigma\\sigma\\sigma\\sigma}_{pqsr}\\bigr),
+        V_{ijkl} = V_{jilk}
+                 = V_{klij}
+                 = V_{lkji}
+                 = V_{kjjl}
+                 = V_{lijk}
+                 = V_{ilkj}
+                 = V_{jklj}
 
-    for ``σ = α`` and ``σ = β``.  All other spin sectors are returned
-    untouched.
+    The operation applied is
 
+    .. math::
+        \langle ij\| kl\rangle=
+        \langle ij\mid kl\rangle-\langle ij\mid lk\rangle
+
+    Keep in mind, that such operation produces terms of the form
+    abba, baab, that are not present in the original tensor.
     """
     if not inplace:
         tensor = tensor.copy()
@@ -54,15 +64,7 @@ def antisymmetrize_two_body(
 
     n = nspin // 2      # number of spatial orbitals
 
-    # αααα block
-    aa = tensor[:n, :n, :n, :n]
-    aa -= np.swapaxes(aa, 2, 3)
-    aa *= 0.5
-
-    # ββββ block
-    bb = tensor[n:, n:, n:, n:]
-    bb -= np.swapaxes(bb, 2, 3)
-    bb *= 0.5
+    tensor = tensor - np.einsum('pqrs->pqsr', tensor)
 
     return tensor
 

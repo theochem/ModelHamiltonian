@@ -55,16 +55,14 @@ def to_geminal(two_body=None, type='h2'):
                 for s in range(r + 1, n):
                     if type == 'rdm2':
                         two_body_gem.append(
-                            0.5 * 4 * two_body[p, q, r, s]
+                            two_body[p, q, r, s]
                         )
                     elif type == 'h2':
                         two_body_gem.append(
-                            0.5 * (
                                 two_body[p, q, r, s]
                                 - two_body[q, p, r, s]
                                 - two_body[p, q, s, r]
                                 + two_body[q, p, s, r]
-                            )
                         )
 
     n_gem = n * (n - 1) // 2
