@@ -22,7 +22,8 @@ __all__ = [
     "HamPPP",
     "HamHuck",
     "HamHub",
-    "HamHeisenberg"
+    "HamHeisenberg",
+    "AlternativeSpinHamiltonian"
 ]
 
 
@@ -393,8 +394,8 @@ class HamHeisenberg(HamiltonianAPI):
     Models spin-1/2 particles on a lattice with the Hamiltonian:\r
 \r
     .. math::\r
-        \hat{H}_{XXZ} = \sum_p (\mu_p^Z - J_{pp}^{\mathrm{eq}}) S_p^Z 
-        + \sum_{pq} J_{pq}^{\mathrm{ax}} S_p^Z S_q^Z 
+        \hat{H}_{XXZ} = \sum_p (\mu_p^Z - J_{pp}^{\mathrm{eq}}) S_p^Z
+        + \sum_{pq} J_{pq}^{\mathrm{ax}} S_p^Z S_q^Z
         + \sum_{pq} J_{pq}^{\mathrm{eq}} (S_p^+ S_q^- + S_p^- S_q^+)
 \r
     `HamIsing` and `HamRG` are special cases of this class.\r
@@ -694,3 +695,41 @@ class HamRG(HamHeisenberg):
             J_ax=J_ax,
             connectivity=connectivity
         )
+
+
+class AlternativeSpinHamiltonian(HamHeisenberg):
+    """
+    Alternative approach to Spin Hamiltonians (Issue #179).
+
+    Acts as an adapter to map custom spin topologies directly to the
+    fermion creation/annihilation operators in HamHeisenberg, avoiding
+    dense Kronecker products.
+    """
+    def __init__(self, num_spins, coupling_constants, connectivity=None):
+        self.num_spins = int(num_spins)
+
+        try:
+            J_val = float(np.array(coupling_constants)[0] if np.array(coupling_constants).size > 0 else 1.0)
+        except (TypeError, IndexError):
+            J_val = float(coupling_constants)
+
+        if connectivity is None or len(connectivity) == 0:
+            self.connectivity_list = [(i, i + 1) for i in range(self.num_spins - 1)]
+        else:
+            self.connectivity_list = connectivity
+
+        J_matrix = np.zeros((self.num_spins, self.num_spins))
+        for (i, j) in self.connectivity_list:
+            J_matrix[i, j] = J_val
+            J_matrix[j, i] = J_val
+
+        mu = np.zeros(self.num_spins)
+
+        super().__init__(
+            mu=mu,
+            J_eq=J_matrix,
+            J_ax=J_matrix
+        )
+
+
+
