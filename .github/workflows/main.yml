@@ -47,6 +47,27 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install .
+    - name: Check built wheel
+      shell: bash
+      run: |
+        wheel_dir="$(mktemp -d)"
+        install_dir="$(mktemp -d)"
+        smoke_dir="$(mktemp -d)"
+        python -m pip wheel . --no-deps --wheel-dir "$wheel_dir"
+        python -m pip install --no-deps --target "$install_dir" "$wheel_dir"/moha-*.whl
+        cd "$smoke_dir"
+        PYTHONPATH="$install_dir" python - <<'PY'
+        from pathlib import Path
+        import moha
+
+        package = Path(moha.__file__).parent
+        resources = (
+            "rauk/hx_dictionary.json", "rauk/kxy_matrix_1.json",
+            "rauk/ionization.json", "toml_tools/defaults.toml",
+            "gpt/config.toml", "gpt/tools.json",
+        )
+        assert all((package / resource).is_file() for resource in resources)
+        PY
     - name: Run tests
       shell: bash
       run: |
