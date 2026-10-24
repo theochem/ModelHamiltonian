@@ -54,7 +54,15 @@ toml = [
 ]
 
 [tool.setuptools]
-packages = ["moha"]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["moha*"]
+
+[tool.setuptools.package-data]
+"moha.rauk" = ["*.json"]
+"moha.toml_tools" = ["*.toml"]
+"moha.gpt" = ["*.toml", "*.json"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
