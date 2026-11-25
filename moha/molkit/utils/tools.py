@@ -171,7 +171,7 @@ def load_fcidump(lit) -> dict:
     # check header
     line = next(lit)
     if not line.startswith(" &FCI NORB="):
-        raise (f"Incorrect file header: {line.strip()}", lit)
+        raise ValueError(f"Incorrect file header: {line.strip()}")
 
     # read info from header
     words = line[5:].split(",")
@@ -198,10 +198,9 @@ def load_fcidump(lit) -> dict:
     for line in lit:
         words = line.split()
         if len(words) != 5:
-            raise (
+            raise ValueError(
                 f"Expecting 5 fields on each data line in FCIDUMP, "
-                f"got {len(words)}.",
-                lit,
+                f"got {len(words)}."
             )
         value = float(words[0])
         if words[3] != "0":

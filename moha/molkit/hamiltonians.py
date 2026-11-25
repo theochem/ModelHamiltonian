@@ -174,7 +174,8 @@ class MolHam:
         -------
         None
         """
-        data = load_fcidump(open(path))
+        with open(path) as fcidump_file:
+            data = load_fcidump(fcidump_file)
         self.one_body = data['one_ints']
         self.two_body = data['two_ints']
         self.zero_body = data['core_energy']
