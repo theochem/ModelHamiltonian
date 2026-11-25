@@ -393,8 +393,8 @@ class HamHeisenberg(HamiltonianAPI):
     Models spin-1/2 particles on a lattice with the Hamiltonian:\r
 \r
     .. math::\r
-        \hat{H}_{XXZ} = \sum_p (\mu_p^Z - J_{pp}^{\mathrm{eq}}) S_p^Z 
-        + \sum_{pq} J_{pq}^{\mathrm{ax}} S_p^Z S_q^Z 
+        \hat{H}_{XXZ} = \sum_p (\mu_p^Z - J_{pp}^{\mathrm{eq}}) S_p^Z
+        + \sum_{pq} J_{pq}^{\mathrm{ax}} S_p^Z S_q^Z
         + \sum_{pq} J_{pq}^{\mathrm{eq}} (S_p^+ S_q^- + S_p^- S_q^+)
 \r
     `HamIsing` and `HamRG` are special cases of this class.\r
